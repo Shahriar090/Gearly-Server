@@ -6,7 +6,7 @@ app.use(express.json());
 app.use(cors());
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('👋 Hello From Gearly Server!');
+  res.send('👋 Hello From Gearly E-Commerce Server!');
 });
 
 export default app;
