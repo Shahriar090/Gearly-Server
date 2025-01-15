@@ -2,7 +2,7 @@ import express from 'express';
 import { userControllers } from './user.controllers';
 
 const router = express.Router();
-// create admin
-router.route('/users/create-admin').post(userControllers.createAdmin);
+// create user
+router.route('/users/create-user').post(userControllers.createUser);
 
 export const userRoutes = router;
