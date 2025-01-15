@@ -1,3 +1,5 @@
+import { Model } from 'mongoose';
+
 export enum UserRoles {
   Admin = 'Admin',
   Customer = 'Customer',
@@ -13,14 +15,14 @@ export enum UserStatus {
   Blocked = 'Blocked',
 }
 
-export type TUserName = {
+export interface IUserName {
   firstName: string;
   middleName?: string;
   lastName: string;
-};
+}
 
-export type TUser = {
-  name: TUserName;
+export interface IUser {
+  name: IUserName;
   gender: string;
   age: number;
   contactNo: string;
@@ -31,4 +33,8 @@ export type TUser = {
   role: UserRoles;
   status: UserStatus;
   isDeleted: boolean;
-};
+}
+
+export interface UserModel extends Model<IUser> {
+  isUserExists(id: string): Promise<IUser>;
+}

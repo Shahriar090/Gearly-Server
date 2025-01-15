@@ -1,15 +1,16 @@
 import { model, Schema } from 'mongoose';
 import {
-  TUser,
-  TUserName,
+  IUser,
+  IUserName,
   UserGender,
+  UserModel,
   UserRoles,
   UserStatus,
 } from './user.interface';
 import bcrypt from 'bcrypt';
 import config from '../../config';
 
-const userNameSchema = new Schema<TUserName>({
+const userNameSchema = new Schema<IUserName>({
   firstName: {
     type: String,
     required: true,
@@ -26,7 +27,7 @@ const userNameSchema = new Schema<TUserName>({
   },
 });
 
-const userSchema = new Schema<TUser>(
+const userSchema = new Schema<IUser, UserModel>(
   {
     name: userNameSchema,
     gender: {
@@ -77,7 +78,7 @@ const userSchema = new Schema<TUser>(
   { timestamps: true },
 );
 
-// hashing the password
+// hashing the password before save the doc
 userSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(
     this.password,
@@ -85,5 +86,14 @@ userSchema.pre('save', async function (next) {
   );
   next();
 });
+
+// removing the password field after save the doc
+userSchema.post('save', function (doc, next) {
+  doc.password = '';
+  next();
+});
+
+// static method to check if the user is already exist or not
+
 // model
-export const User = model<TUser>('User', userSchema);
+export const User = model<IUser, UserModel>('User', userSchema);
