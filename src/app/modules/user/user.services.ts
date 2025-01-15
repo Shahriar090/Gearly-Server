@@ -7,6 +7,7 @@ import { User } from './user.model';
 const createAdminIntoDb = async (
   adminData: Omit<TAdmin, 'user'> & { email: string; password: string },
 ) => {
+  // creating a user first
   const userData: Partial<TUser> = {
     email: adminData.email,
     password: adminData.password,
@@ -16,6 +17,7 @@ const createAdminIntoDb = async (
 
   const newUser = await User.create(userData);
 
+  // creating admin after successfully created a user
   if (newUser) {
     const adminInfo: TAdmin = {
       user: newUser._id,
