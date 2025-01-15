@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { userServices } from './user.services';
 
+// create user
 const createUser = async (req: Request, res: Response) => {
   const result = await userServices.createUserIntoDb(req.body);
   if (result) {
@@ -15,6 +16,22 @@ const createUser = async (req: Request, res: Response) => {
   }
 };
 
+// get all users
+const getAllUsers = async (req: Request, res: Response) => {
+  const result = await userServices.getAllUsersFromDb();
+  if (result) {
+    res.status(201).json({
+      message: 'All Users Retrieved Successfully',
+      data: result,
+    });
+  } else {
+    res.status(400).json({
+      message: 'Users Retrieving Failed.!',
+    });
+  }
+};
+
 export const userControllers = {
   createUser,
+  getAllUsers,
 };

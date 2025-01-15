@@ -51,6 +51,7 @@ const userSchema = new Schema<IUser, UserModel>(
       required: true,
       unique: true,
       trim: true,
+      index: true,
     },
     password: {
       type: String,
@@ -94,6 +95,10 @@ userSchema.post('save', function (doc, next) {
 });
 
 // static method to check if the user is already exist or not
+userSchema.statics.isUserExists = async function (email: string) {
+  // 'this' refers to the user model
+  return this.findOne({ email });
+};
 
 // model
 export const User = model<IUser, UserModel>('User', userSchema);
