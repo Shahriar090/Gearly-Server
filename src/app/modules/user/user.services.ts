@@ -17,7 +17,17 @@ const getAllUsersFromDb = async () => {
   return result;
 };
 
+// get single user
+const getSingleUserFromDb = async (id: string) => {
+  const result = await User.findById(id);
+  if (!result) {
+    throw new Error('No User Found With This Id.!');
+  }
+  return result;
+};
+
 export const userServices = {
   createUserIntoDb,
   getAllUsersFromDb,
+  getSingleUserFromDb,
 };
