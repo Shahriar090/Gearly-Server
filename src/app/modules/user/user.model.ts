@@ -88,6 +88,17 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
+// excluding deleted users (documents) from get operations
+userSchema.pre('find', function (next) {
+  this.where({ isDeleted: { $ne: true } });
+  next();
+});
+
+userSchema.pre('findOne', function (next) {
+  this.where({ isDeleted: { $ne: true } });
+  next();
+});
+
 // removing the password field after save the doc
 userSchema.post('save', function (doc, next) {
   doc.password = '';

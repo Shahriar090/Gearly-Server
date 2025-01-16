@@ -49,9 +49,24 @@ const updateUserIntoDb = async (id: string, payload: IUser) => {
   return result;
 };
 
+// delete a user
+const deleteUserFromDb = async (id: string) => {
+  const isUserExist = await User.findById(id);
+  if (!isUserExist) {
+    throw new Error('No User Found With This Id.!');
+  }
+  const result = await User.findByIdAndUpdate(
+    id,
+    { isDeleted: true },
+    { new: true },
+  );
+  return result;
+};
+
 export const userServices = {
   createUserIntoDb,
   getAllUsersFromDb,
   getSingleUserFromDb,
   updateUserIntoDb,
+  deleteUserFromDb,
 };
