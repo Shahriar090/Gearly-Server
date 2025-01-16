@@ -8,5 +8,7 @@ router.route('/users/create-user').post(userControllers.createUser);
 router.route('/users').get(userControllers.getAllUsers);
 // get single user
 router.route('/users/:id').get(userControllers.getSingleUser);
+// update a user
+router.route('/users/:id').put(userControllers.updateUser);
 
 export const userRoutes = router;

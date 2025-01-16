@@ -26,8 +26,32 @@ const getSingleUserFromDb = async (id: string) => {
   return result;
 };
 
+// update a user
+const updateUserIntoDb = async (id: string, payload: IUser) => {
+  // separating primitive and non primitive data
+  const { name, ...remainingUserData } = payload;
+
+  const modifiedUpdatedData: Record<string, unknown> = {
+    ...remainingUserData,
+  };
+
+  if (name && typeof name === 'object' && Object.keys(name).length) {
+    for (const [key, value] of Object.entries(name)) {
+      // dot notation for updating nested fields in MongoDB
+      modifiedUpdatedData[`name.${key}`] = value;
+    }
+  }
+
+  const result = await User.findByIdAndUpdate(id, modifiedUpdatedData, {
+    new: true,
+  });
+
+  return result;
+};
+
 export const userServices = {
   createUserIntoDb,
   getAllUsersFromDb,
   getSingleUserFromDb,
+  updateUserIntoDb,
 };

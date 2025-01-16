@@ -48,8 +48,27 @@ const getSingleUser = async (req: Request, res: Response) => {
   }
 };
 
+// update a user
+const updateUser = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const userData = req.body;
+  const result = await userServices.updateUserIntoDb(id, userData);
+
+  if (result) {
+    res.status(201).json({
+      message: 'User Information Updated Successfully',
+      data: result,
+    });
+  } else {
+    res.status(400).json({
+      message: 'Failed To Update User Information.!',
+    });
+  }
+};
+
 export const userControllers = {
   createUser,
   getAllUsers,
   getSingleUser,
+  updateUser,
 };
