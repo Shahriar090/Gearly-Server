@@ -50,12 +50,12 @@ const getSingleUser = async (
     const result = await userServices.getSingleUserFromDb(id);
 
     if (result) {
-      res.status(201).json({
+      res.status(200).json({
         message: 'User Retrieved Successfully',
         data: result,
       });
     } else {
-      res.status(400).json({
+      res.status(404).json({
         message: 'User Retrieve Failed',
       });
     }
