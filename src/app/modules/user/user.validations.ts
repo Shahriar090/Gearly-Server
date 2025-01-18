@@ -32,9 +32,20 @@ const createUserValidationSchema = z.object({
         .string()
         .min(6, 'Password Must Be At Least 6 Characters Long'),
       profileImage: z.string().optional(),
-      role: z.enum([UserRoles.Admin, UserRoles.Customer]).optional(),
-      status: z.enum([UserStatus.Active, UserStatus.Blocked]).optional(),
-      isDeleted: z.boolean().optional().default(false).optional(),
+      role: z
+        .enum([UserRoles.Admin, UserRoles.Customer])
+        .optional()
+        .default(UserRoles.Customer),
+      status: z
+        .enum([UserStatus.Active, UserStatus.Blocked])
+        .optional()
+        .default(UserStatus.Active),
+      isDeleted: z
+        .boolean()
+        .optional()
+        .default(false)
+        .optional()
+        .default(false),
     }),
   }),
 });
