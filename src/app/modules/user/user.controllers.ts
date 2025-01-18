@@ -15,7 +15,7 @@ const createUser = asyncHandler(async (req, res) => {
     });
   } else {
     res.status(httpStatus.BAD_REQUEST).json({
-      message: 'User Creating Filed',
+      message: 'User Creation Failed',
     });
   }
 });
