@@ -1,7 +1,7 @@
 import { ErrorRequestHandler } from 'express';
 
 const globalErrorHandler: ErrorRequestHandler = (err, req, res) => {
-  console.error(err.stack);
+  //   console.error(err.stack);
 
   const statusCode = err.statusCode || 500;
   const message = err.message || 'Something Went Wrong.!👎';

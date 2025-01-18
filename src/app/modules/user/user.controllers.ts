@@ -1,17 +1,18 @@
 import { NextFunction, Request, Response } from 'express';
 import { userServices } from './user.services';
+import httpStatus from 'http-status';
 
 // create user
 const createUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await userServices.createUserIntoDb(req.body);
     if (result) {
-      res.status(201).json({
+      res.status(httpStatus.CREATED).json({
         message: 'User Created Successfully',
         data: result,
       });
     } else {
-      res.status(400).json({
+      res.status(httpStatus.BAD_REQUEST).json({
         message: 'User Creating Filed',
       });
     }
@@ -25,13 +26,13 @@ const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await userServices.getAllUsersFromDb();
     if (result) {
-      res.status(201).json({
+      res.status(httpStatus.OK).json({
         message: 'All Users Retrieved Successfully',
         data: result,
       });
     } else {
-      res.status(400).json({
-        message: 'Users Retrieving Failed.!',
+      res.status(httpStatus.NOT_FOUND).json({
+        message: 'Users Retrieving Failed. No Users Found.!',
       });
     }
   } catch (error) {
@@ -50,13 +51,13 @@ const getSingleUser = async (
     const result = await userServices.getSingleUserFromDb(id);
 
     if (result) {
-      res.status(200).json({
+      res.status(httpStatus.OK).json({
         message: 'User Retrieved Successfully',
         data: result,
       });
     } else {
-      res.status(404).json({
-        message: 'User Retrieve Failed',
+      res.status(httpStatus.NOT_FOUND).json({
+        message: 'User Retrieve Failed. User Not Found.!',
       });
     }
   } catch (error) {
@@ -72,12 +73,12 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
     const result = await userServices.updateUserIntoDb(id, userData);
 
     if (result) {
-      res.status(201).json({
+      res.status(httpStatus.OK).json({
         message: 'User Information Updated Successfully',
         data: result,
       });
     } else {
-      res.status(400).json({
+      res.status(httpStatus.NOT_FOUND).json({
         message: 'Failed To Update User Information.!',
       });
     }
@@ -93,11 +94,11 @@ const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
     const result = await userServices.deleteUserFromDb(id);
 
     if (result) {
-      res.status(200).json({
+      res.status(httpStatus.OK).json({
         message: 'User Deleted Successfully',
       });
     } else {
-      res.status(400).json({
+      res.status(httpStatus.NOT_FOUND).json({
         message: 'User Delete Operation Failed.!',
       });
     }
