@@ -5,7 +5,8 @@ import asyncHandler from '../../utils/asyncHandler';
 
 // create user
 const createUser = asyncHandler(async (req, res) => {
-  const result = await userServices.createUserIntoDb(req.body);
+  const result = await userServices.createUserIntoDb(req.body.user);
+  console.log('REQUEST BODY', result);
   if (result) {
     sendResponse(res, {
       statusCode: httpStatus.CREATED,
@@ -59,7 +60,7 @@ const getSingleUser = asyncHandler(async (req, res) => {
 // update a user
 const updateUser = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const userData = req.body;
+  const userData = req.body.user;
   const result = await userServices.updateUserIntoDb(id, userData);
 
   if (result) {
