@@ -111,5 +111,14 @@ userSchema.statics.isUserExists = async function (email: string) {
   return this.findOne({ email });
 };
 
+// static method to check if the plain-text password matches the hashed password.
+userSchema.statics.isPasswordMatched = async function (
+  plainTextPassword: string,
+  hashedPassword: string,
+) {
+  const result = await bcrypt.compare(plainTextPassword, hashedPassword);
+  return result;
+};
+
 // model
 export const User = model<IUser, UserModel>('User', userSchema);
