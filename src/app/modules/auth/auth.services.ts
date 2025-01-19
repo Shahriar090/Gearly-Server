@@ -27,9 +27,10 @@ const loginUser = async (payload: TLoginUser) => {
     throw new Error('Incorrect Password. Please Try Again.');
   }
 
-  // generate access token
+  // generate access and refresh token
   const jwtPayload = {
     id: user?._id,
+    email: user?.email,
     role: user?.role,
   };
 
@@ -39,8 +40,15 @@ const loginUser = async (payload: TLoginUser) => {
     config.access_token_expiry as string,
   );
 
+  const refreshToken = generateJwtToken(
+    jwtPayload,
+    config.refresh_token_secret as string,
+    config.refresh_token_expiry as string,
+  );
+
   return {
     accessToken,
+    refreshToken,
   };
 };
 

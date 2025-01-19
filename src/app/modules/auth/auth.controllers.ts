@@ -5,13 +5,13 @@ import httpStatus from 'http-status';
 
 const loginUser = asyncHandler(async (req, res) => {
   const result = await authServices.loginUser(req.body);
-  const { accessToken } = result;
+  const { accessToken, refreshToken } = result;
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'User Login Successful.',
-    data: { accessToken },
+    data: { accessToken, refreshToken },
   });
 });
 
