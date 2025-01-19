@@ -22,6 +22,7 @@ export interface IUserName {
 }
 
 export interface IUser {
+  _id: string;
   name: IUserName;
   gender: string;
   age: number;
