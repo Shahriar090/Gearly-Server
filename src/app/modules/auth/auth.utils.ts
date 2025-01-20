@@ -1,4 +1,4 @@
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 
 type TJwtPayload = {
   id: string;
@@ -17,5 +17,5 @@ export const generateJwtToken = (
 
 // jwt validator
 export const verifyJwtToken = (token: string, secret: string) => {
-  return jwt.verify(token, secret) as JwtPayload;
+  return jwt.verify(token, secret);
 };

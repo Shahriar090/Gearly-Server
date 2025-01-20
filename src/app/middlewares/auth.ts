@@ -14,8 +14,15 @@ const auth = (...requiredRoles: UserRoles[]) => {
     }
 
     // verify the token
-    const decoded = verifyJwtToken(token, config.access_token_secret as string);
+    const decoded = verifyJwtToken(
+      token,
+      config.access_token_secret as string,
+    ) as JwtPayload;
     const { role, email } = decoded;
+
+    if (!decoded || !('email' in decoded)) {
+      throw new Error('Invalid Token.');
+    }
 
     // check if the user is exists or not
     const user = await User.isUserExists(email);
@@ -38,7 +45,10 @@ const auth = (...requiredRoles: UserRoles[]) => {
       throw new Error('This User Is Blocked.!');
     }
 
-    if (requiredRoles && !requiredRoles.includes(role as UserRoles)) {
+    if (
+      requiredRoles.length > 0 &&
+      !requiredRoles.includes(role as UserRoles)
+    ) {
       throw new Error('You Are Not Authorized.!');
     }
     req.user = decoded as JwtPayload;
