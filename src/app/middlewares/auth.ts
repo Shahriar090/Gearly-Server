@@ -1,11 +1,11 @@
 import config from '../config';
 import { verifyJwtToken } from '../modules/auth/auth.utils';
-import { UserRoles } from '../modules/user/user.interface';
+import { TUserRole } from '../modules/user/user.interface';
 import { User } from '../modules/user/user.model';
 import asyncHandler from '../utils/asyncHandler';
 import { JwtPayload } from 'jsonwebtoken';
 
-const auth = (...requiredRoles: UserRoles[]) => {
+const auth = (...requiredRoles: TUserRole[]) => {
   return asyncHandler(async (req, res, next) => {
     const token = req.headers.authorization;
 
@@ -47,7 +47,7 @@ const auth = (...requiredRoles: UserRoles[]) => {
 
     if (
       requiredRoles.length > 0 &&
-      !requiredRoles.includes(role as UserRoles)
+      !requiredRoles.includes(role as TUserRole)
     ) {
       throw new Error('You Are Not Authorized.!');
     }

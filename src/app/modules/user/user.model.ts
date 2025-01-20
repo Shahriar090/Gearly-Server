@@ -2,13 +2,14 @@ import { model, Schema } from 'mongoose';
 import {
   IUser,
   IUserName,
-  UserGender,
+  TUserGender,
+  TUserRole,
+  TUserStatus,
   UserModel,
-  UserRoles,
-  UserStatus,
 } from './user.interface';
 import bcrypt from 'bcrypt';
 import config from '../../config';
+import { USER_GENDER, USER_ROLES, USER_STATUS } from './user.constant';
 
 const userNameSchema = new Schema<IUserName>({
   firstName: {
@@ -32,7 +33,8 @@ const userSchema = new Schema<IUser, UserModel>(
     name: userNameSchema,
     gender: {
       type: String,
-      enum: Object.values(UserGender),
+      enum: Object.values(USER_GENDER) as TUserGender[],
+      required: true,
     },
     age: {
       type: Number,
@@ -62,13 +64,13 @@ const userSchema = new Schema<IUser, UserModel>(
     },
     role: {
       type: String,
-      enum: Object.values(UserRoles),
-      default: UserRoles.Customer,
+      enum: Object.values(USER_ROLES) as TUserRole[],
+      default: USER_ROLES.Customer,
     },
     status: {
       type: String,
-      enum: Object.values(UserStatus),
-      default: UserStatus.Active,
+      enum: Object.values(USER_STATUS) as TUserStatus[],
+      default: USER_STATUS.Active,
     },
     isDeleted: {
       type: Boolean,
