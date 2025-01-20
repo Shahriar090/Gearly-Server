@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { UserGender, UserRoles, UserStatus } from './user.interface';
+import { USER_GENDER, USER_ROLES, USER_STATUS } from './user.constant';
 
 // create user name validations
 const createUserNameValidationSchema = z.object({
@@ -19,7 +19,11 @@ const createUserValidationSchema = z.object({
   body: z.object({
     user: z.object({
       name: createUserNameValidationSchema,
-      gender: z.enum([UserGender.Male, UserGender.Female, UserGender.Others]),
+      gender: z.enum([
+        USER_GENDER.Male,
+        USER_GENDER.Female,
+        USER_GENDER.Others,
+      ]),
       age: z.number().int().min(18, 'Age Must Be At Least 18'),
       contactNo: z.string().min(1, 'Contact Number Is Required').trim(),
       address: z.string().min(1, 'Address Is Required').trim(),
@@ -33,13 +37,13 @@ const createUserValidationSchema = z.object({
         .min(6, 'Password Must Be At Least 6 Characters Long'),
       profileImage: z.string().optional(),
       role: z
-        .enum([UserRoles.Admin, UserRoles.Customer])
+        .enum([USER_ROLES.Admin, USER_ROLES.Customer])
         .optional()
-        .default(UserRoles.Customer),
+        .default(USER_ROLES.Customer),
       status: z
-        .enum([UserStatus.Active, UserStatus.Blocked])
+        .enum([USER_STATUS.Active, USER_STATUS.Blocked])
         .optional()
-        .default(UserStatus.Active),
+        .default(USER_STATUS.Active),
       isDeleted: z
         .boolean()
         .optional()
@@ -56,7 +60,7 @@ const updateUserValidationSchema = z.object({
     user: z.object({
       name: updateUserNameValidationSchema.optional(),
       gender: z
-        .enum([UserGender.Male, UserGender.Female, UserGender.Others])
+        .enum([USER_GENDER.Male, USER_GENDER.Female, USER_GENDER.Others])
         .optional(),
       age: z.number().int().min(18, 'Age Must Be At Least 18').optional(),
       contactNo: z
@@ -76,8 +80,8 @@ const updateUserValidationSchema = z.object({
         .min(6, 'Password Must Be At Least 6 Characters Long')
         .optional(),
       profileImage: z.string().optional(),
-      role: z.enum([UserRoles.Admin, UserRoles.Customer]).optional(),
-      status: z.enum([UserStatus.Active, UserStatus.Blocked]).optional(),
+      role: z.enum([USER_ROLES.Admin, USER_ROLES.Customer]).optional(),
+      status: z.enum([USER_STATUS.Active, USER_STATUS.Blocked]).optional(),
       isDeleted: z.boolean().optional().default(false).optional(),
     }),
   }),
