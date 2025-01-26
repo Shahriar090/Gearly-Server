@@ -6,18 +6,13 @@ import asyncHandler from '../../utils/asyncHandler';
 // create user
 const createUser = asyncHandler(async (req, res) => {
   const result = await userServices.createUserIntoDb(req.body.user);
-  if (result) {
-    sendResponse(res, {
-      statusCode: httpStatus.CREATED,
-      success: true,
-      message: 'User Created Successfully',
-      data: result,
-    });
-  } else {
-    res.status(httpStatus.BAD_REQUEST).json({
-      message: 'User Creation Failed',
-    });
-  }
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: 'User Created Successfully',
+    data: result,
+  });
 });
 
 // get all users

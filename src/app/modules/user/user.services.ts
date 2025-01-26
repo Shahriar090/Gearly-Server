@@ -8,8 +8,8 @@ const createUserIntoDb = async (payload: IUser) => {
   const isUserExist = await User.isUserExists(payload.email);
   if (isUserExist) {
     throw new AppError(
-      httpStatus.BAD_REQUEST,
-      'This User Is Already Exists.!',
+      httpStatus.CONFLICT,
+      'User Already Exists With This Email.!',
       'UserAlreadyExists',
     );
   }
