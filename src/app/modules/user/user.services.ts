@@ -1,11 +1,17 @@
+import AppError from '../../errors/appError';
 import { IUser } from './user.interface';
 import { User } from './user.model';
+import httpStatus from 'http-status';
 
 // create user
 const createUserIntoDb = async (payload: IUser) => {
   const isUserExist = await User.isUserExists(payload.email);
   if (isUserExist) {
-    throw new Error('User With This Email Already Exists.!');
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'This User Is Already Exists.!',
+      'UserAlreadyExists',
+    );
   }
   const result = await User.create(payload);
   return result;
@@ -21,7 +27,11 @@ const getAllUsersFromDb = async () => {
 const getSingleUserFromDb = async (id: string) => {
   const result = await User.findById(id);
   if (!result) {
-    throw new Error('No User Found With This Id.!');
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'No User Found With This Id.!',
+      'UserNotFound',
+    );
   }
   return result;
 };
@@ -53,7 +63,11 @@ const updateUserIntoDb = async (id: string, payload: IUser) => {
 const deleteUserFromDb = async (id: string) => {
   const isUserExist = await User.findById(id);
   if (!isUserExist) {
-    throw new Error('No User Found With This Id.!');
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'No User Found With This Id.!',
+      'UserNotFound',
+    );
   }
   const result = await User.findByIdAndUpdate(
     id,
