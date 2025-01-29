@@ -1,7 +1,10 @@
+import { JwtPayload } from 'jsonwebtoken';
 import config from '../../config';
+import AppError from '../../errors/appError';
 import { User } from '../user/user.model';
 import { TLoginUser } from './auth.interface';
-import { generateJwtToken } from './auth.utils';
+import { generateJwtToken, verifyJwtToken } from './auth.utils';
+import httpStatus from 'http-status';
 
 const loginUser = async (payload: TLoginUser) => {
   // check if the user is exists or not
@@ -52,6 +55,72 @@ const loginUser = async (payload: TLoginUser) => {
   };
 };
 
+// refresh token
+const refreshToken = async (token: string) => {
+  // check if the token provided or not
+  if (!token) {
+    throw new AppError(
+      httpStatus.UNAUTHORIZED,
+      'You Are Not Authorized.!',
+      'UnauthorizedError',
+    );
+  }
+
+  // decoding token
+  const decoded = verifyJwtToken(
+    token,
+    config.refresh_token_secret as string,
+  ) as JwtPayload;
+  const { email } = decoded;
+
+  // check if the user is exist or not
+  const user = await User.isUserExists(email);
+
+  if (!user) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'User Not Found.!',
+      'UserNotFound',
+    );
+  }
+
+  // check if the user is deleted or not
+  const isDeleted = user?.isDeleted;
+  if (isDeleted) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'This User Is Deleted.!',
+      'DeletedUser',
+    );
+  }
+
+  // check if the user is blocked or not
+  const userStatus = user?.status;
+  if (userStatus === 'Blocked') {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'This User Is Blocked.!',
+      'UserNotFound',
+    );
+  }
+
+  const jwtPayload = {
+    id: user?._id,
+    email: user?.email,
+    role: user?.role,
+  };
+
+  const accessToken = generateJwtToken(
+    jwtPayload,
+    config.access_token_secret as string,
+    config.access_token_expiry as string,
+  );
+
+  return {
+    accessToken,
+  };
+};
 export const authServices = {
   loginUser,
+  refreshToken,
 };
