@@ -20,5 +20,9 @@ router
   .route('/')
   .get(auth(USER_ROLES.Admin), categoryControllers.getAllCategories);
 
+// get single category
+router
+  .route('/:id')
+  .get(auth(USER_ROLES.Admin), categoryControllers.getCategory);
 // ---------------------------------
 export const categoryRoutes = router;

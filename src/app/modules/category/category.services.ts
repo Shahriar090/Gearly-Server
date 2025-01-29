@@ -33,7 +33,23 @@ const getAllCategoriesFromDb = async () => {
   return result;
 };
 
+// get single category
+const getCategoryFromDb = async (id: string) => {
+  const result = await Category.findById(id);
+
+  if (!result) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'No Category Found.!',
+      'CategoryNotFound',
+    );
+  }
+
+  return result;
+};
+
 export const categoryServices = {
   createCategoryIntoDb,
   getAllCategoriesFromDb,
+  getCategoryFromDb,
 };
