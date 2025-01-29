@@ -2,6 +2,8 @@ import AppError from '../../errors/appError';
 import { IUser } from './user.interface';
 import { User } from './user.model';
 import httpStatus from 'http-status';
+import bcrypt from 'bcrypt';
+import config from '../../config';
 
 // create user
 const createUserIntoDb = async (payload: IUser) => {
@@ -45,6 +47,13 @@ const updateUserIntoDb = async (id: string, payload: IUser) => {
     ...remainingUserData,
   };
 
+  // hash the password if password being updated
+  if (payload.password) {
+    modifiedUpdatedData.password = await bcrypt.hash(
+      payload.password,
+      Number(config.bcrypt_salt_round),
+    );
+  }
   if (name && typeof name === 'object' && Object.keys(name).length) {
     for (const [key, value] of Object.entries(name)) {
       // dot notation for updating nested fields in MongoDB

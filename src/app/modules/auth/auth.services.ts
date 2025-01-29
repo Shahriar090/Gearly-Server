@@ -26,7 +26,6 @@ const loginUser = async (payload: TLoginUser) => {
   if (!(await User.isPasswordMatched(payload.password, user.password))) {
     throw new Error('Incorrect Password. Please Try Again.');
   }
-
   // generate access and refresh token
   const jwtPayload = {
     id: user?._id,

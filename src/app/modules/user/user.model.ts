@@ -58,6 +58,7 @@ const userSchema = new Schema<IUser, UserModel>(
     password: {
       type: String,
       required: true,
+      select: false,
     },
     profileImage: {
       type: String,
@@ -90,6 +91,15 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+  this.password = await bcrypt.hash(
+    this.password,
+    Number(config.bcrypt_salt_round),
+  );
+  next();
+});
+
 // excluding deleted users (documents) from get operations
 userSchema.pre('find', function (next) {
   this.where({ isDeleted: { $ne: true } });
@@ -110,7 +120,7 @@ userSchema.post('save', function (doc, next) {
 // static method to check if the user is already exist or not
 userSchema.statics.isUserExists = async function (email: string) {
   // 'this' refers to the user model
-  return this.findOne({ email });
+  return this.findOne({ email }).select('+password');
 };
 
 // static method to check if the plain-text password matches the hashed password.

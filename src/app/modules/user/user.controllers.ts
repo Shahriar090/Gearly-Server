@@ -18,18 +18,13 @@ const createUser = asyncHandler(async (req, res) => {
 // get all users
 const getAllUsers = asyncHandler(async (req, res) => {
   const result = await userServices.getAllUsersFromDb();
-  if (result) {
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: 'All Users Retrieved Successfully',
-      data: result,
-    });
-  } else {
-    res.status(httpStatus.NOT_FOUND).json({
-      message: 'Users Retrieving Failed. No Users Found.!',
-    });
-  }
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'All Users Retrieved Successfully',
+    data: result,
+  });
 });
 
 // get single user
@@ -37,18 +32,12 @@ const getSingleUser = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const result = await userServices.getSingleUserFromDb(id);
 
-  if (result) {
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: 'User Retrieved Successfully',
-      data: result,
-    });
-  } else {
-    res.status(httpStatus.NOT_FOUND).json({
-      message: 'User Retrieve Failed. User Not Found.!',
-    });
-  }
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User Retrieved Successfully',
+    data: result,
+  });
 });
 
 // update a user
@@ -57,18 +46,12 @@ const updateUser = asyncHandler(async (req, res) => {
   const userData = req.body.user;
   const result = await userServices.updateUserIntoDb(id, userData);
 
-  if (result) {
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: 'User Information Updated Successfully',
-      data: result,
-    });
-  } else {
-    res.status(httpStatus.NOT_FOUND).json({
-      message: 'Failed To Update User Information.!',
-    });
-  }
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User Information Updated Successfully',
+    data: result,
+  });
 });
 
 // delete a user
@@ -76,18 +59,12 @@ const deleteUser = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const result = await userServices.deleteUserFromDb(id);
 
-  if (result) {
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: 'User Deleted Successfully',
-      data: result,
-    });
-  } else {
-    res.status(httpStatus.NOT_FOUND).json({
-      message: 'User Delete Operation Failed.!',
-    });
-  }
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User Deleted Successfully',
+    data: result,
+  });
 });
 
 export const userControllers = {
