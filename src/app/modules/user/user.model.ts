@@ -83,13 +83,6 @@ const userSchema = new Schema<IUser, UserModel>(
 );
 
 // hashing the password before save the doc
-userSchema.pre('save', async function (next) {
-  this.password = await bcrypt.hash(
-    this.password,
-    Number(config.bcrypt_salt_round),
-  );
-  next();
-});
 
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
