@@ -3,6 +3,7 @@ import { TCategory } from './category.interface';
 import { Category } from './category.model';
 import httpStatus from 'http-status';
 
+// create category
 const createCategoryIntoDb = async (payload: TCategory) => {
   // check if the category already exists
   const isCategoryExists = await Category.findOne({ name: payload.name });
@@ -17,6 +18,22 @@ const createCategoryIntoDb = async (payload: TCategory) => {
   return result;
 };
 
+// get all categories
+const getAllCategoriesFromDb = async () => {
+  const result = await Category.find();
+
+  if (!result) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'No Category Found.!',
+      'CategoryNotFound',
+    );
+  }
+
+  return result;
+};
+
 export const categoryServices = {
   createCategoryIntoDb,
+  getAllCategoriesFromDb,
 };

@@ -15,5 +15,10 @@ router
     categoryControllers.createCategory,
   );
 
+// get all categories
+router
+  .route('/')
+  .get(auth(USER_ROLES.Admin), categoryControllers.getAllCategories);
+
 // ---------------------------------
 export const categoryRoutes = router;
