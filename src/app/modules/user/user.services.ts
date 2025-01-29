@@ -65,6 +65,13 @@ const updateUserIntoDb = async (id: string, payload: IUser) => {
     new: true,
   });
 
+  if (!result) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'User Not Found',
+      'UserNotFoundError',
+    );
+  }
   return result;
 };
 
