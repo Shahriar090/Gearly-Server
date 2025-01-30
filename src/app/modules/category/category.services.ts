@@ -90,9 +90,27 @@ const updateCategoryIntoDb = async (id: string, payload: TCategory) => {
   return result;
 };
 
+// delete a category (soft delete)
+const deleteCategoryFromDb = async (id: string) => {
+  const category = await Category.findById(id);
+  if (!category) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'No Category Found.!',
+      'CategoryNotFound',
+    );
+  }
+
+  category.isDeleted = true;
+  await category.save(); //(for validation and timestamp update)
+
+  return category;
+};
+
 export const categoryServices = {
   createCategoryIntoDb,
   getAllCategoriesFromDb,
   getCategoryFromDb,
   updateCategoryIntoDb,
+  deleteCategoryFromDb,
 };

@@ -33,5 +33,10 @@ router
     validateRequest(categoryValidations.updateCategoryValidationSchema),
     categoryControllers.updateCategory,
   );
+
+// delete a category
+router
+  .route('/:id')
+  .delete(auth(USER_ROLES.Admin), categoryControllers.deleteCategory);
 // ---------------------------------
 export const categoryRoutes = router;

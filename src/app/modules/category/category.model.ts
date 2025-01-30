@@ -32,5 +32,16 @@ const categorySchema = new Schema<TCategory>(
   { timestamps: true },
 );
 
+// excluding deleted categories (documents) from get operations
+categorySchema.pre('find', function (next) {
+  this.where({ isDeleted: { $ne: true } });
+  next();
+});
+
+categorySchema.pre('findOne', function (next) {
+  this.where({ isDeleted: { $ne: true } });
+  next();
+});
+
 // model
 export const Category = model<TCategory>('Category', categorySchema);
