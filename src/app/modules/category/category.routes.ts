@@ -24,5 +24,14 @@ router
 router
   .route('/:id')
   .get(auth(USER_ROLES.Admin), categoryControllers.getCategory);
+
+// update a category
+router
+  .route('/:id')
+  .put(
+    auth(USER_ROLES.Admin),
+    validateRequest(categoryValidations.updateCategoryValidationSchema),
+    categoryControllers.updateCategory,
+  );
 // ---------------------------------
 export const categoryRoutes = router;

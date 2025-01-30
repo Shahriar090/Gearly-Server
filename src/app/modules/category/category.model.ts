@@ -24,6 +24,10 @@ const categorySchema = new Schema<TCategory>(
       enum: Object.values(CATEGORY_STATUS) as TCategoryStatus[],
       default: CATEGORY_STATUS.Active,
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true },
 );

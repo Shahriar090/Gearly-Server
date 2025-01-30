@@ -8,4 +8,5 @@ export type TCategory = {
   description: string;
   imageUrl: string;
   status: TCategoryStatus;
+  isDeleted: boolean;
 };

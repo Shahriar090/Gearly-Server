@@ -48,8 +48,51 @@ const getCategoryFromDb = async (id: string) => {
   return result;
 };
 
+// update a category
+const updateCategoryIntoDb = async (id: string, payload: TCategory) => {
+  const category = await Category.findById(id);
+  if (!category) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'No Category Found.!',
+      'CategoryNotFound',
+    );
+  }
+
+  // check if the new name conflicts with any other category
+  if (payload.name) {
+    const existingCategory = await Category.findOne({
+      name: payload.name,
+    }).exec();
+
+    if (existingCategory && existingCategory._id.toString() !== id) {
+      throw new AppError(
+        httpStatus.CONFLICT,
+        'Category Name Already Exists.!',
+        'CategoryNameConflict',
+      );
+    }
+  }
+
+  const result = await Category.findByIdAndUpdate(id, payload, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!result) {
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      'Failed To Update Category',
+      'CategoryUpdateFailed',
+    );
+  }
+
+  return result;
+};
+
 export const categoryServices = {
   createCategoryIntoDb,
   getAllCategoriesFromDb,
   getCategoryFromDb,
+  updateCategoryIntoDb,
 };

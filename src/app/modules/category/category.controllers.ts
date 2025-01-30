@@ -41,8 +41,23 @@ const getCategory = asyncHandler(async (req, res) => {
   });
 });
 
+// update a category
+const updateCategory = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { category } = req.body;
+  const result = await categoryServices.updateCategoryIntoDb(id, category);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Category Updated Successfully',
+    data: result,
+  });
+});
+
 export const categoryControllers = {
   createCategory,
   getAllCategories,
   getCategory,
+  updateCategory,
 };
