@@ -67,10 +67,24 @@ const deleteCategory = asyncHandler(async (req, res) => {
     data: result,
   });
 });
+
+// restore deleted category (undo)
+const restoreDeletedCategory = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const result = await categoryServices.restoreDeletedCategory(id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Category Restored Successfully',
+    data: result,
+  });
+});
 export const categoryControllers = {
   createCategory,
   getAllCategories,
   getCategory,
   updateCategory,
   deleteCategory,
+  restoreDeletedCategory,
 };

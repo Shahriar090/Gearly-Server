@@ -107,10 +107,30 @@ const deleteCategoryFromDb = async (id: string) => {
   return category;
 };
 
+// restore deleted category (undo)
+const restoreDeletedCategory = async (id: string) => {
+  const category = await Category.findOne({ _id: id, isDeleted: true });
+
+  // check if the category is found or not
+  if (!category) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'No Category Found.!',
+      'CategoryNotFound',
+    );
+  }
+
+  category.isDeleted = false;
+  await category.save();
+
+  return category;
+};
+
 export const categoryServices = {
   createCategoryIntoDb,
   getAllCategoriesFromDb,
   getCategoryFromDb,
   updateCategoryIntoDb,
   deleteCategoryFromDb,
+  restoreDeletedCategory,
 };

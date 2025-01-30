@@ -38,5 +38,10 @@ router
 router
   .route('/:id')
   .delete(auth(USER_ROLES.Admin), categoryControllers.deleteCategory);
+
+// restore a deleted category
+router
+  .route('/:id')
+  .patch(auth(USER_ROLES.Admin), categoryControllers.restoreDeletedCategory);
 // ---------------------------------
 export const categoryRoutes = router;

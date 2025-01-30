@@ -33,12 +33,25 @@ const categorySchema = new Schema<TCategory>(
 );
 
 // excluding deleted categories (documents) from get operations
+/**NOTE: If the query explicitly targets the deleted docs (for example, restoring deleted docs), it will work as the query. Otherwise, it will filter out all the deleted docs for find operations. */
+
 categorySchema.pre('find', function (next) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const query = this as any;
+  if (query._conditions && query._conditions.isDeleted === true) {
+    return next();
+  }
   this.where({ isDeleted: { $ne: true } });
   next();
 });
 
 categorySchema.pre('findOne', function (next) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const query = this as any;
+
+  if (query._conditions && query._conditions.isDeleted === true) {
+    return next();
+  }
   this.where({ isDeleted: { $ne: true } });
   next();
 });
