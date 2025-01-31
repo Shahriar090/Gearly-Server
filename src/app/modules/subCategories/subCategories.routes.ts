@@ -24,5 +24,9 @@ router
   .route('/:id')
   .put(auth(USER_ROLES.Admin), subCategoryControllers.updateSubCategory);
 
+// delete a sub category
+router
+  .route('/:id')
+  .delete(auth(USER_ROLES.Admin), subCategoryControllers.deleteSubCategory);
 // -----------------------------------------------------------------------
 export const subCategoryRoutes = router;

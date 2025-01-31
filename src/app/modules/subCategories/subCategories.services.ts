@@ -107,9 +107,35 @@ const updateSubCategory = async (
   return updatedSubCategory;
 };
 
+// delete a sub category
+const deleteSubcategoryFromDb = async (id: string) => {
+  const subCategory = await SubCategory.findById(id);
+
+  if (!subCategory) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Sub-Category Not Found.!',
+      'SubCategoryNotFound',
+    );
+  }
+
+  if (subCategory.isDeleted) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Sub-Category Already Deleted',
+      'SubCategoryAlreadyDeleted',
+    );
+  }
+
+  subCategory.isDeleted = true;
+  await subCategory.save();
+
+  return subCategory;
+};
 export const subCategoriesServices = {
   createSubCategoryIntoDb,
   getAllSubCategoriesFromDb,
   getSubCategoryFromDb,
   updateSubCategory,
+  deleteSubcategoryFromDb,
 };
