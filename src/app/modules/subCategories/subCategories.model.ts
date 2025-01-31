@@ -17,7 +17,6 @@ const subCategorySchema = new Schema<TSubCategory>(
     },
     slug: {
       type: String,
-      required: true,
       unique: true,
     },
     description: {
@@ -42,17 +41,26 @@ const subCategorySchema = new Schema<TSubCategory>(
   { timestamps: true },
 );
 
+// Combine both transformations in a single pre-save hook
+subCategorySchema.pre('save', function (next) {
+  if (this.categoryName) {
+    // Normalize categoryName (lowercase + replace spaces with hyphens)
+    this.categoryName = this.categoryName.toLowerCase().replace(/\s+/g, '-');
+  }
+
+  if (!this.slug) {
+    // Generate slug from name if not present
+    this.slug = slugify(this.name, { lower: true, strict: true });
+  }
+
+  next();
+});
+
 // excluding soft deleted documents in the find queries
 subCategorySchema.pre(/^find/, function (next) {
   const query = this as Query<TSubCategory[], TSubCategory>;
   query.setQuery({ ...query.getQuery(), isDeleted: false });
   query.populate({ path: 'category', match: { isDeleted: false } });
-  next();
-});
-subCategorySchema.pre('save', function (next) {
-  if (!this.slug) {
-    this.slug = slugify(this.name, { lower: true, strict: true });
-  }
   next();
 });
 

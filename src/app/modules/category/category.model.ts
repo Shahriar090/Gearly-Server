@@ -1,6 +1,7 @@
 import { model, Schema } from 'mongoose';
 import { TCategory, TCategoryStatus } from './category.interface';
 import { CATEGORY_STATUS } from './category.constants';
+import slugify from 'slugify';
 
 const categorySchema = new Schema<TCategory>(
   {
@@ -9,6 +10,12 @@ const categorySchema = new Schema<TCategory>(
       required: true,
       unique: true,
       trim: true,
+    },
+    slug: {
+      type: String,
+      unique: true,
+      trim: true,
+      lowercase: true,
     },
     description: {
       type: String,
@@ -32,6 +39,13 @@ const categorySchema = new Schema<TCategory>(
   { timestamps: true },
 );
 
+// adding slug
+categorySchema.pre('save', function (next) {
+  if (!this.slug) {
+    this.slug = slugify(this.name, { lower: true, strict: true });
+  }
+  next();
+});
 // excluding deleted categories (documents) from get operations
 /**NOTE: If the query explicitly targets the deleted docs (for example, restoring deleted docs), it will work as the query. Otherwise, it will filter out all the deleted docs for find operations. */
 

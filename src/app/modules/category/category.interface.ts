@@ -5,6 +5,7 @@ export type TCategoryStatus =
 
 export type TCategory = {
   name: string;
+  slug: string;
   description: string;
   imageUrl: string;
   status: TCategoryStatus;

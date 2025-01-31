@@ -6,7 +6,13 @@ import httpStatus from 'http-status';
 
 // create a sub category
 const createSubCategoryIntoDb = async (payload: TSubCategory) => {
-  const category = await Category.findOne({ name: payload.categoryName });
+  const categoryNameSlug = payload.categoryName
+    .toLowerCase()
+    .replace(/\s+/g, '-');
+
+  // Find the category by slug
+  const category = await Category.findOne({ slug: categoryNameSlug });
+
   if (!category) {
     throw new AppError(
       httpStatus.NOT_FOUND,
@@ -32,7 +38,7 @@ const createSubCategoryIntoDb = async (payload: TSubCategory) => {
 
   const subCategoryData = {
     ...payload,
-    category: category?._id,
+    category: category._id,
   };
   const result = await SubCategory.create(subCategoryData);
   return result;
