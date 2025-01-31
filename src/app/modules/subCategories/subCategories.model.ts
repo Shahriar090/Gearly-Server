@@ -49,6 +49,11 @@ subCategorySchema.pre('find', function (next) {
   next();
 });
 
+subCategorySchema.pre('findOne', function (next) {
+  this.populate('category').where({ 'category.isDeleted': { $ne: true } });
+  next();
+});
+
 subCategorySchema.pre('validate', function (next) {
   if (!this.slug) {
     this.slug = slugify(this.name, { lower: true, strict: true });

@@ -41,10 +41,33 @@ const createSubCategoryIntoDb = async (payload: TSubCategory) => {
 // get all sub categories
 const getAllSubCategoriesFromDb = async () => {
   const result = await SubCategory.find();
+
+  if (!result) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Failed To Fetch Sub Categories.!',
+      'SubCategoriesNotFound',
+    );
+  }
+  return result;
+};
+
+// get a single sub category
+const getSubCategoryFromDb = async (id: string) => {
+  const result = await SubCategory.findById(id);
+
+  if (!result) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'No Sub Category Found.!',
+      'SubCategoryNotFound',
+    );
+  }
   return result;
 };
 
 export const subCategoriesServices = {
   createSubCategoryIntoDb,
   getAllSubCategoriesFromDb,
+  getSubCategoryFromDb,
 };

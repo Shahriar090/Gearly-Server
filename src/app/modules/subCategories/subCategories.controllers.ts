@@ -27,7 +27,21 @@ const getAllSubCategories = asyncHandler(async (req, res) => {
   });
 });
 
+// get single sub category
+const getSubCategoryFromDb = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const result = await subCategoriesServices.getSubCategoryFromDb(id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Sub-Category Is Retrieved Successfully',
+    data: result,
+  });
+});
+
 export const subCategoryControllers = {
   createSubCategory,
   getAllSubCategories,
+  getSubCategoryFromDb,
 };

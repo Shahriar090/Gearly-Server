@@ -13,4 +13,11 @@ router
 router
   .route('/')
   .get(auth(USER_ROLES.Admin), subCategoryControllers.getAllSubCategories);
+
+// get single
+router
+  .route('/:id')
+  .get(auth(USER_ROLES.Admin), subCategoryControllers.getSubCategoryFromDb);
+
+// -----------------------------------------------------------------------
 export const subCategoryRoutes = router;
