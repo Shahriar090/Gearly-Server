@@ -66,8 +66,50 @@ const getSubCategoryFromDb = async (id: string) => {
   return result;
 };
 
+// update a sub category
+const updateSubCategory = async (
+  id: string,
+  payload: Partial<TSubCategory>,
+) => {
+  const subCategory = await SubCategory.findById(id);
+  if (!subCategory) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Sub-Category Not Found',
+      'SubCategoryNotFound',
+    );
+  }
+
+  // update operation will be allowed only limited fields
+  const allowedFieldsToUpdate: Array<keyof TSubCategory> = [
+    'name',
+    'description',
+    'imageUrl',
+  ];
+
+  const updatedData: Record<string, unknown> = {};
+
+  allowedFieldsToUpdate.forEach((field) => {
+    if (payload[field] !== undefined) {
+      updatedData[field] = payload[field];
+    }
+  });
+
+  if (Object.keys(updatedData).length === 0) {
+    return subCategory;
+  }
+
+  const updatedSubCategory = await SubCategory.findByIdAndUpdate(
+    id,
+    updatedData,
+    { new: true, runValidators: true },
+  );
+  return updatedSubCategory;
+};
+
 export const subCategoriesServices = {
   createSubCategoryIntoDb,
   getAllSubCategoriesFromDb,
   getSubCategoryFromDb,
+  updateSubCategory,
 };

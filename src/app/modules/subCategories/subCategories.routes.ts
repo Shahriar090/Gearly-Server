@@ -19,5 +19,10 @@ router
   .route('/:id')
   .get(auth(USER_ROLES.Admin), subCategoryControllers.getSubCategoryFromDb);
 
+// update a sub category
+router
+  .route('/:id')
+  .put(auth(USER_ROLES.Admin), subCategoryControllers.updateSubCategory);
+
 // -----------------------------------------------------------------------
 export const subCategoryRoutes = router;
