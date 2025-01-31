@@ -2,6 +2,8 @@ import asyncHandler from '../../utils/asyncHandler';
 import sendResponse from '../../utils/sendResponse';
 import { subCategoriesServices } from './subCategories.services';
 import httpStatus from 'http-status';
+
+// create a sub category
 const createSubCategory = asyncHandler(async (req, res) => {
   const result = await subCategoriesServices.createSubCategoryIntoDb(req.body);
 
@@ -13,6 +15,19 @@ const createSubCategory = asyncHandler(async (req, res) => {
   });
 });
 
+// get all sub categories
+const getAllSubCategories = asyncHandler(async (req, res) => {
+  const result = await subCategoriesServices.getAllSubCategoriesFromDb();
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'All Sub-Categories Are Retrieved Successfully',
+    data: result,
+  });
+});
+
 export const subCategoryControllers = {
   createSubCategory,
+  getAllSubCategories,
 };

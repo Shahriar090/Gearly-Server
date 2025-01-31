@@ -7,4 +7,5 @@ export type TSubCategory = {
   description: string;
   imageUrl: string;
   category: Types.ObjectId;
+  isDeleted: boolean;
 };

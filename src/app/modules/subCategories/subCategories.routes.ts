@@ -4,8 +4,13 @@ import { USER_ROLES } from '../user/user.constant';
 import { subCategoryControllers } from './subCategories.controllers';
 const router = express.Router();
 
+// create
 router
   .route('/create-sub-category')
   .post(auth(USER_ROLES.Admin), subCategoryControllers.createSubCategory);
 
+// get all
+router
+  .route('/')
+  .get(auth(USER_ROLES.Admin), subCategoryControllers.getAllSubCategories);
 export const subCategoryRoutes = router;

@@ -3,39 +3,46 @@ import { TSubCategory } from './subCategories.interface';
 import slugify from 'slugify';
 
 // sub category schema --------------------------------------------------------
-const subCategorySchema = new Schema<TSubCategory>({
-  name: {
-    type: String,
-    required: true,
-    trim: true,
-    unique: true,
+const subCategorySchema = new Schema<TSubCategory>(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+      unique: true,
+    },
+    categoryName: {
+      type: String,
+      trim: true,
+      required: true,
+      unique: true,
+    },
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    description: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    imageUrl: {
+      type: String,
+      required: true,
+    },
+    category: {
+      type: Schema.Types.ObjectId,
+      ref: 'Category',
+      required: true,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
-  categoryName: {
-    type: String,
-    trim: true,
-    required: true,
-    unique: true,
-  },
-  slug: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  description: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  imageUrl: {
-    type: String,
-    required: true,
-  },
-  category: {
-    type: Schema.Types.ObjectId,
-    ref: 'Category',
-    required: true,
-  },
-});
+  { timestamps: true },
+);
 
 subCategorySchema.pre('find', function (next) {
   this.populate('category').where({ 'category.isDeleted': { $ne: true } });

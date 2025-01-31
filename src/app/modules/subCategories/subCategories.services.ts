@@ -4,6 +4,7 @@ import { TSubCategory } from './subCategories.interface';
 import { SubCategory } from './subCategories.model';
 import httpStatus from 'http-status';
 
+// create a sub category
 const createSubCategoryIntoDb = async (payload: TSubCategory) => {
   const category = await Category.findOne({ name: payload.categoryName });
   if (!category) {
@@ -37,6 +38,13 @@ const createSubCategoryIntoDb = async (payload: TSubCategory) => {
   return result;
 };
 
+// get all sub categories
+const getAllSubCategoriesFromDb = async () => {
+  const result = await SubCategory.find();
+  return result;
+};
+
 export const subCategoriesServices = {
   createSubCategoryIntoDb,
+  getAllSubCategoriesFromDb,
 };
