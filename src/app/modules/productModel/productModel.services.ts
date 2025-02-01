@@ -15,8 +15,7 @@ const createProductIntoDb = async (payload: TProductModel) => {
   // find the sub category using the generated slug
   const subCategory = await SubCategory.findOne({
     slug: categorySlug,
-  }).populate('category');
-  console.log(subCategory);
+  });
   if (!subCategory) {
     throw new AppError(
       httpStatus.NOT_FOUND,

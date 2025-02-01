@@ -1,6 +1,11 @@
 import { model, Schema } from 'mongoose';
-import { TProductModel, TReview } from './productModel.interface';
+import {
+  TProductModel,
+  TReview,
+  TSpecifications,
+} from './productModel.interface';
 import slugify from 'slugify';
+import { AVAILABILITY_STATUS } from './productModel.constants';
 
 const reviewSchema = new Schema<TReview>(
   {
@@ -22,84 +27,50 @@ const reviewSchema = new Schema<TReview>(
   { timestamps: true },
 );
 
-const productModelSchema = new Schema<TProductModel>(
+// specifications schema
+const specificationsSchema = new Schema<TSpecifications>({
+  color: { type: [String], required: true },
+  storage: { type: String, required: true },
+  display: { type: String, required: true },
+  camera: { type: String, required: true },
+  battery: { type: String, required: true },
+  weight: { type: Number, required: true },
+  warranty: { type: String },
+  dimensions: { type: String, required: true },
+});
+
+const productSchema = new Schema<TProductModel>(
   {
-    name: {
+    name: { type: String, required: true },
+    slug: { type: String, required: true, unique: true },
+    categoryName: { type: String, required: true },
+    description: { type: String, required: true },
+    price: { type: Number, required: true },
+    discount: { type: Number },
+    discountPrice: { type: Number },
+    colors: { type: [String], default: [] },
+    specifications: { type: specificationsSchema, required: true },
+    tags: { type: [String], default: [] },
+    availabilityStatus: {
       type: String,
-      required: true,
-      trim: true,
-    },
-    slug: {
-      type: String,
-      unique: true,
-    },
-    categoryName: {
-      type: String,
-      required: true,
-      trim: true,
-      lowercase: true,
-    },
-    description: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    price: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
-    discount: {
-      type: Number,
-      default: 0,
-      min: 0,
-      max: 100,
-    },
-    stock: {
-      type: Number,
-      min: 0,
+      enum: Object.values(AVAILABILITY_STATUS), // Enum from the AVAILABILITY_STATUS constants
       required: true,
     },
-    category: {
-      type: Schema.Types.ObjectId,
-      ref: 'Category',
-      required: true,
-    },
-    subCategory: {
-      type: Schema.Types.ObjectId,
-      ref: 'SubCategory',
-    },
-    brand: {
-      type: String,
-      trim: true,
-    },
-    images: [
-      {
-        type: String,
-        required: true,
-      },
-    ],
-    ratings: {
-      type: Number,
-      min: 0,
-      max: 5,
-      default: 0,
-    },
-    reviews: [reviewSchema],
-    isFeatured: {
-      type: Boolean,
-      default: false,
-    },
-    isDeleted: {
-      type: Boolean,
-      default: false,
-    },
+    stock: { type: Number, required: true },
+    category: { type: Schema.Types.ObjectId, ref: 'Category', required: true }, // Assuming you have a Category model
+    subCategory: { type: Schema.Types.ObjectId, ref: 'SubCategory' },
+    brand: { type: String, required: true },
+    images: { type: [String], required: true },
+    ratings: { type: Number },
+    reviews: { type: [reviewSchema], default: [] },
+    isFeatured: { type: Boolean, required: true },
+    isDeleted: { type: Boolean, default: false },
   },
   { timestamps: true },
 );
 
 // This logic will automatically updates product ratings based on user reviews. That's why no need to manually calculate average rating in the frontend/backend.
-productModelSchema.pre('save', function (next) {
+productSchema.pre('save', function (next) {
   if (this.isModified('reviews')) {
     if (!this.reviews || this.reviews.length === 0) {
       this.ratings = 0;
@@ -115,7 +86,7 @@ productModelSchema.pre('save', function (next) {
 });
 
 // adding slug
-productModelSchema.pre('save', function (next) {
+productSchema.pre('save', function (next) {
   if (!this.slug || this.isModified('name')) {
     this.slug = slugify(this.name, { lower: true, strict: true });
   }
@@ -123,4 +94,4 @@ productModelSchema.pre('save', function (next) {
 });
 
 // model
-export const Product = model<TProductModel>('Product', productModelSchema);
+export const Product = model<TProductModel>('Product', productSchema);
