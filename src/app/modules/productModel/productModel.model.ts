@@ -42,7 +42,7 @@ const specificationsSchema = new Schema<TSpecifications>({
 const productSchema = new Schema<TProductModel>(
   {
     name: { type: String, required: true },
-    slug: { type: String, required: true, unique: true },
+    slug: { type: String, unique: true },
     categoryName: { type: String, required: true },
     description: { type: String, required: true },
     price: { type: Number, required: true },
@@ -80,6 +80,18 @@ productSchema.pre('save', function (next) {
         0,
       );
       this.ratings = total / this.reviews.length;
+    }
+  }
+  next();
+});
+
+// calculating discount price
+productSchema.pre('save', function (next) {
+  if (this.isModified('price') || this.isModified('discount')) {
+    if (this.discount && this.discount > 0 && this.discount <= 100) {
+      this.discountPrice = this.price - (this.price * this.discount) / 100;
+    } else {
+      this.discountPrice = this.price;
     }
   }
   next();
