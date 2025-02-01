@@ -2,12 +2,18 @@ import express from 'express';
 import auth from '../../middlewares/auth';
 import { USER_ROLES } from '../user/user.constant';
 import { subCategoryControllers } from './subCategories.controllers';
+import validateRequest from '../../middlewares/validateRequest';
+import { subCategoryValidations } from './subCategories.validations';
 const router = express.Router();
 
 // create
 router
   .route('/create-sub-category')
-  .post(auth(USER_ROLES.Admin), subCategoryControllers.createSubCategory);
+  .post(
+    validateRequest(subCategoryValidations.createSubCategoryValidationSchema),
+    auth(USER_ROLES.Admin),
+    subCategoryControllers.createSubCategory,
+  );
 
 // get all
 router
@@ -22,7 +28,11 @@ router
 // update a sub category
 router
   .route('/:id')
-  .put(auth(USER_ROLES.Admin), subCategoryControllers.updateSubCategory);
+  .put(
+    validateRequest(subCategoryValidations.createSubCategoryValidationSchema),
+    auth(USER_ROLES.Admin),
+    subCategoryControllers.updateSubCategory,
+  );
 
 // delete a sub category
 router

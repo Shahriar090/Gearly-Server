@@ -5,7 +5,9 @@ import httpStatus from 'http-status';
 
 // create a sub category
 const createSubCategory = asyncHandler(async (req, res) => {
-  const result = await subCategoriesServices.createSubCategoryIntoDb(req.body);
+  const { subCategory } = req.body;
+  const result =
+    await subCategoriesServices.createSubCategoryIntoDb(subCategory);
 
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
