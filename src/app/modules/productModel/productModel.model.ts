@@ -1,5 +1,6 @@
 import { model, Schema } from 'mongoose';
 import { TProductModel, TReview } from './productModel.interface';
+import slugify from 'slugify';
 
 const reviewSchema = new Schema<TReview>(
   {
@@ -31,7 +32,12 @@ const productModelSchema = new Schema<TProductModel>(
     slug: {
       type: String,
       unique: true,
+    },
+    categoryName: {
+      type: String,
       required: true,
+      trim: true,
+      lowercase: true,
     },
     description: {
       type: String,
@@ -104,6 +110,14 @@ productModelSchema.pre('save', function (next) {
       );
       this.ratings = total / this.reviews.length;
     }
+  }
+  next();
+});
+
+// adding slug
+productModelSchema.pre('save', function (next) {
+  if (!this.slug || this.isModified('name')) {
+    this.slug = slugify(this.name, { lower: true, strict: true });
   }
   next();
 });

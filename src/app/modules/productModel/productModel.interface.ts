@@ -9,6 +9,7 @@ export type TReview = {
 export type TProductModel = {
   name: string;
   slug: string;
+  categoryName: string;
   description: string;
   price: number;
   discount?: number;
