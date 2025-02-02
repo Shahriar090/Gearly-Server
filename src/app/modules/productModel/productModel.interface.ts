@@ -24,7 +24,7 @@ export type TAvailabilityStatus =
 export type TProductModel = {
   name: string;
   slug: string;
-  categoryName: string;
+  subCategoryName: string;
   description: string;
   price: number;
   discount?: number;

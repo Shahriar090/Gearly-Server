@@ -45,7 +45,7 @@ const createProductValidationSchema = z.object({
     product: z.object({
       name: z.string().min(1, 'Product Name Is Required').trim(),
       slug: z.string().trim().min(1, 'Slug Is Required').optional(),
-      categoryName: z.string().min(1, 'Category Name Is Required').trim(),
+      subCategoryName: z.string().min(1, 'Category Name Is Required').trim(),
       description: z.string().min(1, 'Description Is Required').trim(),
       price: z
         .number()
@@ -84,7 +84,7 @@ const updateProductValidationSchema = z.object({
     product: z.object({
       name: z.string().min(1, 'Product Name Is Required').trim().optional(),
       slug: z.string().trim().min(1, 'Slug Is Required').optional(),
-      categoryName: z
+      subCategoryName: z
         .string()
         .min(1, 'Category Name Is Required')
         .trim()

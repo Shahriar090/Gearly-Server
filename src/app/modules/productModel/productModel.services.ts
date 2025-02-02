@@ -7,7 +7,7 @@ import slugify from 'slugify';
 
 const createProductIntoDb = async (payload: TProductModel) => {
   // generating slug from category name to find the sub category using its slug
-  const categorySlug = slugify(payload.categoryName, {
+  const categorySlug = slugify(payload.subCategoryName, {
     lower: true,
     strict: true,
   });
