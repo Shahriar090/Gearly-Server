@@ -4,11 +4,15 @@ import validateRequest from '../../middlewares/validateRequest';
 import { productValidations } from './productModel.validations';
 const router = express.Router();
 
+// create a product
 router
   .route('/create-product')
   .post(
     validateRequest(productValidations.createProductValidationSchema),
     productControllers.createProduct,
   );
+
+// get all products
+router.route('/').get(productControllers.getAllProducts);
 // ---------------------------------
 export const productRoutes = router;

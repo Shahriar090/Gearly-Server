@@ -5,6 +5,7 @@ import httpStatus from 'http-status';
 import { Product } from './productModel.model';
 import slugify from 'slugify';
 
+// create a product
 const createProductIntoDb = async (payload: TProductModel) => {
   // generating slug from category name to find the sub category using its slug
   const categorySlug = slugify(payload.subCategoryName, {
@@ -57,6 +58,22 @@ const createProductIntoDb = async (payload: TProductModel) => {
   return result;
 };
 
+// get all products
+const getAllProductsFromDb = async () => {
+  const result = await Product.find().populate('subCategory');
+
+  if (!result) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'No Products Found.!',
+      'ProductsNotFound',
+    );
+  }
+
+  return result;
+};
+
 export const productServices = {
   createProductIntoDb,
+  getAllProductsFromDb,
 };
