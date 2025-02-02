@@ -29,7 +29,7 @@ const reviewSchema = new Schema<TReview>(
 
 // specifications schema
 const specificationsSchema = new Schema<TSpecifications>({
-  color: { type: [String], required: true },
+  colors: { type: [String], required: true },
   storage: { type: String, required: true },
   display: { type: String, required: true },
   camera: { type: String, required: true },
@@ -48,7 +48,6 @@ const productSchema = new Schema<TProductModel>(
     price: { type: Number, required: true },
     discount: { type: Number },
     discountPrice: { type: Number },
-    colors: { type: [String], default: [] },
     specifications: { type: specificationsSchema, required: true },
     tags: { type: [String], default: [] },
     availabilityStatus: {

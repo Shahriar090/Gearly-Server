@@ -17,7 +17,7 @@ const updateReviewsValidationSchema = z.object({
 
 // create specifications validation schema
 const createSpecificationsValidationSchema = z.object({
-  color: z.array(z.string()).nonempty(),
+  colors: z.array(z.string()).nonempty(),
   storage: z.string().nonempty(),
   display: z.string().nonempty(),
   camera: z.string().nonempty(),
@@ -29,7 +29,7 @@ const createSpecificationsValidationSchema = z.object({
 
 // update specifications validations schema
 const updateSpecificationsValidationSchema = z.object({
-  color: z.array(z.string()).nonempty().optional(),
+  colors: z.array(z.string()).nonempty().optional(),
   storage: z.string().nonempty().optional(),
   display: z.string().nonempty().optional(),
   camera: z.string().nonempty().optional(),
@@ -57,7 +57,6 @@ const createProductValidationSchema = z.object({
         })
         .optional(),
       discountPrice: z.number().optional(),
-      colors: z.array(z.string()).default([]),
       specifications: createSpecificationsValidationSchema,
       tags: z.array(z.string()).default([]),
       availabilityStatus: z.enum(
@@ -105,7 +104,6 @@ const updateProductValidationSchema = z.object({
         })
         .optional(),
       discountPrice: z.number().optional(),
-      colors: z.array(z.string()).default([]).optional(),
       specifications: updateSpecificationsValidationSchema.optional(),
       tags: z.array(z.string()).default([]).optional(),
       availabilityStatus: z

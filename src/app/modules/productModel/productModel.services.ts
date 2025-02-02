@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import AppError from '../../errors/appError';
 import { SubCategory } from '../subCategories/subCategories.model';
 import { TProductModel } from './productModel.interface';
@@ -102,8 +103,73 @@ const getSingleProductFromDb = async (id: string) => {
   return product;
 };
 
+// update a product
+const updateProductIntoDb = async (
+  id: string,
+  payload: Partial<TProductModel>,
+) => {
+  const { specifications, tags, images, ...remainingData } = payload;
+
+  const modifiedUpdatedData: Record<string, unknown> = { ...remainingData };
+
+  if (!modifiedUpdatedData.$addToSet) {
+    modifiedUpdatedData.$addToSet = {};
+  }
+
+  // specifications is and object which is holding an array of colors
+
+  if (specifications && typeof specifications === 'object') {
+    for (const [key, value] of Object.entries(specifications)) {
+      // adding new color without replacing existing colors in the colors array.
+      if (key === 'colors' && Array.isArray(value)) {
+        (modifiedUpdatedData.$addToSet as Record<string, any>)[
+          `specifications.colors`
+        ] = { $each: value };
+      } else {
+        (modifiedUpdatedData as Record<string, any>)[`specifications.${key}`] =
+          value;
+      }
+    }
+  }
+
+  // updating arrays
+  const arrayUpdatesOperation: Record<string, { $each: string[] }> = {};
+
+  if (tags && tags.length) {
+    arrayUpdatesOperation.tags = { $each: tags };
+  }
+
+  if (images && images.length) {
+    arrayUpdatesOperation.images = { $each: images };
+  }
+
+  if (Object.keys(arrayUpdatesOperation).length > 0) {
+    const addToSet = modifiedUpdatedData.$addToSet as Record<string, any>;
+
+    modifiedUpdatedData.$addToSet = {
+      ...addToSet,
+      ...arrayUpdatesOperation,
+    };
+  }
+
+  const result = await Product.findByIdAndUpdate(id, modifiedUpdatedData, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!result) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Failed To Update The Product.!',
+      'ProductUpdateFailed',
+    );
+  }
+
+  return result;
+};
 export const productServices = {
   createProductIntoDb,
   getAllProductsFromDb,
   getSingleProductFromDb,
+  updateProductIntoDb,
 };

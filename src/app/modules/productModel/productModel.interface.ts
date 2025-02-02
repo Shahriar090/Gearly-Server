@@ -8,7 +8,7 @@ export type TReview = {
 };
 
 export type TSpecifications = {
-  color: string[];
+  colors: string[];
   storage: string;
   display: string;
   camera: string;
@@ -29,7 +29,6 @@ export type TProductModel = {
   price: number;
   discount?: number;
   discountPrice?: number;
-  colors?: string[];
   specifications: TSpecifications;
   tags?: string[];
   availabilityStatus: TAvailabilityStatus;

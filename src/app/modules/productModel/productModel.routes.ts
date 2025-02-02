@@ -17,5 +17,13 @@ router.route('/').get(productControllers.getAllProducts);
 
 // get a single product
 router.route('/:id').get(productControllers.getSingleProduct);
+
+// update a product
+router
+  .route('/:id')
+  .put(
+    validateRequest(productValidations.updateProductValidationSchema),
+    productControllers.updateProduct,
+  );
 // ---------------------------------
 export const productRoutes = router;

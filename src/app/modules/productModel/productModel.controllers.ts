@@ -41,8 +41,23 @@ const getSingleProduct = asyncHandler(async (req, res) => {
   });
 });
 
+// update a product
+const updateProduct = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { product } = req.body;
+  const result = await productServices.updateProductIntoDb(id, product);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Product Is Updated Successfully',
+    data: result,
+  });
+});
+
 export const productControllers = {
   createProduct,
   getAllProducts,
   getSingleProduct,
+  updateProduct,
 };
