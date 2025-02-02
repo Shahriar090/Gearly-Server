@@ -25,5 +25,8 @@ router
     validateRequest(productValidations.updateProductValidationSchema),
     productControllers.updateProduct,
   );
+
+// delete a product
+router.route('/:id').delete(productControllers.deleteProduct);
 // ---------------------------------
 export const productRoutes = router;

@@ -61,11 +61,11 @@ const createProductIntoDb = async (payload: TProductModel) => {
 
 // get all products
 const getAllProductsFromDb = async () => {
-  const result = await Product.find()
+  const result = await Product.find({ isDeleted: { $ne: true } })
     .populate('category')
     .populate('subCategory');
 
-  if (!result) {
+  if (!result || result.length === 0) {
     throw new AppError(
       httpStatus.NOT_FOUND,
       'No Products Found.!',
@@ -167,9 +167,37 @@ const updateProductIntoDb = async (
 
   return result;
 };
+
+// delete a product
+const deleteProductFromDb = async (id: string) => {
+  const product = await Product.findById(id);
+
+  if (!product) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'No Product Found.!',
+      'ProductNotFound',
+    );
+  }
+
+  product.isDeleted = true;
+  const result = await product.save();
+
+  if (!result) {
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      'Failed To Delete The Product.!',
+      'ProductDeleteFailed',
+    );
+  }
+
+  return result;
+};
+
 export const productServices = {
   createProductIntoDb,
   getAllProductsFromDb,
   getSingleProductFromDb,
   updateProductIntoDb,
+  deleteProductFromDb,
 };
