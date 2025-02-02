@@ -60,7 +60,9 @@ const createProductIntoDb = async (payload: TProductModel) => {
 
 // get all products
 const getAllProductsFromDb = async () => {
-  const result = await Product.find().populate('subCategory');
+  const result = await Product.find()
+    .populate('category')
+    .populate('subCategory');
 
   if (!result) {
     throw new AppError(

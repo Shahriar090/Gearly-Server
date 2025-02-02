@@ -60,7 +60,7 @@ subCategorySchema.pre('save', function (next) {
 subCategorySchema.pre(/^find/, function (next) {
   const query = this as Query<TSubCategory[], TSubCategory>;
   query.setQuery({ ...query.getQuery(), isDeleted: false });
-  query.populate({ path: 'category', match: { isDeleted: false } });
+  // query.populate({ path: 'category', match: { isDeleted: false } });
   next();
 });
 
