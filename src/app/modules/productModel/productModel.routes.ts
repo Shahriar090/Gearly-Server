@@ -14,5 +14,8 @@ router
 
 // get all products
 router.route('/').get(productControllers.getAllProducts);
+
+// get a single product
+router.route('/:id').get(productControllers.getSingleProduct);
 // ---------------------------------
 export const productRoutes = router;

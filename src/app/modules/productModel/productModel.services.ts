@@ -75,7 +75,35 @@ const getAllProductsFromDb = async () => {
   return result;
 };
 
+// get a single product
+const getSingleProductFromDb = async (id: string) => {
+  // check if the product is exists or not
+  const product = await Product.findById(id)
+    .populate('category')
+    .populate('subCategory');
+
+  if (!product) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'No Product Found.!',
+      'ProductNotFound',
+    );
+  }
+
+  // check if the product is deleted
+  if (product.isDeleted) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Product Is Deleted.!',
+      'ProductNotFound',
+    );
+  }
+
+  return product;
+};
+
 export const productServices = {
   createProductIntoDb,
   getAllProductsFromDb,
+  getSingleProductFromDb,
 };
