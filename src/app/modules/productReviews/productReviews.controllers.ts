@@ -64,9 +64,23 @@ const getAllReviewsForAProduct = asyncHandler(async (req, res) => {
   });
 });
 
+// get single review
+const getSingleReview = asyncHandler(async (req, res) => {
+  const { reviewId } = req.params;
+  const result = await reviewServices.getSingleReview(reviewId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: 'Review Is Fetched Successfully',
+    data: result,
+  });
+});
+
 export const reviewControllers = {
   createReview,
   updateReview,
   deleteReview,
   getAllReviewsForAProduct,
+  getSingleReview,
 };

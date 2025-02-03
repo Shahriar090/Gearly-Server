@@ -34,5 +34,8 @@ router
 
 // fetch all reviews for a product
 router.route('/:productId').get(reviewControllers.getAllReviewsForAProduct);
+
+// fetch a single review
+router.route('/:reviewId').get(reviewControllers.getSingleReview);
 // -------------
 export const reviewRoutes = router;

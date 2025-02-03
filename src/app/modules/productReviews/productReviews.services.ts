@@ -140,9 +140,24 @@ const getAllReviewsForAProduct = async (productId: string) => {
   return reviews;
 };
 
+// get single review for a product
+const getSingleReview = async (reviewId: string) => {
+  const review = await Review.findById(reviewId).populate('user', 'name email');
+
+  if (!review) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Review Not Found.',
+      'ReviewNotFound',
+    );
+  }
+  return review;
+};
+
 export const reviewServices = {
   createReview,
   updateReview,
   deleteReview,
   getAllReviewsForAProduct,
+  getSingleReview,
 };
