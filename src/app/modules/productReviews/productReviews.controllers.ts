@@ -19,6 +19,23 @@ const createReview = asyncHandler(async (req, res) => {
   });
 });
 
+// update a review
+const updateReview = asyncHandler(async (req, res) => {
+  const { reviewId } = req.params;
+  const { id } = req.user;
+  const { review } = req.body;
+
+  const result = await reviewServices.updateReview(reviewId, id, review);
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: 'Your Review Has Updated Successfully',
+    data: result,
+  });
+});
+
 export const reviewControllers = {
   createReview,
+  updateReview,
 };

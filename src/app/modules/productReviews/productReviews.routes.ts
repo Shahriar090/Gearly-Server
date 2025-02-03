@@ -15,5 +15,14 @@ router
     reviewControllers.createReview,
   );
 
+// update a review
+router
+  .route('/:reviewId')
+  .put(
+    auth(USER_ROLES.Admin, USER_ROLES.Customer),
+    validateRequest(reviewValidations.updateReviewValidationSchema),
+    reviewControllers.updateReview,
+  );
+
 // -------------
 export const reviewRoutes = router;

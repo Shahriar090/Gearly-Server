@@ -46,6 +46,50 @@ const createReview = async (
   return newReview;
 };
 
+// update a review
+const updateReview = async (
+  reviewId: string,
+  userId: string,
+  payload: Partial<TProductReview>,
+) => {
+  // find the submitted review
+  const submittedReview = await Review.findById(reviewId);
+
+  if (!submittedReview) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Review Not Found.!',
+      'ReviewNotFound',
+    );
+  }
+
+  // check if the review is belong to the right user or not
+  if (!submittedReview.user.equals(userId)) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      'You Are Not Authorized To Update This Review',
+      'NotAuthorized',
+    );
+  }
+
+  // update the review
+  if (payload.rating && payload.rating !== undefined) {
+    submittedReview.rating = payload.rating;
+  }
+
+  if (payload.comment && payload.comment !== undefined) {
+    submittedReview.comment = payload.comment;
+  }
+
+  await submittedReview.save();
+
+  // updating product's average rating
+  await updateProductRatings(submittedReview.product.toString());
+
+  return submittedReview;
+};
+
 export const reviewServices = {
   createReview,
+  updateReview,
 };

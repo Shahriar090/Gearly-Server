@@ -19,8 +19,8 @@ const createReviewValidationSchema = z.object({
 const updateReviewValidationSchema = z.object({
   body: z.object({
     review: z.object({
-      user: z.string(),
-      product: z.string(),
+      user: z.string().optional(),
+      product: z.string().optional(),
       rating: z
         .number()
         .min(1, 'Rating Cannot Be Less Than 1')
