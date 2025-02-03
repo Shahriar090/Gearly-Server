@@ -24,5 +24,13 @@ router
     reviewControllers.updateReview,
   );
 
+// delete a review
+router
+  .route('/:reviewId')
+  .delete(
+    auth(USER_ROLES.Admin, USER_ROLES.Customer),
+    reviewControllers.deleteReview,
+  );
+
 // -------------
 export const reviewRoutes = router;

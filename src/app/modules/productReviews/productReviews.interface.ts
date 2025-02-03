@@ -5,4 +5,5 @@ export type TProductReview = {
   product: Types.ObjectId;
   rating: number;
   comment?: string;
+  isDeleted: boolean;
 };

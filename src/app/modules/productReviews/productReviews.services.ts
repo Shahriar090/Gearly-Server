@@ -89,7 +89,38 @@ const updateReview = async (
   return submittedReview;
 };
 
+// delete a review
+const deleteReview = async (reviewId: string, userId: string) => {
+  const review = await Review.findById(reviewId);
+
+  if (!review || review.isDeleted) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Review Not Found',
+      'ReviewNotFound',
+    );
+  }
+
+  if (!review.user.equals(userId)) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      'You Are Not Authorized To Delete Tis Review',
+      'NotAuthorized',
+    );
+  }
+
+  review.isDeleted = true;
+  await review.save();
+
+  if (review.product) {
+    await updateProductRatings(review.product.toString());
+  }
+
+  return review;
+};
+
 export const reviewServices = {
   createReview,
   updateReview,
+  deleteReview,
 };

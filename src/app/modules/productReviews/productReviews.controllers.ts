@@ -35,7 +35,23 @@ const updateReview = asyncHandler(async (req, res) => {
   });
 });
 
+// delete a review
+const deleteReview = asyncHandler(async (req, res) => {
+  const { reviewId } = req.params;
+  const { id } = req.user;
+
+  const result = await reviewServices.deleteReview(reviewId, id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: 'Your Review Is Deleted Successfully',
+    data: result,
+  });
+});
+
 export const reviewControllers = {
   createReview,
   updateReview,
+  deleteReview,
 };
