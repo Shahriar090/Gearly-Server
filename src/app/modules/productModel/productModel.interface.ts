@@ -1,12 +1,6 @@
 import { Types } from 'mongoose';
 import { AVAILABILITY_STATUS } from './productModel.constants';
 
-export type TReview = {
-  user: Types.ObjectId;
-  rating: number;
-  comment?: string;
-};
-
 export type TSpecifications = {
   colors: string[];
   storage: string;
@@ -38,7 +32,6 @@ export type TProductModel = {
   brand: string;
   images: string[];
   ratings?: number;
-  reviews?: TReview[];
   isFeatured: boolean;
   isDeleted: boolean;
 };

@@ -1,31 +1,7 @@
 import { model, Schema } from 'mongoose';
-import {
-  TProductModel,
-  TReview,
-  TSpecifications,
-} from './productModel.interface';
+import { TProductModel, TSpecifications } from './productModel.interface';
 import slugify from 'slugify';
 import { AVAILABILITY_STATUS } from './productModel.constants';
-
-const reviewSchema = new Schema<TReview>(
-  {
-    user: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-    },
-    rating: {
-      type: Number,
-      min: 0,
-      max: 5,
-    },
-    comment: {
-      type: String,
-      trim: true,
-    },
-  },
-  { timestamps: true },
-);
 
 // specifications schema
 const specificationsSchema = new Schema<TSpecifications>({
@@ -60,8 +36,6 @@ const productSchema = new Schema<TProductModel>(
     subCategory: { type: Schema.Types.ObjectId, ref: 'SubCategory' },
     brand: { type: String, required: true },
     images: { type: [String], required: true },
-    ratings: { type: Number },
-    reviews: { type: [reviewSchema], default: [] },
     isFeatured: { type: Boolean, required: true },
     isDeleted: { type: Boolean, default: false },
   },
@@ -69,20 +43,20 @@ const productSchema = new Schema<TProductModel>(
 );
 
 // This logic will automatically updates product ratings based on user reviews. That's why no need to manually calculate average rating in the frontend/backend.
-productSchema.pre('save', function (next) {
-  if (this.isModified('reviews')) {
-    if (!this.reviews || this.reviews.length === 0) {
-      this.ratings = 0;
-    } else {
-      const total = this.reviews.reduce(
-        (sum, review) => sum + review.rating,
-        0,
-      );
-      this.ratings = total / this.reviews.length;
-    }
-  }
-  next();
-});
+// productSchema.pre('save', function (next) {
+//   if (this.isModified('reviews')) {
+//     if (!this.reviews || this.reviews.length === 0) {
+//       this.ratings = 0;
+//     } else {
+//       const total = this.reviews.reduce(
+//         (sum, review) => sum + review.rating,
+//         0,
+//       );
+//       this.ratings = total / this.reviews.length;
+//     }
+//   }
+//   next();
+// });
 
 // calculating discount price
 productSchema.pre('save', function (next) {

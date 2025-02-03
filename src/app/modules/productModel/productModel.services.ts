@@ -5,6 +5,7 @@ import { TProductModel } from './productModel.interface';
 import httpStatus from 'http-status';
 import { Product } from './productModel.model';
 import slugify from 'slugify';
+import { Review } from '../productReviews/productReviews.model';
 
 // create a product
 const createProductIntoDb = async (payload: TProductModel) => {
@@ -61,11 +62,11 @@ const createProductIntoDb = async (payload: TProductModel) => {
 
 // get all products
 const getAllProductsFromDb = async () => {
-  const result = await Product.find({ isDeleted: { $ne: true } })
+  const products = await Product.find({ isDeleted: { $ne: true } })
     .populate('category')
     .populate('subCategory');
 
-  if (!result || result.length === 0) {
+  if (!products || products.length === 0) {
     throw new AppError(
       httpStatus.NOT_FOUND,
       'No Products Found.!',
@@ -73,7 +74,33 @@ const getAllProductsFromDb = async () => {
     );
   }
 
-  return result;
+  // fetch reviews for all products
+  const productIds = products.map((product) => product._id);
+
+  const reviews = await Review.find({ product: { $in: productIds } }).populate(
+    'user',
+  );
+
+  // attach reviews and calculate average ratings for each product
+
+  const productsWithReviews = products.map((product) => {
+    const productReviews = reviews.filter((review) =>
+      review.product.equals(product._id),
+    );
+
+    const totalRatings = productReviews.reduce(
+      (sum, review) => sum + review.rating,
+      0,
+    );
+
+    const averageRating = productReviews.length
+      ? totalRatings / productReviews.length
+      : 0;
+
+    return { ...product.toObject(), reviews: productReviews, averageRating };
+  });
+
+  return productsWithReviews;
 };
 
 // get a single product
@@ -83,7 +110,7 @@ const getSingleProductFromDb = async (id: string) => {
     .populate('category')
     .populate('subCategory');
 
-  if (!product) {
+  if (!product || product.isDeleted) {
     throw new AppError(
       httpStatus.NOT_FOUND,
       'No Product Found.!',
@@ -91,16 +118,14 @@ const getSingleProductFromDb = async (id: string) => {
     );
   }
 
-  // check if the product is deleted
-  if (product.isDeleted) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      'Product Is Deleted.!',
-      'ProductNotFound',
-    );
-  }
+  // fetching all reviews of the product
+  const reviews = await Review.find({ product: id }).populate('user');
 
-  return product;
+  // calculate average rating
+  const totalRatings = reviews.reduce((sum, review) => sum + review.rating, 0);
+  const averageRating = reviews.length ? totalRatings / reviews.length : 0;
+
+  return { ...product.toObject(), reviews, averageRating };
 };
 
 // update a product
