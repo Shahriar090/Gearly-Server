@@ -2,18 +2,18 @@ import { z } from 'zod';
 import { AVAILABILITY_STATUS } from './productModel.constants';
 
 // create review schema
-const createReviewValidationSchema = z.object({
-  user: z.string().min(1, 'User ID Is Required'),
-  rating: z.number().min(0).max(5, 'Rating Cannot Be More Than 5'),
-  comment: z.string().trim().optional(),
-});
+// const createReviewValidationSchema = z.object({
+//   user: z.string().min(1, 'User ID Is Required'),
+//   rating: z.number().min(0).max(5, 'Rating Cannot Be More Than 5'),
+//   comment: z.string().trim().optional(),
+// });
 
 // update review schema
-const updateReviewsValidationSchema = z.object({
-  user: z.string().min(1, 'User ID Is Required').optional(),
-  rating: z.number().min(0).max(5, 'Rating Cannot Be More Than 5').optional(),
-  comment: z.string().trim().optional(),
-});
+// const updateReviewsValidationSchema = z.object({
+//   user: z.string().min(1, 'User ID Is Required').optional(),
+//   rating: z.number().min(0).max(5, 'Rating Cannot Be More Than 5').optional(),
+//   comment: z.string().trim().optional(),
+// });
 
 // create specifications validation schema
 const createSpecificationsValidationSchema = z.object({
@@ -69,8 +69,8 @@ const createProductValidationSchema = z.object({
       images: z
         .array(z.string().url('Invalid Image URL'))
         .nonempty('At least one image is required'),
-      ratings: z.number().min(0).max(5).default(0),
-      reviews: z.array(createReviewValidationSchema).default([]),
+      // ratings: z.number().min(0).max(5).default(0),
+      // reviews: z.array(createReviewValidationSchema).default([]),
       isFeatured: z.boolean().default(false),
       isDeleted: z.boolean().default(false),
     }),
@@ -114,8 +114,8 @@ const updateProductValidationSchema = z.object({
       subCategory: z.string().optional(),
       brand: z.string().trim().optional(),
       images: z.array(z.string().url('Invalid Image URL')).optional(),
-      ratings: z.number().min(0).max(5).default(0).optional(),
-      reviews: z.array(updateReviewsValidationSchema).default([]).optional(),
+      // ratings: z.number().min(0).max(5).default(0).optional(),
+      // reviews: z.array(updateReviewsValidationSchema).default([]).optional(),
       isFeatured: z.boolean().default(false).optional(),
       isDeleted: z.boolean().default(false).optional(),
     }),

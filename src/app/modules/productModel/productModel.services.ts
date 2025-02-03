@@ -80,7 +80,6 @@ const getAllProductsFromDb = async () => {
   const reviews = await Review.find({ product: { $in: productIds } }).populate(
     'user',
   );
-
   // attach reviews and calculate average ratings for each product
 
   const productsWithReviews = products.map((product) => {
