@@ -32,5 +32,7 @@ router
     reviewControllers.deleteReview,
   );
 
+// fetch all reviews for a product
+router.route('/:productId').get(reviewControllers.getAllReviewsForAProduct);
 // -------------
 export const reviewRoutes = router;

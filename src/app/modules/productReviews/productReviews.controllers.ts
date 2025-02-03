@@ -50,8 +50,23 @@ const deleteReview = asyncHandler(async (req, res) => {
   });
 });
 
+// get all reviews for a product
+const getAllReviewsForAProduct = asyncHandler(async (req, res) => {
+  const { productId } = req.params;
+
+  const result = await reviewServices.getAllReviewsForAProduct(productId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: 'All Reviews For This Product Fetched Successfully',
+    data: result,
+  });
+});
+
 export const reviewControllers = {
   createReview,
   updateReview,
   deleteReview,
+  getAllReviewsForAProduct,
 };

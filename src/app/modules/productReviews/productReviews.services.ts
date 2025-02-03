@@ -119,8 +119,30 @@ const deleteReview = async (reviewId: string, userId: string) => {
   return review;
 };
 
+// get all reviews
+const getAllReviewsForAProduct = async (productId: string) => {
+  const product = await Product.findById(productId);
+
+  if (!product || product.isDeleted) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Product Not Found',
+      'ProductNotFound',
+    );
+  }
+
+  // fetching all reviews for the product
+  const reviews = await Review.find({ product: productId }).populate(
+    'user',
+    'name email',
+  );
+
+  return reviews;
+};
+
 export const reviewServices = {
   createReview,
   updateReview,
   deleteReview,
+  getAllReviewsForAProduct,
 };
