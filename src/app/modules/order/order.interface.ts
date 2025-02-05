@@ -9,6 +9,7 @@ export type TItems = {
   product: Types.ObjectId;
   quantity: number;
   price: number;
+  total: number;
 };
 
 export type TAddress = {
@@ -35,4 +36,5 @@ export type TOrder = {
   paymentStatus: TPaymentStatus;
   paymentMethod: TPaymentMethod;
   address: TAddress;
+  isDeleted: boolean;
 };

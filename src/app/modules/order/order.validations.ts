@@ -42,6 +42,7 @@ const createOrderValidationSchema = z.object({
         .enum(Object.values(PAYMENT_METHODS) as [string, ...string[]])
         .optional(),
       address: addressSchema,
+      isDeleted: z.boolean().optional(),
     }),
   }),
 });
@@ -70,6 +71,7 @@ const updateOrderValidationSchema = z.object({
         .enum(Object.values(PAYMENT_METHODS) as [string, ...string[]])
         .optional(),
       address: addressSchema.optional(),
+      isDeleted: z.boolean().optional(),
     }),
   }),
 });
