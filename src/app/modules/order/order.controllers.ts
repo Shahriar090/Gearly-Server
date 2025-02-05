@@ -3,6 +3,7 @@ import httpStatus from 'http-status';
 import { orderServices } from './order.services';
 import sendResponse from '../../utils/sendResponse';
 
+// create order
 const createOrder = asyncHandler(async (req, res) => {
   const { order } = req.body;
   const { id } = req.user;
@@ -16,6 +17,20 @@ const createOrder = asyncHandler(async (req, res) => {
   });
 });
 
+// get order by id
+const getOrderById = asyncHandler(async (req, res) => {
+  const { orderId } = req.params;
+  const result = await orderServices.getOrderByIdFromDb(orderId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: 'Your Order Is Retrieved Successfully',
+    data: result,
+  });
+});
+
 export const orderControllers = {
   createOrder,
+  getOrderById,
 };

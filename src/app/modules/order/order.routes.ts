@@ -15,5 +15,13 @@ router
     orderControllers.createOrder,
   );
 
+// get order by id
+router
+  .route('/:orderId')
+  .get(
+    auth(USER_ROLES.Customer, USER_ROLES.Admin),
+    orderControllers.getOrderById,
+  );
+
 // --------------
 export const orderRoutes = router;

@@ -5,6 +5,7 @@ import { Order } from './order.model';
 import { ORDER_STATUS, PAYMENT_STATUS } from './order.constants';
 import { generateOrderTrackingId } from './order.utils';
 
+// create order
 const createOrderIntoDb = async (payload: TOrder, userId: string) => {
   if (!payload) {
     throw new AppError(
@@ -34,6 +35,22 @@ const createOrderIntoDb = async (payload: TOrder, userId: string) => {
   return order;
 };
 
+// get order by id
+const getOrderByIdFromDb = async (orderId: string) => {
+  const order = await Order.findById(orderId).populate('user items.product');
+
+  if (!order || order.isDeleted) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Order Not Found',
+      'OrderNotFound',
+    );
+  }
+
+  return order;
+};
+
 export const orderServices = {
   createOrderIntoDb,
+  getOrderByIdFromDb,
 };
