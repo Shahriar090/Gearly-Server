@@ -28,16 +28,21 @@ const addressSchema = z.object({
 const createOrderValidationSchema = z.object({
   body: z.object({
     order: z.object({
-      user: z.string(),
-      trackingId: z.string(),
-      item: z
+      user: z.string().optional(),
+      trackingId: z.string().optional(),
+      items: z
         .array(createItemValidationSchema)
         .nonempty('Order Must Have At Least One Item'),
-      totalAmount: z.number().min(0, 'Total Amount Must Be A Positive Number'),
-      status: z.enum(Object.values(ORDER_STATUS) as [string, ...string[]]),
-      paymentStatus: z.enum(
-        Object.values(PAYMENT_STATUS) as [string, ...string[]],
-      ),
+      totalAmount: z
+        .number()
+        .min(0, 'Total Amount Must Be A Positive Number')
+        .optional(),
+      orderStatus: z
+        .enum(Object.values(ORDER_STATUS) as [string, ...string[]])
+        .optional(),
+      paymentStatus: z
+        .enum(Object.values(PAYMENT_STATUS) as [string, ...string[]])
+        .optional(),
       paymentMethod: z
         .enum(Object.values(PAYMENT_METHODS) as [string, ...string[]])
         .optional(),
@@ -61,7 +66,7 @@ const updateOrderValidationSchema = z.object({
         .number()
         .min(0, 'Total Amount Must Be A Positive Number')
         .optional(),
-      status: z
+      orderStatus: z
         .enum(Object.values(ORDER_STATUS) as [string, ...string[]])
         .optional(),
       paymentStatus: z

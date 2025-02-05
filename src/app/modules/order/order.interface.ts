@@ -19,7 +19,7 @@ export type TAddress = {
   country: string;
 };
 
-export type TStatus = (typeof ORDER_STATUS)[keyof typeof ORDER_STATUS];
+export type TOrderStatus = (typeof ORDER_STATUS)[keyof typeof ORDER_STATUS];
 
 export type TPaymentStatus =
   (typeof PAYMENT_STATUS)[keyof typeof PAYMENT_STATUS];
@@ -32,7 +32,7 @@ export type TOrder = {
   trackingId: string;
   items: TItems[];
   totalAmount: number;
-  status: TStatus;
+  orderStatus: TOrderStatus;
   paymentStatus: TPaymentStatus;
   paymentMethod: TPaymentMethod;
   address: TAddress;

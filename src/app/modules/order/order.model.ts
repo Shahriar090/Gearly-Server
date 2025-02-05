@@ -3,9 +3,9 @@ import {
   TAddress,
   TItems,
   TOrder,
+  TOrderStatus,
   TPaymentMethod,
   TPaymentStatus,
-  TStatus,
 } from './order.interface';
 import {
   ORDER_STATUS,
@@ -28,7 +28,6 @@ const itemSchema = new Schema<TItems>({
   },
   total: {
     type: Number,
-    required: true,
   },
 });
 
@@ -52,11 +51,10 @@ const orderSchema = new Schema<TOrder>(
     items: [itemSchema],
     totalAmount: {
       type: Number,
-      required: true,
     },
-    status: {
+    orderStatus: {
       type: String,
-      enum: Object.values(ORDER_STATUS) as TStatus[],
+      enum: Object.values(ORDER_STATUS) as TOrderStatus[],
       default: ORDER_STATUS.Pending,
     },
     paymentStatus: {
