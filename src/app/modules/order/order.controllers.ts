@@ -48,8 +48,27 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
     data: result,
   });
 });
+
+// update payment status
+const updatePaymentStatus = asyncHandler(async (req, res) => {
+  const { orderId } = req.params;
+  const { paymentStatus } = req.body.order;
+
+  const result = await orderServices.updatePaymentStatusIntoDb(
+    orderId,
+    paymentStatus,
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: 'Payment Status Is Updated Successfully',
+    data: result,
+  });
+});
 export const orderControllers = {
   createOrder,
   getOrderById,
   updateOrderStatus,
+  updatePaymentStatus,
 };

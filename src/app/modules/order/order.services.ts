@@ -1,5 +1,5 @@
 import AppError from '../../errors/appError';
-import { TOrder, TOrderStatus } from './order.interface';
+import { TOrder, TOrderStatus, TPaymentStatus } from './order.interface';
 import httpStatus from 'http-status';
 import { Order } from './order.model';
 import { ORDER_STATUS, PAYMENT_STATUS } from './order.constants';
@@ -80,8 +80,43 @@ const updateOrderStatusIntoDb = async (
   return updatedOrder;
 };
 
+// update payment status (payment logic will be included soon)
+
+const updatePaymentStatusIntoDb = async (
+  orderId: string,
+  paymentStatus: TPaymentStatus,
+) => {
+  if (
+    !paymentStatus ||
+    !Object.values(PAYMENT_STATUS).includes(paymentStatus)
+  ) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Invalid Payment Status',
+      'InvalidPaymentStatus',
+    );
+  }
+
+  const updatedOrder = await Order.findByIdAndUpdate(
+    orderId,
+    { paymentStatus: paymentStatus },
+    { new: true },
+  );
+
+  if (!updatedOrder) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Order Not Found',
+      'OrderNotFound',
+    );
+  }
+
+  return updatedOrder;
+};
+
 export const orderServices = {
   createOrderIntoDb,
   getOrderByIdFromDb,
   updateOrderStatusIntoDb,
+  updatePaymentStatusIntoDb,
 };

@@ -25,8 +25,12 @@ router
 
 // update order status (shipped, delivered)
 router
-  .route('/:orderId')
+  .route('/order-status/:orderId')
   .put(auth(USER_ROLES.Admin), orderControllers.updateOrderStatus);
 
+// update payment status
+router
+  .route('/payment-status/:orderId')
+  .put(auth(USER_ROLES.Admin), orderControllers.updatePaymentStatus);
 // --------------
 export const orderRoutes = router;
