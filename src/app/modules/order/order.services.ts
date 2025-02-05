@@ -1,5 +1,5 @@
 import AppError from '../../errors/appError';
-import { TOrder } from './order.interface';
+import { TOrder, TOrderStatus } from './order.interface';
 import httpStatus from 'http-status';
 import { Order } from './order.model';
 import { ORDER_STATUS, PAYMENT_STATUS } from './order.constants';
@@ -50,7 +50,38 @@ const getOrderByIdFromDb = async (orderId: string) => {
   return order;
 };
 
+// update order status (shipped, delivered, etc)
+const updateOrderStatusIntoDb = async (
+  orderId: string,
+  status: TOrderStatus,
+) => {
+  if (!status || !Object.values(ORDER_STATUS).includes(status)) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Invalid Order Status',
+      'InvalidOrderStatus',
+    );
+  }
+
+  const updatedOrder = await Order.findByIdAndUpdate(
+    orderId,
+    { orderStatus: status },
+    { new: true },
+  );
+
+  if (!updatedOrder) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Order Not Found',
+      'OrderNotFound',
+    );
+  }
+
+  return updatedOrder;
+};
+
 export const orderServices = {
   createOrderIntoDb,
   getOrderByIdFromDb,
+  updateOrderStatusIntoDb,
 };

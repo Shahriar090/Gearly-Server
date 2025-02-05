@@ -30,7 +30,26 @@ const getOrderById = asyncHandler(async (req, res) => {
   });
 });
 
+// update order status (delivered, shipped, etc)
+
+const updateOrderStatus = asyncHandler(async (req, res) => {
+  const { orderId } = req.params;
+  const { orderStatus } = req.body.order;
+
+  const result = await orderServices.updateOrderStatusIntoDb(
+    orderId,
+    orderStatus,
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: 'Order Status Is Updated Successfully',
+    data: result,
+  });
+});
 export const orderControllers = {
   createOrder,
   getOrderById,
+  updateOrderStatus,
 };

@@ -23,5 +23,10 @@ router
     orderControllers.getOrderById,
   );
 
+// update order status (shipped, delivered)
+router
+  .route('/:orderId')
+  .put(auth(USER_ROLES.Admin), orderControllers.updateOrderStatus);
+
 // --------------
 export const orderRoutes = router;
