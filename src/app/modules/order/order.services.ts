@@ -80,6 +80,37 @@ const updateOrderStatusIntoDb = async (
   return updatedOrder;
 };
 
+// cancel order from db (user can cancel their order if they want)
+const cancelOrderFromDb = async (orderId: string, userId: string) => {
+  const order = await Order.findById(orderId);
+
+  if (!order || order.isDeleted) {
+    throw new AppError(httpStatus.NOT_FOUND, 'No Order Found', 'OrderNotFound');
+  }
+
+  // only the owner of the order or admin can cancel the order
+  if (order.user.toString() !== userId) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      'You Are Not Authorized To Cancel This Order',
+      'UnauthorizedCancelAction',
+    );
+  }
+  if (order && order.orderStatus !== ORDER_STATUS.Pending) {
+    // user can only cancel their order if the order status is pending
+
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Only Pending Orders Can Be Canceled',
+      'InvalidCancel',
+    );
+  }
+
+  order.orderStatus = ORDER_STATUS.Cancelled;
+  await order.save();
+  return order;
+};
+
 // update payment status (payment logic will be included soon)
 
 const updatePaymentStatusIntoDb = async (
@@ -156,4 +187,5 @@ export const orderServices = {
   updatePaymentStatusIntoDb,
   getAllOrdersOfUser,
   deleteOrderFromDb,
+  cancelOrderFromDb,
 };

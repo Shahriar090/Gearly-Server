@@ -31,6 +31,14 @@ router
     orderControllers.getOrderById,
   );
 
+// cancel order
+router
+  .route('/cancel-order/:orderId')
+  .patch(
+    auth(USER_ROLES.Admin, USER_ROLES.Customer),
+    orderControllers.cancelOrder,
+  );
+
 // delete order by id
 router
   .route('/:orderId')

@@ -49,6 +49,20 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
   });
 });
 
+// cancel order
+const cancelOrder = asyncHandler(async (req, res) => {
+  const { orderId } = req.params;
+  const { id } = req.user; // User id
+  const result = await orderServices.cancelOrderFromDb(orderId, id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: 'Your Order Has Been Cancelled Successfully',
+    data: result,
+  });
+});
+
 // update payment status
 const updatePaymentStatus = asyncHandler(async (req, res) => {
   const { orderId } = req.params;
@@ -98,4 +112,5 @@ export const orderControllers = {
   updatePaymentStatus,
   getAllOrdersOfUser,
   deleteOrder,
+  cancelOrder,
 };

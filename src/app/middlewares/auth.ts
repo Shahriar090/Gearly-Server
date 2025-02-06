@@ -18,6 +18,7 @@ const auth = (...requiredRoles: TUserRole[]) => {
       token,
       config.access_token_secret as string,
     ) as JwtPayload;
+
     const { role, email } = decoded;
 
     if (!decoded || !('email' in decoded)) {
