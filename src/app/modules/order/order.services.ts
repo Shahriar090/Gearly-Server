@@ -118,7 +118,7 @@ const updatePaymentStatusIntoDb = async (
 const getAllOrdersOfUser = async (userId: string) => {
   const orders = await Order.find({ user: userId }).populate('user');
 
-  if (!orders) {
+  if (!orders || orders.length === 0) {
     throw new AppError(
       httpStatus.NOT_FOUND,
       'No Order Found.!',
@@ -129,10 +129,31 @@ const getAllOrdersOfUser = async (userId: string) => {
   return orders;
 };
 
+// delete an order(soft delete)
+
+const deleteOrderFromDb = async (orderId: string) => {
+  const deletedOrder = await Order.findByIdAndUpdate(
+    orderId,
+    { isDeleted: true },
+    { new: true },
+  );
+
+  if (!deletedOrder) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'No Order Found.!',
+      'NoOrderFound',
+    );
+  }
+
+  return deletedOrder;
+};
+
 export const orderServices = {
   createOrderIntoDb,
   getOrderByIdFromDb,
   updateOrderStatusIntoDb,
   updatePaymentStatusIntoDb,
   getAllOrdersOfUser,
+  deleteOrderFromDb,
 };

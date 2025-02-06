@@ -78,10 +78,24 @@ const getAllOrdersOfUser = asyncHandler(async (req, res) => {
     data: result,
   });
 });
+
+// delete an order
+const deleteOrder = asyncHandler(async (req, res) => {
+  const { orderId } = req.params;
+  const result = await orderServices.deleteOrderFromDb(orderId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: 'Order Was Deleted Successfully',
+    data: result,
+  });
+});
 export const orderControllers = {
   createOrder,
   getOrderById,
   updateOrderStatus,
   updatePaymentStatus,
   getAllOrdersOfUser,
+  deleteOrder,
 };
