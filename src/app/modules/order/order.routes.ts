@@ -15,6 +15,14 @@ router
     orderControllers.createOrder,
   );
 
+// get all orders of a user
+router
+  .route('/:userId')
+  .get(
+    auth(USER_ROLES.Admin, USER_ROLES.Customer),
+    orderControllers.getAllOrdersOfUser,
+  );
+
 // get order by id
 router
   .route('/:orderId')
@@ -32,5 +40,6 @@ router
 router
   .route('/payment-status/:orderId')
   .put(auth(USER_ROLES.Admin), orderControllers.updatePaymentStatus);
+
 // --------------
 export const orderRoutes = router;

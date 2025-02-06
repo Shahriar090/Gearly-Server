@@ -114,9 +114,25 @@ const updatePaymentStatusIntoDb = async (
   return updatedOrder;
 };
 
+// get all orders of a user
+const getAllOrdersOfUser = async (userId: string) => {
+  const orders = await Order.find({ user: userId }).populate('user');
+
+  if (!orders) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'No Order Found.!',
+      'NoOrderFound',
+    );
+  }
+
+  return orders;
+};
+
 export const orderServices = {
   createOrderIntoDb,
   getOrderByIdFromDb,
   updateOrderStatusIntoDb,
   updatePaymentStatusIntoDb,
+  getAllOrdersOfUser,
 };

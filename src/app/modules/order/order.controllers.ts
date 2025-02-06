@@ -66,9 +66,22 @@ const updatePaymentStatus = asyncHandler(async (req, res) => {
     data: result,
   });
 });
+
+// get all orders of a user
+const getAllOrdersOfUser = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+  const result = await orderServices.getAllOrdersOfUser(userId);
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: 'All Of Your Orders Are Retrieved Successfully',
+    data: result,
+  });
+});
 export const orderControllers = {
   createOrder,
   getOrderById,
   updateOrderStatus,
   updatePaymentStatus,
+  getAllOrdersOfUser,
 };
