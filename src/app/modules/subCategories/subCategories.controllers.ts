@@ -19,7 +19,9 @@ const createSubCategory = asyncHandler(async (req, res) => {
 
 // get all sub categories
 const getAllSubCategories = asyncHandler(async (req, res) => {
-  const result = await subCategoriesServices.getAllSubCategoriesFromDb();
+  const result = await subCategoriesServices.getAllSubCategoriesFromDb(
+    req.query,
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

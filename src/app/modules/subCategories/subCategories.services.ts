@@ -1,5 +1,7 @@
+import QueryBuilder from '../../builder/QueryBuilder';
 import AppError from '../../errors/appError';
 import { Category } from '../category/category.model';
+import { SUB_CATEGORIES_SEARCHABLE_FIELDS } from './subCategories.constants';
 import { TSubCategory } from './subCategories.interface';
 import { SubCategory } from './subCategories.model';
 import httpStatus from 'http-status';
@@ -45,17 +47,39 @@ const createSubCategoryIntoDb = async (payload: TSubCategory) => {
 };
 
 // get all sub categories
-const getAllSubCategoriesFromDb = async () => {
-  const result = await SubCategory.find();
+const getAllSubCategoriesFromDb = async (query: Record<string, unknown>) => {
+  // const result = await SubCategory.find();
+  // if (!result) {
+  //   throw new AppError(
+  //     httpStatus.NOT_FOUND,
+  //     'Failed To Fetch Sub Categories.!',
+  //     'SubCategoriesNotFound',
+  //   );
+  // }
+  // return result;
 
-  if (!result) {
+  const subCategoryQuery = new QueryBuilder(SubCategory.find(), query)
+    .search(SUB_CATEGORIES_SEARCHABLE_FIELDS)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await subCategoryQuery.modelQuery;
+  const meta = await subCategoryQuery.countTotal();
+
+  if (!result.length) {
     throw new AppError(
       httpStatus.NOT_FOUND,
-      'Failed To Fetch Sub Categories.!',
-      'SubCategoriesNotFound',
+      'No Sub Category Found.!',
+      'ProductsNotFound',
     );
   }
-  return result;
+
+  return {
+    meta,
+    result,
+  };
 };
 
 // get a single sub category
