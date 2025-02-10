@@ -80,12 +80,44 @@ const getAllProductsFromDb = async (query: Record<string, unknown>) => {
   });
 
   // filtering
-  const excludeFields = ['searchTerm'];
+  const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
   excludeFields.forEach((el) => delete queryObject[el]);
 
-  const products = await searchQuery
-    .find(queryObject)
-    .populate('category')
+  const filterQuery = searchQuery.find(queryObject);
+
+  // sorting
+  let sort = '-createdAt';
+
+  if (query.sort) {
+    sort = query.sort as string;
+  }
+
+  const sortQuery = filterQuery.sort(sort);
+  // limiting and pagination
+  let page = 1;
+  let limit = 1;
+  let skip = 0;
+  if (query.limit) {
+    limit = Number(query.limit);
+  }
+  if (query.page) {
+    page = Number(query.page);
+    skip = (page - 1) * limit;
+  }
+
+  const paginateQuery = sortQuery.skip(skip);
+
+  let fields = '-__v';
+
+  if (query.fields) {
+    fields = (query.fields as string).split(',').join(' ');
+  }
+
+  const fieldQuery = paginateQuery.select(fields);
+
+  const products = await fieldQuery
+    .select(fields)
+    .populate('category', 'name')
     .populate('subCategory');
 
   if (!products || products.length === 0) {
@@ -101,6 +133,7 @@ const getAllProductsFromDb = async (query: Record<string, unknown>) => {
 
   const reviews = await Review.find({ product: { $in: productIds } }).populate(
     'user',
+    'name email profileImage',
   );
   // attach reviews and calculate average ratings for each product
 
