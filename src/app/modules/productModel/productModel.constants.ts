@@ -3,3 +3,5 @@ export const AVAILABILITY_STATUS = {
   OUT_OF_STOCK: 'Out Of Stock',
   DISCONTINUED: 'Discontinued',
 } as const;
+
+export const PRODUCT_SEARCHABLE_FIELDS = ['name', 'subCategoryName'];

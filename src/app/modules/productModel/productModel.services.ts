@@ -6,6 +6,8 @@ import httpStatus from 'http-status';
 import { Product } from './productModel.model';
 import slugify from 'slugify';
 import { Review } from '../productReviews/productReviews.model';
+import QueryBuilder from '../../builder/QueryBuilder';
+import { PRODUCT_SEARCHABLE_FIELDS } from './productModel.constants';
 
 // create a product
 const createProductIntoDb = async (payload: TProductModel) => {
@@ -62,63 +64,18 @@ const createProductIntoDb = async (payload: TProductModel) => {
 
 // get all products
 const getAllProductsFromDb = async (query: Record<string, unknown>) => {
-  const productsSearchableFields = ['name', 'subCategoryName'];
-  const queryObject = { ...query }; //copy object of actual query object
+  const productQuery = new QueryBuilder(
+    Product.find().populate('category', 'name').populate('subCategory'),
+    query,
+  )
+    .search(PRODUCT_SEARCHABLE_FIELDS)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
 
-  let searchTerm = '';
-
-  if (query?.searchTerm) {
-    searchTerm = query?.searchTerm as string;
-  }
-
-  // search query
-  const searchQuery = Product.find({
-    $or: productsSearchableFields.map((field) => ({
-      [field]: { $regex: searchTerm, $options: 'i' },
-      isDeleted: { $ne: true },
-    })),
-  });
-
-  // filtering
-  const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
-  excludeFields.forEach((el) => delete queryObject[el]);
-
-  const filterQuery = searchQuery.find(queryObject);
-
-  // sorting
-  let sort = '-createdAt';
-
-  if (query.sort) {
-    sort = query.sort as string;
-  }
-
-  const sortQuery = filterQuery.sort(sort);
-  // limiting and pagination
-  let page = 1;
-  let limit = 1;
-  let skip = 0;
-  if (query.limit) {
-    limit = Number(query.limit);
-  }
-  if (query.page) {
-    page = Number(query.page);
-    skip = (page - 1) * limit;
-  }
-
-  const paginateQuery = sortQuery.skip(skip);
-
-  let fields = '-__v';
-
-  if (query.fields) {
-    fields = (query.fields as string).split(',').join(' ');
-  }
-
-  const fieldQuery = paginateQuery.select(fields);
-
-  const products = await fieldQuery
-    .select(fields)
-    .populate('category', 'name')
-    .populate('subCategory');
+  const products = await productQuery.modelQuery;
+  const meta = await productQuery.countTotal();
 
   if (!products || products.length === 0) {
     throw new AppError(
@@ -151,7 +108,12 @@ const getAllProductsFromDb = async (query: Record<string, unknown>) => {
       ? totalRatings / productReviews.length
       : 0;
 
-    return { ...product.toObject(), reviews: productReviews, averageRating };
+    return {
+      ...product.toObject(),
+      reviews: productReviews,
+      averageRating,
+      meta,
+    };
   });
 
   return productsWithReviews;
