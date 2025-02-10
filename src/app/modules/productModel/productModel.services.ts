@@ -77,7 +77,7 @@ const getAllProductsFromDb = async (query: Record<string, unknown>) => {
   const products = await productQuery.modelQuery;
   const meta = await productQuery.countTotal();
 
-  if (!products || products.length === 0) {
+  if (!products.length) {
     throw new AppError(
       httpStatus.NOT_FOUND,
       'No Products Found.!',
@@ -112,11 +112,10 @@ const getAllProductsFromDb = async (query: Record<string, unknown>) => {
       ...product.toObject(),
       reviews: productReviews,
       averageRating,
-      meta,
     };
   });
 
-  return productsWithReviews;
+  return { meta, products: productsWithReviews };
 };
 
 // get a single product
