@@ -9,15 +9,15 @@ import { Review } from '../productReviews/productReviews.model';
 
 // create a product
 const createProductIntoDb = async (payload: TProductModel) => {
-  // generating slug from category name to find the sub category using its slug
-  const categorySlug = slugify(payload.subCategoryName, {
+  // generating slug from sub category name to find the sub category using its slug
+  const subCategorySlug = slugify(payload.subCategoryName, {
     lower: true,
     strict: true,
   });
 
   // find the sub category using the generated slug
   const subCategory = await SubCategory.findOne({
-    slug: categorySlug,
+    slug: subCategorySlug,
   });
   if (!subCategory) {
     throw new AppError(
@@ -61,8 +61,30 @@ const createProductIntoDb = async (payload: TProductModel) => {
 };
 
 // get all products
-const getAllProductsFromDb = async () => {
-  const products = await Product.find({ isDeleted: { $ne: true } })
+const getAllProductsFromDb = async (query: Record<string, unknown>) => {
+  const productsSearchableFields = ['name', 'subCategoryName'];
+  const queryObject = { ...query }; //copy object of actual query object
+
+  let searchTerm = '';
+
+  if (query?.searchTerm) {
+    searchTerm = query?.searchTerm as string;
+  }
+
+  // search query
+  const searchQuery = Product.find({
+    $or: productsSearchableFields.map((field) => ({
+      [field]: { $regex: searchTerm, $options: 'i' },
+      isDeleted: { $ne: true },
+    })),
+  });
+
+  // filtering
+  const excludeFields = ['searchTerm'];
+  excludeFields.forEach((el) => delete queryObject[el]);
+
+  const products = await searchQuery
+    .find(queryObject)
     .populate('category')
     .populate('subCategory');
 

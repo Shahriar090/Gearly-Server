@@ -18,7 +18,7 @@ const createProduct = asyncHandler(async (req, res) => {
 
 // get all products
 const getAllProducts = asyncHandler(async (req, res) => {
-  const result = await productServices.getAllProductsFromDb();
+  const result = await productServices.getAllProductsFromDb(req.query);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

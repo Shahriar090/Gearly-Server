@@ -41,7 +41,7 @@ router
 
 // delete order by id
 router
-  .route('/:orderId')
+  .route('/delete-order/:orderId')
   .delete(auth(USER_ROLES.Admin), orderControllers.deleteOrder);
 
 // update order status (shipped, delivered)
