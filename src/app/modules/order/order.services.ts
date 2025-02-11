@@ -5,6 +5,7 @@ import { Order } from './order.model';
 import { ORDER_STATUS, PAYMENT_STATUS } from './order.constants';
 import { calculateOrder, generateOrderTrackingId } from './order.utils';
 import { Product } from '../productModel/productModel.model';
+import mongoose from 'mongoose';
 
 // create order
 const createOrderIntoDb = async (payload: TOrder, userId: string) => {
@@ -16,58 +17,87 @@ const createOrderIntoDb = async (payload: TOrder, userId: string) => {
     );
   }
 
-  const products = await Product.find({
-    _id: { $in: payload.items.map((item) => item.product) },
-  });
+  // start a transaction
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  if (products.length !== payload.items.length) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      'One Or More Products Were Not Found',
-      'ProductNotFound',
-    );
-  }
+  try {
+    const products = await Product.find({
+      _id: { $in: payload.items.map((item) => item.product) },
+    }).session(session); // attached the transaction session
 
-  const orderItems = payload.items.map((item) => {
-    const product = products.find(
-      (p) => p._id.toString() === item.product.toString(),
-    );
-
-    if (!product) {
+    if (products.length !== payload.items.length) {
       throw new AppError(
         httpStatus.NOT_FOUND,
-        `Product With ID ${item.product} Not Found`,
+        'One Or More Products Were Not Found',
         'ProductNotFound',
       );
     }
 
-    return {
-      product: product._id,
-      quantity: item.quantity,
-      price: product.price, // ensuring price is taking from the DB
-      tax: 0.0, // Default value for tax
-      shippingCharge: 0.0, // Default value for shipping charge
-      total: 0.0,
-    };
-  });
+    const orderItems = [];
+    for (const item of payload.items) {
+      const product = products.find(
+        (p) => p._id.toString() === item.product.toString(),
+      );
 
-  // calculate tax, shipping price etc.
-  const { items: calculatedItems, totalAmount } = calculateOrder(orderItems);
+      if (!product) {
+        throw new AppError(
+          httpStatus.NOT_FOUND,
+          `Product With ID ${item.product} Not Found`,
+          'ProductNotFound',
+        );
+      }
 
-  const trackingId = generateOrderTrackingId();
+      // check stock availability
+      if (product.stock < item.quantity) {
+        throw new AppError(
+          httpStatus.BAD_REQUEST,
+          `Insufficient Stock For Product ${product.name}. Available: ${product.stock}, Ordered:${item.quantity}`,
+          'InsufficientStock',
+        );
+      }
 
-  const order = new Order({
-    user: userId,
-    trackingId,
-    items: calculatedItems,
-    totalAmount,
-    orderStatus: ORDER_STATUS.Pending,
-    paymentStatus: PAYMENT_STATUS.Pending,
-    paymentMethod: payload.paymentMethod,
-    address: payload.address,
-  });
+      // decreasing stock dynamically
+      product.stock -= item.quantity;
+      await product.save({ session });
 
-  return await order.save();
+      orderItems.push({
+        product: product._id,
+        quantity: item.quantity,
+        price: product.price,
+        tax: 0.0,
+        shippingCharge: 0.0,
+        total: 0.0,
+      });
+    }
+
+    // calculate tax, shipping price etc.
+    const { items: calculatedItems, totalAmount } = calculateOrder(orderItems);
+
+    const trackingId = generateOrderTrackingId();
+
+    const order = new Order({
+      user: userId,
+      trackingId,
+      items: calculatedItems,
+      totalAmount,
+      orderStatus: ORDER_STATUS.Pending,
+      paymentStatus: PAYMENT_STATUS.Pending,
+      paymentMethod: payload.paymentMethod,
+      address: payload.address,
+    });
+
+    await order.save({ session });
+
+    await session.commitTransaction();
+    session.endSession();
+
+    return order;
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
+  }
 };
 
 // get order by id
