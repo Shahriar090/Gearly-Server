@@ -69,5 +69,10 @@ router
   .route('/total-sales-by-date')
   .get(auth(USER_ROLES.Admin), orderControllers.calculateTotalSalesByDate);
 
+// total sales between dates
+router
+  .route('/sales-between-date')
+  .get(auth(USER_ROLES.Admin), orderControllers.calculateSalesBetweenDates);
+
 // --------------
 export const orderRoutes = router;

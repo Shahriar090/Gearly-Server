@@ -267,6 +267,34 @@ const calculateTotalSalesByDate = async () => {
   return sales;
 };
 
+// calculate sales between dates
+const calculateSalesBetweenDates = async (
+  startDate: string,
+  endDate: string,
+) => {
+  const sales = await Order.aggregate([
+    {
+      $match: {
+        isDeleted: false,
+        createdAt: {
+          $gte: new Date(`${startDate}T00:00:00.000Z`),
+          $lt: new Date(`${endDate}T23:59:59.999Z`),
+        },
+      },
+    },
+    {
+      $group: {
+        _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+        totalSales: { $sum: '$totalAmount' },
+        totalOrders: { $sum: 1 },
+      },
+    },
+    { $sort: { _id: 1 } },
+  ]);
+
+  return sales;
+};
+
 export const orderServices = {
   createOrderIntoDb,
   getOrderByIdFromDb,
@@ -278,4 +306,5 @@ export const orderServices = {
   countTotalOrdersFromDb,
   calculateTotalSalesFromDb,
   calculateTotalSalesByDate,
+  calculateSalesBetweenDates,
 };

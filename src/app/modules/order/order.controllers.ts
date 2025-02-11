@@ -141,6 +141,22 @@ const calculateTotalSalesByDate = asyncHandler(async (req, res) => {
     data: result,
   });
 });
+
+// calculate sales between dates
+const calculateSalesBetweenDates = asyncHandler(async (req, res) => {
+  const { startDate, endDate } = req.body;
+  const result = await orderServices.calculateSalesBetweenDates(
+    startDate,
+    endDate,
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: `Total Sales Between ${startDate} & ${endDate} Retrieved Successfully`,
+    data: result,
+  });
+});
 export const orderControllers = {
   createOrder,
   getOrderById,
@@ -152,4 +168,5 @@ export const orderControllers = {
   countTotalOrders,
   countTotalSales,
   calculateTotalSalesByDate,
+  calculateSalesBetweenDates,
 };
