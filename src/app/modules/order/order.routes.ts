@@ -64,5 +64,10 @@ router
   .route('/total-sales')
   .get(auth(USER_ROLES.Admin), orderControllers.countTotalSales);
 
+// total sales by date
+router
+  .route('/total-sales-by-date')
+  .get(auth(USER_ROLES.Admin), orderControllers.calculateTotalSalesByDate);
+
 // --------------
 export const orderRoutes = router;

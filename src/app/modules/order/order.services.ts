@@ -246,6 +246,27 @@ const calculateTotalSalesFromDb = async () => {
   return totalSales;
 };
 
+// calculate sales by date
+const calculateTotalSalesByDate = async () => {
+  const sales = await Order.aggregate([
+    {
+      $match: { isDeleted: false },
+    },
+    {
+      $group: {
+        _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+        totalSales: { $sum: '$totalAmount' },
+        totalOrders: { $sum: 1 },
+      },
+    },
+    {
+      $sort: { _id: 1 },
+    },
+  ]);
+
+  return sales;
+};
+
 export const orderServices = {
   createOrderIntoDb,
   getOrderByIdFromDb,
@@ -256,4 +277,5 @@ export const orderServices = {
   cancelOrderFromDb,
   countTotalOrdersFromDb,
   calculateTotalSalesFromDb,
+  calculateTotalSalesByDate,
 };

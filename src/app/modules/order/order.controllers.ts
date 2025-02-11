@@ -129,6 +129,18 @@ const countTotalSales = asyncHandler(async (req, res) => {
     data: result,
   });
 });
+
+// calculate total sales by date
+const calculateTotalSalesByDate = asyncHandler(async (req, res) => {
+  const result = await orderServices.calculateTotalSalesByDate();
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: 'Total Sales By Date Retrieved Successfully',
+    data: result,
+  });
+});
 export const orderControllers = {
   createOrder,
   getOrderById,
@@ -139,4 +151,5 @@ export const orderControllers = {
   cancelOrder,
   countTotalOrders,
   countTotalSales,
+  calculateTotalSalesByDate,
 };
