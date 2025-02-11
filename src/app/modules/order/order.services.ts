@@ -215,6 +215,21 @@ const deleteOrderFromDb = async (orderId: string) => {
   return deletedOrder;
 };
 
+// count total orders
+const countTotalOrdersFromDb = async () => {
+  const totalOrders = await Order.countDocuments({ isDeleted: false });
+
+  if (totalOrders === 0) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'No Orders Found',
+      'NoOrdersFound',
+    );
+  }
+
+  return totalOrders;
+};
+
 export const orderServices = {
   createOrderIntoDb,
   getOrderByIdFromDb,
@@ -223,4 +238,5 @@ export const orderServices = {
   getAllOrdersOfUser,
   deleteOrderFromDb,
   cancelOrderFromDb,
+  countTotalOrdersFromDb,
 };

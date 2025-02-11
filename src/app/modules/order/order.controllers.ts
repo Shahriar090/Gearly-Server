@@ -105,6 +105,18 @@ const deleteOrder = asyncHandler(async (req, res) => {
     data: result,
   });
 });
+
+// count total orders
+const countTotalOrders = asyncHandler(async (req, res) => {
+  const result = await orderServices.countTotalOrdersFromDb();
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: 'Total Orders Are Retrieved Successfully',
+    data: result,
+  });
+});
 export const orderControllers = {
   createOrder,
   getOrderById,
@@ -113,4 +125,5 @@ export const orderControllers = {
   getAllOrdersOfUser,
   deleteOrder,
   cancelOrder,
+  countTotalOrders,
 };

@@ -15,9 +15,14 @@ router
     orderControllers.createOrder,
   );
 
+// count total orders
+router
+  .route('/count-total-orders')
+  .get(auth(USER_ROLES.Admin), orderControllers.countTotalOrders);
+
 // get all orders of a user
 router
-  .route('/:userId')
+  .route('/get-all-orders/:userId')
   .get(
     auth(USER_ROLES.Admin, USER_ROLES.Customer),
     orderControllers.getAllOrdersOfUser,
@@ -25,7 +30,7 @@ router
 
 // get order by id
 router
-  .route('/:orderId')
+  .route('/get-order/:orderId')
   .get(
     auth(USER_ROLES.Customer, USER_ROLES.Admin),
     orderControllers.getOrderById,
