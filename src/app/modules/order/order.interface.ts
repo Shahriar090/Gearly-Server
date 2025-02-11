@@ -9,6 +9,8 @@ export type TItems = {
   product: Types.ObjectId;
   quantity: number;
   price: number;
+  tax: number;
+  shippingCharge: number;
   total: number;
 };
 

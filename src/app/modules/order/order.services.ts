@@ -3,36 +3,71 @@ import { TOrder, TOrderStatus, TPaymentStatus } from './order.interface';
 import httpStatus from 'http-status';
 import { Order } from './order.model';
 import { ORDER_STATUS, PAYMENT_STATUS } from './order.constants';
-import { generateOrderTrackingId } from './order.utils';
+import { calculateOrder, generateOrderTrackingId } from './order.utils';
+import { Product } from '../productModel/productModel.model';
 
 // create order
 const createOrderIntoDb = async (payload: TOrder, userId: string) => {
-  if (!payload) {
+  if (!payload || payload.items.length === 0) {
     throw new AppError(
-      httpStatus.BAD_REQUEST,
-      'All Fields Are Required',
-      'RequiredFields',
+      httpStatus.NOT_FOUND,
+      'No Order Items Found',
+      'NoOrderItems',
     );
   }
 
-  if (payload && payload.items.length === 0) {
-    throw new AppError(
-      httpStatus.BAD_REQUEST,
-      'Order Must Contain At Least One Item',
-      'InvalidItem',
-    );
-  }
-
-  const order = new Order({
-    ...payload,
-    user: userId,
-    paymentStatus: PAYMENT_STATUS.Pending,
-    status: ORDER_STATUS.Pending,
-    trackingId: generateOrderTrackingId(),
+  const products = await Product.find({
+    _id: { $in: payload.items.map((item) => item.product) },
   });
 
-  await order.save();
-  return order;
+  if (products.length !== payload.items.length) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'One Or More Products Were Not Found',
+      'ProductNotFound',
+    );
+  }
+
+  const orderItems = payload.items.map((item) => {
+    const product = products.find(
+      (p) => p._id.toString() === item.product.toString(),
+    );
+
+    if (!product) {
+      throw new AppError(
+        httpStatus.NOT_FOUND,
+        `Product With ID ${item.product} Not Found`,
+        'ProductNotFound',
+      );
+    }
+
+    return {
+      product: product._id,
+      quantity: item.quantity,
+      price: product.price, // ensuring price is taking from the DB
+      tax: 0.0, // Default value for tax
+      shippingCharge: 0.0, // Default value for shipping charge
+      total: 0.0,
+    };
+  });
+
+  // calculate tax, shipping price etc.
+  const { items: calculatedItems, totalAmount } = calculateOrder(orderItems);
+
+  const trackingId = generateOrderTrackingId();
+
+  const order = new Order({
+    user: userId,
+    trackingId,
+    items: calculatedItems,
+    totalAmount,
+    orderStatus: ORDER_STATUS.Pending,
+    paymentStatus: PAYMENT_STATUS.Pending,
+    paymentMethod: payload.paymentMethod,
+    address: payload.address,
+  });
+
+  return await order.save();
 };
 
 // get order by id

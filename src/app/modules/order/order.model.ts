@@ -24,7 +24,14 @@ const itemSchema = new Schema<TItems>({
   },
   price: {
     type: Number,
-    required: true,
+  },
+  tax: {
+    type: Number,
+    default: 0.0,
+  },
+  shippingCharge: {
+    type: Number,
+    default: 0.0,
   },
   total: {
     type: Number,
@@ -76,17 +83,17 @@ const orderSchema = new Schema<TOrder>(
 );
 
 // pre save hook for calculating total amount
-orderSchema.pre('save', async function (next) {
-  if (this.isModified('items')) {
-    let totalAmount = 0;
-    this.items.forEach((item) => {
-      item.total = item.price * item.quantity;
-      totalAmount += item.total;
-    });
-    this.totalAmount = totalAmount;
-  }
-  next();
-});
+// orderSchema.pre('save', async function (next) {
+//   if (this.isModified('items')) {
+//     let totalAmount = 0;
+//     this.items.forEach((item) => {
+//       item.total = item.price * item.quantity;
+//       totalAmount += item.total;
+//     });
+//     this.totalAmount = totalAmount;
+//   }
+//   next();
+// });
 
 // static method to check if the order is completed
 orderSchema.statics.isOrderCompleted = async function (orderId: string) {
