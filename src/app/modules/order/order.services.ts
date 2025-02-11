@@ -230,6 +230,22 @@ const countTotalOrdersFromDb = async () => {
   return totalOrders;
 };
 
+// calculate total sales
+const calculateTotalSalesFromDb = async () => {
+  const orders = await Order.find();
+  if (orders.length === 0) {
+    throw new AppError(httpStatus.NOT_FOUND, 'No Order Found', 'NoOrderFound');
+  }
+  const totalSales = orders.reduce((sum, order) => {
+    if (order.totalAmount && typeof order.totalAmount === 'number') {
+      return sum + order.totalAmount;
+    }
+    return sum;
+  }, 0);
+
+  return totalSales;
+};
+
 export const orderServices = {
   createOrderIntoDb,
   getOrderByIdFromDb,
@@ -239,4 +255,5 @@ export const orderServices = {
   deleteOrderFromDb,
   cancelOrderFromDb,
   countTotalOrdersFromDb,
+  calculateTotalSalesFromDb,
 };

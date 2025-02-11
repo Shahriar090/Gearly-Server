@@ -59,5 +59,10 @@ router
   .route('/payment-status/:orderId')
   .put(auth(USER_ROLES.Admin), orderControllers.updatePaymentStatus);
 
+// count total sales
+router
+  .route('/total-sales')
+  .get(auth(USER_ROLES.Admin), orderControllers.countTotalSales);
+
 // --------------
 export const orderRoutes = router;
