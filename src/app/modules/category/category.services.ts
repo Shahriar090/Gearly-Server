@@ -1,10 +1,12 @@
 import AppError from '../../errors/appError';
+import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary';
 import { TCategory } from './category.interface';
 import { Category } from './category.model';
 import httpStatus from 'http-status';
 
 // create category
-const createCategoryIntoDb = async (payload: TCategory) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const createCategoryIntoDb = async (payload: TCategory, file: any) => {
   // check if the category already exists
   const isCategoryExists = await Category.findOne({ name: payload.name });
   if (isCategoryExists) {
@@ -13,6 +15,16 @@ const createCategoryIntoDb = async (payload: TCategory) => {
       'This Category Is Already Exist.!',
       'CategoryExistingError',
     );
+  }
+
+  if (file) {
+    const imageName = `${payload.name}`;
+    const imagePath = file.path;
+
+    // send image to cloudinary
+    const categoryImage = await sendImageToCloudinary(imageName, imagePath);
+    const { secure_url } = categoryImage;
+    payload.imageUrl = secure_url as string;
   }
   const result = await Category.create(payload);
   return result;

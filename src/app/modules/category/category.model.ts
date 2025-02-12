@@ -24,7 +24,6 @@ const categorySchema = new Schema<TCategory>(
     },
     imageUrl: {
       type: String,
-      required: true,
     },
     status: {
       type: String,

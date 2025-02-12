@@ -7,10 +7,7 @@ const createCategoryValidationSchema = z.object({
     category: z.object({
       name: z.string().trim().min(1, 'Category Name Is Required'),
       description: z.string().trim().min(1, 'Description Is Required'),
-      imageUrl: z
-        .string()
-        .url('Invalid Image URL')
-        .min(1, 'Image Url Is Required'),
+      imageUrl: z.string().url('Invalid Image URL').optional(),
       status: z
         .enum(Object.values(CATEGORY_STATUS) as [string, ...string[]])
         .optional(),
