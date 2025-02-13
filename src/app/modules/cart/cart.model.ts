@@ -7,6 +7,7 @@ const itemsSchema = new Schema<TCartItems>({
   product: {
     type: Schema.Types.ObjectId,
     ref: 'Product',
+    required: true,
   },
   quantity: {
     type: Number,
@@ -14,7 +15,12 @@ const itemsSchema = new Schema<TCartItems>({
   },
   price: {
     type: Number,
-    required: true,
+  },
+  discount: {
+    type: Number,
+  },
+  saved: {
+    type: Number,
   },
   totalPrice: {
     type: Number,
@@ -36,12 +42,15 @@ const cartSchema = new Schema<TCart>(
     items: [itemsSchema],
     totalAmount: {
       type: Number,
-      required: true,
+
       default: 0,
     },
     discount: {
       type: Number,
       default: 0,
+    },
+    totalSaved: {
+      type: Number,
     },
     tax: {
       type: Number,
@@ -50,6 +59,9 @@ const cartSchema = new Schema<TCart>(
     shippingCharge: {
       type: Number,
       default: 0,
+    },
+    grandTotal: {
+      type: Number,
     },
     status: {
       type: String,

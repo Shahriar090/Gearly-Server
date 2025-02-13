@@ -5,6 +5,8 @@ export type TCartItems = {
   product: Types.ObjectId;
   quantity: number;
   price: number;
+  discount?: number;
+  saved: number;
   totalPrice: number;
   itemImg?: string;
   variant?: string;
@@ -17,7 +19,9 @@ export type TCart = {
   items: TCartItems[];
   totalAmount: number;
   discount: number;
+  totalSaved: number;
   tax: number;
   shippingCharge: number;
+  grandTotal: number;
   status: TCartStatus;
 };

@@ -3,19 +3,20 @@ import sendResponse from '../../utils/sendResponse';
 import { cartServices } from './cart.services';
 import httpStatus from 'http-status';
 
-// create a new cart for the first time
-const createCart = asyncHandler(async (req, res) => {
+// add to cart
+const addToCart = asyncHandler(async (req, res) => {
   const { id } = req.user;
-  const result = await cartServices.createCart(id);
+  const { cart } = req.body;
+  const result = await cartServices.addToCart(id, cart);
 
   sendResponse(res, {
-    statusCode: httpStatus.CREATED,
+    statusCode: httpStatus.OK,
     success: true,
-    message: 'Your Cart Has Been Created',
+    message: 'Your Items Has Been Added To The Cart Successfully',
     data: result,
   });
 });
 
 export const cartControllers = {
-  createCart,
+  addToCart,
 };
