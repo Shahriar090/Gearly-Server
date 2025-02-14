@@ -18,11 +18,27 @@ const addToCart = async (userId: string, payload: TCart) => {
   // fetch all required products in a single DB query
   const products = await Product.find({ _id: { $in: productIds } });
 
+  if (products.length === 0) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Some Products Not Found',
+      'ProductsNotFound',
+    );
+  }
+
   // create a map for quick product lookup
   const productMap = new Map(products.map((p) => [p._id.toString(), p]));
 
   // processing cart items
   const newItems = payload.items.map((newItem) => {
+    if (newItem.quantity <= 0) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        'Quantity must be greater than 0',
+        'InvalidQuantity',
+      );
+    }
+
     const product = productMap.get(newItem.product.toString());
 
     if (!product) {
@@ -30,6 +46,14 @@ const addToCart = async (userId: string, payload: TCart) => {
         httpStatus.NOT_FOUND,
         `Product With ID ${newItem.product} Not Found`,
         'ProductNotFound',
+      );
+    }
+
+    if (newItem.quantity > product.stock) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        `Only ${product.stock} units available for ${product.name}`,
+        'OutOfStock',
       );
     }
 
