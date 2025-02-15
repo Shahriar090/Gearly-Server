@@ -175,9 +175,29 @@ const removeCartItem = async (userId: string, productId: string) => {
   return await cart.save();
 };
 
+// clear cart
+const clearCart = async (userId: string) => {
+  const cart = await Cart.findOne({ user: userId });
+
+  if (!cart) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Cart Not Found', 'CartNotFound');
+  }
+
+  cart.items = [];
+  cart.totalAmount = 0;
+  cart.discount = 0;
+  cart.totalSaved = 0;
+  cart.shippingCharge = 0;
+  cart.grandTotal = 0;
+  cart.tax = 0;
+
+  return await cart.save();
+};
+
 export const cartServices = {
   addToCart,
   getCart,
   updateCartItem,
   removeCartItem,
+  clearCart,
 };

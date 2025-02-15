@@ -60,9 +60,23 @@ const removeCartItem = asyncHandler(async (req, res) => {
   });
 });
 
+// clear cart
+const clearCart = asyncHandler(async (req, res) => {
+  const { id } = req.user;
+  const result = await cartServices.clearCart(id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Your Cart Has Been Cleared Successfully',
+    data: result,
+  });
+});
+
 export const cartControllers = {
   addToCart,
   getCart,
   updateCartItem,
   removeCartItem,
+  clearCart,
 };

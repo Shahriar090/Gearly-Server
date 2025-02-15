@@ -23,5 +23,10 @@ router
 router
   .route('/remove-item/:productId')
   .delete(auth(USER_ROLES.Customer), cartControllers.removeCartItem);
+
+// clear cart
+router
+  .route('/clear-cart')
+  .delete(auth(USER_ROLES.Customer), cartControllers.clearCart);
 // ----------------
 export const cartRoutes = router;
