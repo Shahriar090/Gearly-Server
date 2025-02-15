@@ -46,8 +46,23 @@ const updateCartItem = asyncHandler(async (req, res) => {
   });
 });
 
+// remove cart item
+const removeCartItem = asyncHandler(async (req, res) => {
+  const { id } = req.user;
+  const { productId } = req.params;
+  const result = await cartServices.removeCartItem(id, productId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Item Removed From The Cart Successfully',
+    data: result,
+  });
+});
+
 export const cartControllers = {
   addToCart,
   getCart,
   updateCartItem,
+  removeCartItem,
 };

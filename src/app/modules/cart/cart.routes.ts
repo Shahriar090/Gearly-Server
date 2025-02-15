@@ -18,5 +18,10 @@ router
 router
   .route('/update-item/:productId')
   .patch(auth(USER_ROLES.Customer), cartControllers.updateCartItem);
+
+// remove cart item
+router
+  .route('/remove-item/:productId')
+  .delete(auth(USER_ROLES.Customer), cartControllers.removeCartItem);
 // ----------------
 export const cartRoutes = router;

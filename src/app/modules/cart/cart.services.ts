@@ -149,8 +149,35 @@ const updateCartItem = async (
   return await cart.save();
 };
 
+// remove cart item
+const removeCartItem = async (userId: string, productId: string) => {
+  const cart = await Cart.findOne({ user: userId });
+
+  if (!cart) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Cart Not Found', 'CartNotFound');
+  }
+
+  const itemIndex = cart.items.findIndex(
+    (item) => item.product.toString() === productId,
+  );
+
+  if (itemIndex === -1) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Product Not In Cart',
+      'ProductNotInCart',
+    );
+  }
+
+  cart.items.splice(itemIndex, 1);
+  Object.assign(cart, calculateCartTotals(cart.items));
+
+  return await cart.save();
+};
+
 export const cartServices = {
   addToCart,
   getCart,
   updateCartItem,
+  removeCartItem,
 };
