@@ -82,4 +82,75 @@ const addToCart = async (userId: string, payload: TCart) => {
   return await cart.save();
 };
 
-export const cartServices = { addToCart };
+// get user specific cart
+const getCart = async (userId: string) => {
+  const cart = await Cart.findOne({ user: userId });
+
+  if (!cart) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Cart Not Found', 'CartNotFound');
+  }
+
+  return cart;
+};
+
+// update cart item
+const updateCartItem = async (
+  userId: string,
+  productId: string,
+  quantity: number,
+) => {
+  const cart = await Cart.findOne({ user: userId });
+
+  if (!cart) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Cart Not Found', 'CartNotFound');
+  }
+
+  const itemIndex = cart.items.findIndex(
+    (item) => item.product.toString() === productId,
+  );
+
+  if (itemIndex === -1) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Product Not In Cart',
+      'ProductNotInCart',
+    );
+  }
+
+  if (quantity <= 0) {
+    cart.items.splice(itemIndex, 1);
+  } else {
+    const product = await Product.findById(productId);
+    if (!product) {
+      throw new AppError(
+        httpStatus.NOT_FOUND,
+        'Product Not Found',
+        'ProductNotFound',
+      );
+    }
+    if (quantity > product.stock) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        `Only ${product.stock} Units Available`,
+        'OutOfStock',
+      );
+    }
+    cart.items[itemIndex].quantity = quantity;
+    cart.items[itemIndex].price = product.discountPrice ?? product.price;
+    cart.items[itemIndex].discount = product.discount ?? 0;
+    cart.items[itemIndex].saved = cart.items[itemIndex].discount * quantity;
+    cart.items[itemIndex].totalPrice =
+      (cart.items[itemIndex].price - cart.items[itemIndex].discount) * quantity;
+  }
+
+  // recalculating totals
+  Object.assign(cart, calculateCartTotals(cart.items));
+
+  return await cart.save();
+};
+
+export const cartServices = {
+  addToCart,
+  getCart,
+  updateCartItem,
+};
