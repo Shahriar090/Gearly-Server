@@ -117,34 +117,36 @@ const updateCartItem = async (
     );
   }
 
-  if (quantity <= 0) {
-    cart.items.splice(itemIndex, 1);
-  } else {
-    const product = await Product.findById(productId);
-    if (!product) {
-      throw new AppError(
-        httpStatus.NOT_FOUND,
-        'Product Not Found',
-        'ProductNotFound',
-      );
-    }
-    if (quantity > product.stock) {
-      throw new AppError(
-        httpStatus.BAD_REQUEST,
-        `Only ${product.stock} Units Available`,
-        'OutOfStock',
-      );
-    }
-    cart.items[itemIndex].quantity = quantity;
-    cart.items[itemIndex].price = product.discountPrice ?? product.price;
-    cart.items[itemIndex].discount = product.discount ?? 0;
-    cart.items[itemIndex].saved = cart.items[itemIndex].discount * quantity;
-    cart.items[itemIndex].totalPrice =
-      (cart.items[itemIndex].price - cart.items[itemIndex].discount) * quantity;
+  const product = await Product.findById(productId);
+
+  if (!product) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Product Not Found',
+      'ProductNotFound',
+    );
   }
 
-  // recalculating totals
-  Object.assign(cart, calculateCartTotals(cart.items));
+  if (quantity > product.stock) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      `Only ${product.stock} Units Available`,
+      'OutOfStock',
+    );
+  }
+
+  const price = product.discountPrice ?? product.price;
+  const discount = product.price - price;
+
+  cart.items[itemIndex].quantity = quantity;
+  cart.items[itemIndex].price = price;
+  cart.items[itemIndex].discount = discount;
+  cart.items[itemIndex].saved = discount * quantity;
+  cart.items[itemIndex].totalPrice = (price - discount) * quantity;
+
+  const totals = calculateCartTotals(cart.items);
+
+  Object.assign(cart, totals);
 
   return await cart.save();
 };

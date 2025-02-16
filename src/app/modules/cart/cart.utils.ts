@@ -26,20 +26,20 @@ export const calculateCartTotals = (cartItems: TCartItems[]) => {
     totalSaved += item.saved;
     return {
       ...item,
-      totalPrice: parseFloat(totalPrice.toFixed(2)),
-      discount: parseFloat(((item.discount ?? 0) * item.quantity).toFixed(2)),
-      saved: parseFloat(item.saved.toFixed(2)),
+      totalPrice: totalPrice,
+      discount: (item.discount ?? 0) * item.quantity,
+      saved: item.saved,
     };
   });
 
   return {
     items: updatedItems,
-    totalAmount: parseFloat(totalAmount.toFixed(2)),
-    tax: parseFloat(totalTax.toFixed(2)),
-    discount: parseFloat(totalDiscount.toFixed(2)),
-    totalSaved: parseFloat(totalSaved.toFixed(2)),
+    totalAmount: totalAmount,
+    tax: totalTax,
+    discount: totalDiscount,
+    totalSaved,
     shippingCharge,
-    grandTotal: parseFloat((totalAmount + shippingCharge).toFixed(2)),
+    grandTotal: totalAmount + shippingCharge,
   };
 };
 
@@ -58,9 +58,18 @@ export const mergeCartItems = (
       existingItem.quantity += newItem.quantity;
       existingItem.price = newItem.price;
       existingItem.discount = newItem.discount;
+
+      // calculate saved amount based on quantity
+      existingItem.saved +=
+        newItem.discount != null
+          ? newItem.discount
+          : newItem.price * newItem.quantity;
     } else {
-      // add new item
-      itemMap.set(newItem.product.toString(), { ...newItem, totalPrice: 0 });
+      // add new item if it does not already exist in the cart
+
+      newItem.saved = newItem.discount ?? newItem.price * newItem.quantity;
+
+      itemMap.set(newItem.product.toString(), { ...newItem });
     }
   });
 
