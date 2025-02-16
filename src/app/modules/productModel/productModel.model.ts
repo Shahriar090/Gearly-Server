@@ -42,22 +42,6 @@ const productSchema = new Schema<TProductModel>(
   { timestamps: true },
 );
 
-// This logic will automatically updates product ratings based on user reviews. That's why no need to manually calculate average rating in the frontend/backend.
-// productSchema.pre('save', function (next) {
-//   if (this.isModified('reviews')) {
-//     if (!this.reviews || this.reviews.length === 0) {
-//       this.ratings = 0;
-//     } else {
-//       const total = this.reviews.reduce(
-//         (sum, review) => sum + review.rating,
-//         0,
-//       );
-//       this.ratings = total / this.reviews.length;
-//     }
-//   }
-//   next();
-// });
-
 // calculating discount price
 productSchema.pre('save', function (next) {
   if (this.isModified('price') || this.isModified('discount')) {
@@ -66,6 +50,14 @@ productSchema.pre('save', function (next) {
     } else {
       this.discountPrice = this.price;
     }
+  }
+  next();
+});
+
+// pre save hook to convert tags to lowercase
+productSchema.pre('save', function (next) {
+  if (this.tags && Array.isArray(this.tags)) {
+    this.tags = this.tags.map((tag) => tag.toLowerCase());
   }
   next();
 });
