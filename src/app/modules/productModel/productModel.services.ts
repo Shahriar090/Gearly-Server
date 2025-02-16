@@ -176,7 +176,8 @@ const updateProductIntoDb = async (
   const arrayUpdatesOperation: Record<string, { $each: string[] }> = {};
 
   if (tags && tags.length) {
-    arrayUpdatesOperation.tags = { $each: tags };
+    const lowerCaseTags = tags.map((tag) => tag.toLowerCase());
+    arrayUpdatesOperation.tags = { $each: lowerCaseTags };
   }
 
   if (images && images.length) {
