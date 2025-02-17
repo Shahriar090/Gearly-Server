@@ -22,6 +22,7 @@ export type TCart = {
   totalSaved: number;
   tax: number;
   shippingCharge: number;
+  shippingAddress: string;
   grandTotal: number;
   status: TCartStatus;
 };

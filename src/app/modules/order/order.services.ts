@@ -61,18 +61,29 @@ const createOrderIntoDb = async (payload: TOrder, userId: string) => {
       product.stock -= item.quantity;
       await product.save({ session });
 
+      const price = product.discountPrice ?? product.price;
+      const discount = product.price - price;
+
       orderItems.push({
         product: product._id,
         quantity: item.quantity,
-        price: product.price,
-        tax: 0.0,
-        shippingCharge: 0.0,
-        total: 0.0,
+        price: price,
+        discount: discount,
+        saved: product.saved ?? 0,
+        totalPrice: 0,
       });
     }
 
     // calculate tax, shipping price etc.
-    const { items: calculatedItems, totalAmount } = calculateOrder(orderItems);
+    const {
+      items: calculatedItems,
+      totalAmount,
+      tax,
+      discount,
+      totalSaved,
+      shippingCharge,
+      grandTotal,
+    } = calculateOrder(orderItems);
 
     const trackingId = generateOrderTrackingId();
 
@@ -81,6 +92,11 @@ const createOrderIntoDb = async (payload: TOrder, userId: string) => {
       trackingId,
       items: calculatedItems,
       totalAmount,
+      tax,
+      totalSaved,
+      shippingCharge,
+      discount,
+      grandTotal,
       orderStatus: ORDER_STATUS.Pending,
       paymentStatus: PAYMENT_STATUS.Pending,
       paymentMethod: payload.paymentMethod,

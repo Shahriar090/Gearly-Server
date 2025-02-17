@@ -14,24 +14,38 @@ const getTaxRate = (price: number): number => {
 
 // utility function to calculate order (price, tax etc.)
 export const calculateOrder = (items: TItems[]) => {
+  let totalAmount = 0;
+  let totalTax = 0;
+  let totalDiscount = 0;
+  let totalSaved = 0;
+  const shippingCharge = 30;
+
   const calculatedItems = items.map((item) => {
     const taxRate = getTaxRate(item.price);
     const tax = item.price * taxRate * item.quantity;
-    const shippingCharge = 20;
-    const total = item.price * item.quantity + tax + shippingCharge;
+    const totalPrice = item.price * item.quantity + tax;
+
+    totalAmount += totalPrice;
+    totalTax += tax;
+    totalDiscount += (item.discount ?? 0) * item.quantity;
+    totalSaved += item.saved * item.quantity;
 
     return {
       ...item,
       tax,
-      shippingCharge,
-      total,
+      totalPrice,
+      discount: (item.discount ?? 0) * item.quantity,
+      saved: item.saved * item.quantity,
     };
   });
 
-  const totalAmount = calculatedItems.reduce(
-    (sum, item) => sum + item.total,
-    0,
-  );
-
-  return { items: calculatedItems, totalAmount };
+  return {
+    items: calculatedItems,
+    totalAmount,
+    tax: totalTax,
+    discount: totalDiscount,
+    totalSaved,
+    shippingCharge,
+    grandTotal: totalAmount + shippingCharge,
+  };
 };

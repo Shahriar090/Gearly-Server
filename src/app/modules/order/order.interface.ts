@@ -9,9 +9,11 @@ export type TItems = {
   product: Types.ObjectId;
   quantity: number;
   price: number;
-  tax: number;
-  shippingCharge: number;
-  total: number;
+  discount?: number;
+  saved: number;
+  totalPrice: number;
+  itemImg?: string;
+  variant?: string;
 };
 
 export type TAddress = {
@@ -19,6 +21,8 @@ export type TAddress = {
   city: string;
   postalCode: string;
   country: string;
+  contactNo: string;
+  email: string;
 };
 
 export type TOrderStatus = (typeof ORDER_STATUS)[keyof typeof ORDER_STATUS];
@@ -34,6 +38,11 @@ export type TOrder = {
   trackingId: string;
   items: TItems[];
   totalAmount: number;
+  discount: number;
+  totalSaved: number;
+  tax: number;
+  shippingCharge: number;
+  grandTotal: number;
   orderStatus: TOrderStatus;
   paymentStatus: TPaymentStatus;
   paymentMethod: TPaymentMethod;

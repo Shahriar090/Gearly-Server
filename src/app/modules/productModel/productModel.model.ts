@@ -24,6 +24,7 @@ const productSchema = new Schema<TProductModel>(
     price: { type: Number, required: true },
     discount: { type: Number },
     discountPrice: { type: Number },
+    saved: { type: Number },
     specifications: { type: specificationsSchema, required: true },
     tags: { type: [String], default: [] },
     availabilityStatus: {
@@ -47,8 +48,10 @@ productSchema.pre('save', function (next) {
   if (this.isModified('price') || this.isModified('discount')) {
     if (this.discount && this.discount > 0 && this.discount <= 100) {
       this.discountPrice = this.price - (this.price * this.discount) / 100;
+      this.saved = this.price - this.discountPrice;
     } else {
       this.discountPrice = this.price;
+      this.saved = 0;
     }
   }
   next();

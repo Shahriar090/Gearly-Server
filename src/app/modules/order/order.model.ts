@@ -25,15 +25,16 @@ const itemSchema = new Schema<TItems>({
   price: {
     type: Number,
   },
-  tax: {
+  discount: {
     type: Number,
-    default: 0.0,
+    default: 0,
   },
-  shippingCharge: {
+  saved: {
     type: Number,
-    default: 0.0,
+    default: 0,
   },
-  total: {
+
+  totalPrice: {
     type: Number,
   },
 });
@@ -43,6 +44,14 @@ const addressSchema = new Schema<TAddress>({
   city: String,
   postalCode: String,
   country: String,
+  contactNo: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+  },
 });
 
 const orderSchema = new Schema<TOrder>(
@@ -56,7 +65,22 @@ const orderSchema = new Schema<TOrder>(
       unique: true,
     },
     items: [itemSchema],
-    totalAmount: {
+    discount: {
+      type: Number,
+      default: 0,
+    },
+    totalSaved: {
+      type: Number,
+    },
+    tax: {
+      type: Number,
+      default: 0,
+    },
+    shippingCharge: {
+      type: Number,
+      default: 0,
+    },
+    grandTotal: {
       type: Number,
     },
     orderStatus: {
@@ -81,19 +105,6 @@ const orderSchema = new Schema<TOrder>(
   },
   { timestamps: true },
 );
-
-// pre save hook for calculating total amount
-// orderSchema.pre('save', async function (next) {
-//   if (this.isModified('items')) {
-//     let totalAmount = 0;
-//     this.items.forEach((item) => {
-//       item.total = item.price * item.quantity;
-//       totalAmount += item.total;
-//     });
-//     this.totalAmount = totalAmount;
-//   }
-//   next();
-// });
 
 // static method to check if the order is completed
 orderSchema.statics.isOrderCompleted = async function (orderId: string) {
@@ -125,11 +136,5 @@ orderSchema.pre('findOne', function (next) {
   next();
 });
 
-// post save hook to remove sensitive data (for example payment details)
-
-// orderSchema.post('save', function (doc, next) {
-//   doc.paymentStatus = '';
-//   doc.paymentMethod = '';
-// });
 // model
 export const Order = model<TOrder>('Order', orderSchema);

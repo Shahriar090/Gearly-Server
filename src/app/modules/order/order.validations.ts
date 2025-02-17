@@ -26,6 +26,8 @@ const addressSchema = z.object({
   city: z.string().min(1, 'City Is Required'),
   postalCode: z.string().min(1, 'Postal Code Is Required'),
   country: z.string().min(1, 'Country Is Required'),
+  contactNo: z.string().min(1, 'Contact No Is Required'),
+  email: z.string().min(1, 'Email Is Required'),
 });
 
 // create order validation schema

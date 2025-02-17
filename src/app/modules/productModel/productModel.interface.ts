@@ -23,6 +23,7 @@ export type TProductModel = {
   price: number;
   discount?: number;
   discountPrice?: number;
+  saved: number;
   specifications: TSpecifications;
   tags?: string[];
   availabilityStatus: TAvailabilityStatus;
