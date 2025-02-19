@@ -24,6 +24,7 @@ export interface IUser {
   address: string;
   email: string;
   password: string;
+  passwordChangedAt?: Date;
   profileImage: string;
   role: TUserRole;
   status: TUserStatus;

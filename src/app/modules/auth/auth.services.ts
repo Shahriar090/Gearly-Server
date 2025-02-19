@@ -6,6 +6,7 @@ import { TLoginUser } from './auth.interface';
 import { generateJwtToken, verifyJwtToken } from './auth.utils';
 import httpStatus from 'http-status';
 import { sendEmail } from '../../utils/sendEmail';
+import bcrypt from 'bcrypt';
 
 const loginUser = async (payload: TLoginUser) => {
   // check if the user is exists or not
@@ -179,8 +180,81 @@ const forgetPassword = async (email: string) => {
   return resetPasswordLink;
 };
 
+// reset password
+const resetPassword = async (
+  token: string,
+  payload: {
+    email: string;
+    newPassword: string;
+  },
+) => {
+  const decoded = verifyJwtToken(
+    token,
+    config.access_token_secret as string,
+  ) as JwtPayload;
+
+  if (!decoded || !decoded.email || !decoded.exp) {
+    throw new AppError(
+      httpStatus.UNAUTHORIZED,
+      'Invalid Or Expired Token',
+      'Unauthorized',
+    );
+  }
+
+  // check if the token has expired
+  if (Date.now() >= decoded.exp * 1000) {
+    throw new AppError(
+      httpStatus.UNAUTHORIZED,
+      'Token Has Expired',
+      'Unauthorized',
+    );
+  }
+
+  const user = await User.isUserExists(payload.email);
+
+  if (!user) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'No User Found With This Email',
+      'UserNotFound',
+    );
+  }
+
+  // Check if the user is deleted or blocked
+  if (user.isDeleted) {
+    throw new AppError(httpStatus.NOT_FOUND, 'This User Has Been Deleted', '');
+  }
+  if (user.status === 'Blocked') {
+    throw new AppError(httpStatus.FORBIDDEN, 'This User Is Blocked!', '');
+  }
+
+  // ensure token email matches the user email
+  if (payload.email !== decoded.email) {
+    throw new AppError(
+      httpStatus.UNAUTHORIZED,
+      'You Are Not Authorized',
+      'Unauthorized',
+    );
+  }
+
+  // hash the new password
+  const newHashedPassword = await bcrypt.hash(
+    payload.newPassword,
+    Number(config.bcrypt_salt_round),
+  );
+
+  // update user password
+  await User.findOneAndUpdate(
+    { email: decoded.email, role: decoded.role },
+    {
+      $set: { password: newHashedPassword, passwordChangedAt: Date.now() },
+    },
+  );
+};
+
 export const authServices = {
   loginUser,
   refreshToken,
   forgetPassword,
+  resetPassword,
 };

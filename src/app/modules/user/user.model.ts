@@ -60,6 +60,9 @@ const userSchema = new Schema<IUser, UserModel>(
       required: true,
       select: false,
     },
+    passwordChangedAt: {
+      type: Date,
+    },
     profileImage: {
       type: String,
     },
