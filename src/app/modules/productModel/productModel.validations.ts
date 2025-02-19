@@ -16,28 +16,33 @@ import { AVAILABILITY_STATUS } from './productModel.constants';
 // });
 
 // create specifications validation schema
-const createSpecificationsValidationSchema = z.object({
-  colors: z.array(z.string()).nonempty(),
-  storage: z.string().nonempty(),
-  display: z.string().nonempty(),
-  camera: z.string().nonempty(),
-  battery: z.string().nonempty(),
-  weight: z.number(),
-  warranty: z.string().optional(),
-  dimensions: z.string().nonempty(),
-});
+// const createSpecificationsValidationSchema = z.object({
+//   colors: z.array(z.string()).nonempty(),
+//   storage: z.string().nonempty(),
+//   display: z.string().nonempty(),
+//   camera: z.string().nonempty(),
+//   battery: z.string().nonempty(),
+//   weight: z.number(),
+//   warranty: z.string().optional(),
+//   dimensions: z.string().nonempty(),
+// });
+
+// dynamic specifications validation schema : Experimental
+const dynamicSpecificationsValidationSchema = z.record(
+  z.union([z.string(), z.number(), z.boolean(), z.array(z.string())]),
+);
 
 // update specifications validations schema
-const updateSpecificationsValidationSchema = z.object({
-  colors: z.array(z.string()).nonempty().optional(),
-  storage: z.string().nonempty().optional(),
-  display: z.string().nonempty().optional(),
-  camera: z.string().nonempty().optional(),
-  battery: z.string().nonempty().optional(),
-  weight: z.number().optional(),
-  warranty: z.string().optional().optional(),
-  dimensions: z.string().nonempty().optional(),
-});
+// const updateSpecificationsValidationSchema = z.object({
+//   colors: z.array(z.string()).nonempty().optional(),
+//   storage: z.string().nonempty().optional(),
+//   display: z.string().nonempty().optional(),
+//   camera: z.string().nonempty().optional(),
+//   battery: z.string().nonempty().optional(),
+//   weight: z.number().optional(),
+//   warranty: z.string().optional().optional(),
+//   dimensions: z.string().nonempty().optional(),
+// });
 
 // create product validation schema
 const createProductValidationSchema = z.object({
@@ -57,7 +62,7 @@ const createProductValidationSchema = z.object({
         })
         .optional(),
       discountPrice: z.number().optional(),
-      specifications: createSpecificationsValidationSchema,
+      specifications: dynamicSpecificationsValidationSchema,
       tags: z.array(z.string()).default([]),
       availabilityStatus: z.enum(
         Object.values(AVAILABILITY_STATUS) as [string, ...string[]],
@@ -104,7 +109,7 @@ const updateProductValidationSchema = z.object({
         })
         .optional(),
       discountPrice: z.number().optional(),
-      specifications: updateSpecificationsValidationSchema.optional(),
+      specifications: dynamicSpecificationsValidationSchema.optional(),
       tags: z.array(z.string()).default([]).optional(),
       availabilityStatus: z
         .enum(Object.values(AVAILABILITY_STATUS) as [string, ...string[]])

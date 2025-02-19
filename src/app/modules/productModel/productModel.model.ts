@@ -1,19 +1,26 @@
 import { model, Schema } from 'mongoose';
-import { TProductModel, TSpecifications } from './productModel.interface';
+import { TProductModel } from './productModel.interface';
 import slugify from 'slugify';
 import { AVAILABILITY_STATUS } from './productModel.constants';
 
-// specifications schema
-const specificationsSchema = new Schema<TSpecifications>({
-  colors: { type: [String], required: true },
-  storage: { type: String, required: true },
-  display: { type: String, required: true },
-  camera: { type: String, required: true },
-  battery: { type: String, required: true },
-  weight: { type: Number, required: true },
-  warranty: { type: String },
-  dimensions: { type: String, required: true },
-});
+// specifications schema => Previous
+// const specificationsSchema = new Schema<
+//   Record<string, string | string[] | boolean | number>
+// >({
+//   colors: { type: [String], required: true },
+//   storage: { type: String, required: true },
+//   display: { type: String, required: true },
+//   camera: { type: String, required: true },
+//   battery: { type: String, required: true },
+//   weight: { type: Number, required: true },
+//   warranty: { type: String },
+//   dimensions: { type: String, required: true },
+// });
+
+// Dynamic specifications schema : Experimental
+const specificationsSchema = new Schema<
+  Record<string, string | string[] | number | boolean>
+>({}, { _id: false });
 
 const productSchema = new Schema<TProductModel>(
   {
@@ -25,7 +32,7 @@ const productSchema = new Schema<TProductModel>(
     discount: { type: Number },
     discountPrice: { type: Number },
     saved: { type: Number },
-    specifications: { type: specificationsSchema, required: true },
+    specifications: { type: specificationsSchema, required: false },
     tags: { type: [String], default: [] },
     availabilityStatus: {
       type: String,
@@ -48,7 +55,8 @@ productSchema.pre('save', function (next) {
   if (this.isModified('price') || this.isModified('discount')) {
     if (this.discount && this.discount > 0 && this.discount <= 100) {
       this.discountPrice = this.price - (this.price * this.discount) / 100;
-      this.saved = this.price - this.discountPrice;
+      this.discountPrice = Math.round(this.discountPrice);
+      this.saved = Math.round(this.price - this.discountPrice);
     } else {
       this.discountPrice = this.price;
       this.saved = 0;

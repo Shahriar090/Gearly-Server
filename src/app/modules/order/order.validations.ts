@@ -6,19 +6,23 @@ import {
 } from './order.constants';
 
 const createItemValidationSchema = z.object({
-  product: z.string(),
+  product: z
+    .string()
+    .min(1, 'You Have To Add At Least One Product To Place An Order'),
   quantity: z.number().min(1, 'Quantity Must Be At Least 1'),
-  price: z.number().min(0.0, 'Price Must Be A Positive Number').optional(),
-  tax: z.number().optional(),
-  shippingPrice: z.number().optional(),
+  // price: z.number().min(0.0, 'Price Must Be A Positive Number').optional(),
+  // discount: z.number().optional(),
+  // saved: z.number().optional(),
+  // totalPrice: z.number().optional(),
 });
 
 const updateItemValidationSchema = z.object({
   product: z.string().optional(),
   quantity: z.number().min(1, 'Quantity Must Be At Least 1').optional(),
-  price: z.number().min(0.0, 'Price Must Be A Positive Number').optional(),
-  tax: z.number().optional(),
-  shippingPrice: z.number().optional(),
+  // price: z.number().min(0.0, 'Price Must Be A Positive Number').optional(),
+  // discount: z.number().optional(),
+  // saved: z.number().optional(),
+  // totalPrice: z.number().optional(),
 });
 
 const addressSchema = z.object({
@@ -35,23 +39,20 @@ const createOrderValidationSchema = z.object({
   body: z.object({
     order: z.object({
       user: z.string().optional(),
-      trackingId: z.string().optional(),
+      // trackingId: z.string().optional(),
       items: z
         .array(createItemValidationSchema)
         .nonempty('Order Must Have At Least One Item'),
-      totalAmount: z
-        .number()
-        .min(0.0, 'Total Amount Must Be A Positive Number')
-        .optional(),
-      orderStatus: z
-        .enum(Object.values(ORDER_STATUS) as [string, ...string[]])
-        .optional(),
-      paymentStatus: z
-        .enum(Object.values(PAYMENT_STATUS) as [string, ...string[]])
-        .optional(),
-      paymentMethod: z
-        .enum(Object.values(PAYMENT_METHODS) as [string, ...string[]])
-        .optional(),
+      // discount: z.number().optional(),
+      // orderStatus: z
+      //   .enum(Object.values(ORDER_STATUS) as [string, ...string[]])
+      //   .optional(),
+      // paymentStatus: z
+      //   .enum(Object.values(PAYMENT_STATUS) as [string, ...string[]])
+      //   .optional(),
+      // paymentMethod: z
+      //   .enum(Object.values(PAYMENT_METHODS) as [string, ...string[]])
+      //   .optional(),
       address: addressSchema,
       isDeleted: z.boolean().optional(),
     }),
@@ -63,7 +64,7 @@ const updateOrderValidationSchema = z.object({
   body: z.object({
     order: z.object({
       user: z.string().optional(),
-      trackingId: z.string().optional(),
+      // trackingId: z.string().optional(),
       item: z
         .array(updateItemValidationSchema)
         .nonempty('Order Must Have At Least One Item')
