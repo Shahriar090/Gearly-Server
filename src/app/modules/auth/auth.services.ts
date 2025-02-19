@@ -5,6 +5,7 @@ import { User } from '../user/user.model';
 import { TLoginUser } from './auth.interface';
 import { generateJwtToken, verifyJwtToken } from './auth.utils';
 import httpStatus from 'http-status';
+import { sendEmail } from '../../utils/sendEmail';
 
 const loginUser = async (payload: TLoginUser) => {
   // check if the user is exists or not
@@ -158,8 +159,23 @@ const forgetPassword = async (email: string) => {
     config.access_token_secret as string,
     '10m',
   );
-  const resetPasswordLink = `${config.front_end_url}?email=${user?.email}&token=reset-password?token=${resetToken}`;
+  const resetPasswordLink = `${config.front_end_url}/reset-password?token=${resetToken}`;
 
+  const emailInfo = {
+    to: user.email,
+    subject: 'Your Reset Password Link.',
+    text: 'Please reset your password within 10 minutes.!',
+    html: `<p>Click the link below to reset your password:</p>
+    <a href="${resetPasswordLink}">${resetPasswordLink}</a>
+    `,
+  };
+
+  await sendEmail(
+    emailInfo.to,
+    emailInfo.subject,
+    emailInfo.text,
+    emailInfo.html,
+  );
   return resetPasswordLink;
 };
 

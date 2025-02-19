@@ -16,4 +16,6 @@ export default {
   cloudinary_api_key: process.env.CLOUDINARY_API_KEY,
   cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET,
   front_end_url: process.env.FRONT_END_URL,
+  node_mailer_sender_email: process.env.NODE_MAILER_SENDER_EMAIL,
+  node_mailer_app_password: process.env.NODE_MAILER_APP_PASSWORD,
 };
