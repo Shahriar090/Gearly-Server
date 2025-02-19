@@ -37,7 +37,21 @@ const refreshToken = asyncHandler(async (req, res) => {
     data: result,
   });
 });
+
+// forget password
+const forgetPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  const result = await authServices.forgetPassword(email);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Click The Link To Reset Your Password',
+    data: result,
+  });
+});
 export const authControllers = {
   loginUser,
   refreshToken,
+  forgetPassword,
 };

@@ -72,7 +72,6 @@ const refreshToken = async (token: string) => {
     config.refresh_token_secret as string,
   ) as JwtPayload;
   const { email } = decoded;
-
   // check if the user is exist or not
   const user = await User.isUserExists(email);
 
@@ -120,7 +119,52 @@ const refreshToken = async (token: string) => {
     accessToken,
   };
 };
+
+// forget password
+const forgetPassword = async (email: string) => {
+  const user = await User.isUserExists(email);
+
+  if (!user) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'No User Found With This Email.!',
+      '',
+    );
+  }
+
+  // check if the user is deleted or blocked
+  const isDeleted = user?.isDeleted;
+  if (isDeleted) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'This User Is Already Deleted',
+      '',
+    );
+  }
+
+  const userStatus = user.status;
+  if (userStatus === 'Blocked') {
+    throw new AppError(httpStatus.FORBIDDEN, 'This User Is Blocked!', '');
+  }
+
+  const jwtPayload = {
+    id: user?._id,
+    email: user?.email,
+    role: user?.role,
+  };
+
+  const resetToken = generateJwtToken(
+    jwtPayload,
+    config.access_token_secret as string,
+    '10m',
+  );
+  const resetPasswordLink = `${config.front_end_url}?email=${user?.email}&token=reset-password?token=${resetToken}`;
+
+  return resetPasswordLink;
+};
+
 export const authServices = {
   loginUser,
   refreshToken,
+  forgetPassword,
 };

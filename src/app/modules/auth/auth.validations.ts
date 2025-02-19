@@ -17,7 +17,19 @@ const refreshTokenValidationSchema = z.object({
   }),
 });
 
+// forget password validation schema
+
+const forgetPasswordValidationSchema = z.object({
+  body: z.object({
+    email: z
+      .string({ required_error: 'Email Is Required' })
+      .email('Invalid Email Format')
+      .trim(),
+  }),
+});
+
 export const authValidations = {
   loginUserValidationSchema,
   refreshTokenValidationSchema,
+  forgetPasswordValidationSchema,
 };

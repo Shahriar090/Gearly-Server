@@ -2,12 +2,15 @@ import express from 'express';
 import { productControllers } from './productModel.controllers';
 import validateRequest from '../../middlewares/validateRequest';
 import { productValidations } from './productModel.validations';
+import auth from '../../middlewares/auth';
+import { USER_ROLES } from '../user/user.constant';
 const router = express.Router();
 
 // create a product
 router
   .route('/create-product')
   .post(
+    auth(USER_ROLES.Admin),
     validateRequest(productValidations.createProductValidationSchema),
     productControllers.createProduct,
   );
