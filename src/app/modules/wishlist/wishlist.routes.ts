@@ -14,5 +14,10 @@ router
     validateRequest(wishlistValidations.createWishListValidationSchema),
     wishListControllers.addToWishList,
   );
+
+// get wish list
+router
+  .route('/get-wish-list')
+  .get(auth(USER_ROLES.Customer), wishListControllers.getWishList);
 // -------------
 export const wishListRoutes = router;

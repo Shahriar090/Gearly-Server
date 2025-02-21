@@ -40,7 +40,25 @@ const addToWishList = async (userId: string, payload: TWishList) => {
   return await wishList.save();
 };
 
+// get wish list
+const getWishList = async (userId: string) => {
+  const wishList = await WishList.findOne({ user: userId }).populate(
+    'products',
+  );
+
+  if (!wishList) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Wish List Not Found',
+      'WishListNotFound',
+    );
+  }
+
+  return wishList;
+};
+
 // -----------------------
 export const wishListServices = {
   addToWishList,
+  getWishList,
 };
