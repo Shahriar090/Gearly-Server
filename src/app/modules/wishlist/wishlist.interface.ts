@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 
 export type TWishList = {
-  userId: Types.ObjectId;
-  productId: Types.ObjectId[];
+  user: Types.ObjectId;
+  products: Types.ObjectId[];
 };
