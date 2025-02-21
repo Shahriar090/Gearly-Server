@@ -57,8 +57,41 @@ const getWishList = async (userId: string) => {
   return wishList;
 };
 
+// delete product from wish list
+const deleteProductFromWishList = async (userId: string, productId: string) => {
+  const productObjId = new mongoose.Types.ObjectId(productId);
+
+  let wishList = await WishList.findOne({ user: userId });
+
+  if (!wishList) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Wish List Not Found',
+      'WishListNotFound',
+    );
+  }
+
+  if (!wishList.products.includes(productObjId)) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Product not found in wishlist',
+      'ProductNotInWishlist',
+    );
+  }
+
+  // remove the product from the wish list
+  wishList = await WishList.findOneAndUpdate(
+    { user: userId },
+    { $pull: { products: productObjId } },
+    { new: true },
+  );
+
+  return wishList;
+};
+
 // -----------------------
 export const wishListServices = {
   addToWishList,
   getWishList,
+  deleteProductFromWishList,
 };

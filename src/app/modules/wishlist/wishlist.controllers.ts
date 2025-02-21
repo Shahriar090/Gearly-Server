@@ -30,7 +30,25 @@ const getWishList = asyncHandler(async (req, res) => {
   });
 });
 
+// remove item from wish list
+const removeItemFromWishList = asyncHandler(async (req, res) => {
+  const { id } = req.user;
+  const { productId } = req.params;
+  const result = await wishListServices.deleteProductFromWishList(
+    id,
+    productId,
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Item Successfully Removed From The Wish List',
+    data: result,
+  });
+});
+
 export const wishListControllers = {
   addToWishList,
   getWishList,
+  removeItemFromWishList,
 };

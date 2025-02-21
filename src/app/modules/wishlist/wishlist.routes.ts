@@ -19,5 +19,13 @@ router
 router
   .route('/get-wish-list')
   .get(auth(USER_ROLES.Customer), wishListControllers.getWishList);
+
+// remove item
+router
+  .route('/remove-item/:productId')
+  .delete(
+    auth(USER_ROLES.Customer),
+    wishListControllers.removeItemFromWishList,
+  );
 // -------------
 export const wishListRoutes = router;
