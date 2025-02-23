@@ -23,9 +23,9 @@ export type TAvailabilityStatus =
   (typeof AVAILABILITY_STATUS)[keyof typeof AVAILABILITY_STATUS];
 
 export type TProductModel = {
-  name: string;
+  modelName: string;
   slug: string;
-  subCategoryName: string;
+  brandName: string;
   description: string;
   price: number;
   discount?: number;
@@ -35,7 +35,7 @@ export type TProductModel = {
   tags?: string[];
   availabilityStatus: TAvailabilityStatus;
   stock: number;
-  category: Types.ObjectId;
+  category?: Types.ObjectId;
   subCategory?: Types.ObjectId;
   brand: string;
   images: string[];

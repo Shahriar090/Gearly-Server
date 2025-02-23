@@ -48,9 +48,9 @@ const dynamicSpecificationsValidationSchema = z.record(
 const createProductValidationSchema = z.object({
   body: z.object({
     product: z.object({
-      name: z.string().min(1, 'Product Name Is Required').trim(),
+      modelName: z.string().min(1, 'Product Name Is Required').trim(),
       slug: z.string().trim().min(1, 'Slug Is Required').optional(),
-      subCategoryName: z.string().min(1, 'Category Name Is Required').trim(),
+      brandName: z.string().min(1, 'Brand Name Is Required').trim(),
       description: z.string().min(1, 'Description Is Required').trim(),
       price: z
         .number()
@@ -86,13 +86,13 @@ const createProductValidationSchema = z.object({
 const updateProductValidationSchema = z.object({
   body: z.object({
     product: z.object({
-      name: z.string().min(1, 'Product Name Is Required').trim().optional(),
-      slug: z.string().trim().min(1, 'Slug Is Required').optional(),
-      subCategoryName: z
+      modelName: z
         .string()
-        .min(1, 'Category Name Is Required')
+        .min(1, 'Product Name Is Required')
         .trim()
         .optional(),
+      slug: z.string().trim().min(1, 'Slug Is Required').optional(),
+      brandName: z.string().min(1, 'Brand Name Is Required').trim().optional(),
       description: z
         .string()
         .min(1, 'Description Is Required')

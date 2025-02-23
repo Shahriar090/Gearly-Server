@@ -24,9 +24,9 @@ const specificationsSchema = new Schema<
 
 const productSchema = new Schema<TProductModel>(
   {
-    name: { type: String, required: true },
+    modelName: { type: String, required: true },
     slug: { type: String, unique: true },
-    subCategoryName: { type: String, required: true },
+    brandName: { type: String, required: true },
     description: { type: String, required: true },
     price: { type: Number, required: true },
     discount: { type: Number },
@@ -40,7 +40,7 @@ const productSchema = new Schema<TProductModel>(
       required: true,
     },
     stock: { type: Number, required: true },
-    category: { type: Schema.Types.ObjectId, ref: 'Category', required: true }, // Assuming you have a Category model
+    category: { type: Schema.Types.ObjectId, ref: 'Category' },
     subCategory: { type: Schema.Types.ObjectId, ref: 'SubCategory' },
     brand: { type: String, required: true },
     images: { type: [String], required: true },
@@ -76,7 +76,7 @@ productSchema.pre('save', function (next) {
 // adding slug
 productSchema.pre('save', function (next) {
   if (!this.slug || this.isModified('name')) {
-    this.slug = slugify(this.name, { lower: true, strict: true });
+    this.slug = slugify(this.modelName, { lower: true, strict: true });
   }
   next();
 });

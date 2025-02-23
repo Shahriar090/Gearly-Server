@@ -12,12 +12,12 @@ import { PRODUCT_SEARCHABLE_FIELDS } from './productModel.constants';
 // create a product
 const createProductIntoDb = async (payload: TProductModel) => {
   // generating slug from sub category name to find the sub category using its slug
-  const subCategorySlug = slugify(payload.subCategoryName, {
+  const subCategorySlug = slugify(payload.brandName, {
     lower: true,
     strict: true,
   });
 
-  // find the sub category using the generated slug
+  // find the sub category (brand: like Apple, Samsung) using the generated slug
   const subCategory = await SubCategory.findOne({
     slug: subCategorySlug,
   });
@@ -41,7 +41,7 @@ const createProductIntoDb = async (payload: TProductModel) => {
   }
 
   // check if the product is already exists or not
-  const isExists = await Product.findOne({ name: payload.name });
+  const isExists = await Product.findOne({ name: payload.modelName });
 
   if (isExists) {
     throw new AppError(
@@ -64,10 +64,7 @@ const createProductIntoDb = async (payload: TProductModel) => {
 
 // get all products
 const getAllProductsFromDb = async (query: Record<string, unknown>) => {
-  const productQuery = new QueryBuilder(
-    Product.find().populate('category', 'name').populate('subCategory'),
-    query,
-  )
+  const productQuery = new QueryBuilder(Product.find(), query)
     .search(PRODUCT_SEARCHABLE_FIELDS)
     .filter()
     .sort()
@@ -80,42 +77,73 @@ const getAllProductsFromDb = async (query: Record<string, unknown>) => {
   if (!products.length) {
     throw new AppError(
       httpStatus.NOT_FOUND,
-      'No Products Found.!',
+      'No Products Found',
       'ProductsNotFound',
     );
   }
 
-  // fetch reviews for all products
-  const productIds = products.map((product) => product._id);
+  // using aggregation to populate category, subCategory (each brand) and fetch reviews.
 
-  const reviews = await Review.find({ product: { $in: productIds } }).populate(
-    'user',
-    'name email profileImage',
-  );
-  // attach reviews and calculate average ratings for each product
+  const productsWithDetails = await Product.aggregate([
+    {
+      $match: { _id: { $in: products.map((product) => product._id) } },
+    },
 
-  const productsWithReviews = products.map((product) => {
-    const productReviews = reviews.filter((review) =>
-      review.product.equals(product._id),
-    );
+    // populating category
+    {
+      $lookup: {
+        from: 'categories',
+        localField: 'category',
+        foreignField: '_id',
+        as: 'category',
+      },
+    },
+    { $unwind: { path: '$category', preserveNullAndEmptyArrays: true } },
 
-    const totalRatings = productReviews.reduce(
-      (sum, review) => sum + review.rating,
-      0,
-    );
+    // populating sub category (each brand)
 
-    const averageRating = productReviews.length
-      ? totalRatings / productReviews.length
-      : 0;
+    {
+      $lookup: {
+        from: 'subcategories',
+        localField: 'subCategory',
+        foreignField: '_id',
+        as: 'subCategory',
+      },
+    },
+    { $unwind: { path: '$subCategory', preserveNullAndEmptyArrays: true } },
 
-    return {
-      ...product.toObject(),
-      reviews: productReviews,
-      averageRating,
-    };
-  });
+    // populating reviews
+    {
+      $lookup: {
+        from: 'reviews',
+        localField: '_id',
+        foreignField: 'product',
+        as: 'reviews',
+      },
+    },
 
-  return { meta, products: productsWithReviews };
+    // calculating average rating
+    {
+      $addFields: {
+        averageRating: {
+          $cond: {
+            if: { $gt: [{ $size: '$reviews' }, 0] },
+            then: { $avg: '$reviews.rating' },
+            else: 0,
+          },
+        },
+      },
+    },
+
+    // hide password in reviews
+    {
+      $project: {
+        'reviews.user.password': 0,
+      },
+    },
+  ]);
+
+  return { meta, products: productsWithDetails };
 };
 
 // get a single product
