@@ -5,7 +5,7 @@ import slugify from 'slugify';
 // sub category schema --------------------------------------------------------
 const subCategorySchema = new Schema<TSubCategory>(
   {
-    name: {
+    brandName: {
       type: String,
       required: true,
       trim: true,
@@ -50,7 +50,7 @@ subCategorySchema.pre('save', function (next) {
 
   if (!this.slug) {
     // Generate slug from name if not present
-    this.slug = slugify(this.name, { lower: true, strict: true });
+    this.slug = slugify(this.brandName, { lower: true, strict: true });
   }
 
   next();

@@ -4,7 +4,7 @@ import { z } from 'zod';
 const createSubCategoryValidationSchema = z.object({
   body: z.object({
     subCategory: z.object({
-      name: z.string().trim().min(1, 'Sub Category Name Is Required'),
+      brandName: z.string().trim().min(1, 'Sub Category Name Is Required'),
       categoryName: z.string().trim().min(1, 'Category Is Required'),
       slug: z.string().trim().optional(),
       description: z.string().trim().min(1, 'Description Is Required'),
@@ -23,7 +23,7 @@ const createSubCategoryValidationSchema = z.object({
 const updateSubCategoryValidationSchema = z.object({
   body: z.object({
     subCategory: z.object({
-      name: z
+      brandName: z
         .string()
         .trim()
         .min(1, 'Sub Category Name Is Required')

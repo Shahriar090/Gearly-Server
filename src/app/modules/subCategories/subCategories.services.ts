@@ -6,7 +6,7 @@ import { TSubCategory } from './subCategories.interface';
 import { SubCategory } from './subCategories.model';
 import httpStatus from 'http-status';
 
-// create a sub category
+// create a sub category (brand) into the db
 const createSubCategoryIntoDb = async (payload: TSubCategory) => {
   const categoryNameSlug = payload.categoryName
     .toLowerCase()
@@ -26,7 +26,7 @@ const createSubCategoryIntoDb = async (payload: TSubCategory) => {
   // ensuring sub category is unique per category, not globally
 
   const isExists = await SubCategory.findOne({
-    name: payload.name,
+    name: payload.brandName,
     category: category._id,
   });
 
@@ -112,7 +112,7 @@ const updateSubCategory = async (
 
   // update operation will be allowed only limited fields
   const allowedFieldsToUpdate: Array<keyof TSubCategory> = [
-    'name',
+    'brandName',
     'description',
     'imageUrl',
   ];

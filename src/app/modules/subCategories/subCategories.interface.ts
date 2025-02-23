@@ -1,7 +1,8 @@
 import { Types } from 'mongoose';
 
+// sub category is referring to the brands
 export type TSubCategory = {
-  name: string;
+  brandName: string;
   categoryName: string;
   slug: string;
   description: string;
