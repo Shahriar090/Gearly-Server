@@ -44,6 +44,12 @@ const productSchema = new Schema<TProductModel>(
     subCategory: { type: Schema.Types.ObjectId, ref: 'SubCategory' },
     brand: { type: String, required: true },
     images: { type: [String], required: true },
+    reviews: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Review',
+      },
+    ],
     isFeatured: { type: Boolean, required: true },
     isDeleted: { type: Boolean, default: false },
   },

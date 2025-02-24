@@ -39,6 +39,7 @@ export type TProductModel = {
   subCategory?: Types.ObjectId;
   brand: string;
   images: string[];
+  reviews?: Types.ObjectId[];
   ratings?: number;
   isFeatured: boolean;
   isDeleted: boolean;

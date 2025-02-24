@@ -115,9 +115,9 @@ const getAllProductsFromDb = async (query: Record<string, unknown>) => {
     // populating reviews
     {
       $lookup: {
-        from: 'reviews',
-        localField: '_id',
-        foreignField: 'product',
+        from: 'productreviews',
+        localField: 'reviews',
+        foreignField: '_id',
         as: 'reviews',
       },
     },

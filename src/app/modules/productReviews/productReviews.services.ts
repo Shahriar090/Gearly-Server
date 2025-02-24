@@ -43,6 +43,13 @@ const createReview = async (
 
   //   update the product's average rating
   await updateProductRatings(productId);
+  await Product.findByIdAndUpdate(
+    productId,
+    {
+      $push: { reviews: newReview._id },
+    },
+    { new: true, useFindAndModify: false },
+  );
   return newReview;
 };
 
