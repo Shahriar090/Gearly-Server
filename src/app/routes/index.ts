@@ -8,6 +8,7 @@ import { reviewRoutes } from '../modules/productReviews/productReviews.routes';
 import { orderRoutes } from '../modules/order/order.routes';
 import { cartRoutes } from '../modules/cart/cart.routes';
 import { wishListRoutes } from '../modules/wishlist/wishlist.routes';
+import { adminDashboardRoutes } from '../modules/adminDashboard/adminDashboard.routes';
 const router = express.Router();
 
 const moduleRoutes = [
@@ -46,6 +47,10 @@ const moduleRoutes = [
   {
     path: '/wish-list',
     route: wishListRoutes,
+  },
+  {
+    path: '/admin-dashboard',
+    route: adminDashboardRoutes,
   },
 ];
 
