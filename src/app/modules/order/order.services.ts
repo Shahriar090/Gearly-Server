@@ -52,7 +52,7 @@ const createOrderIntoDb = async (payload: TOrder, userId: string) => {
       if (product.stock < item.quantity) {
         throw new AppError(
           httpStatus.BAD_REQUEST,
-          `Insufficient Stock For Product ${product.name}. Available: ${product.stock}, Ordered:${item.quantity}`,
+          `Insufficient Stock For Product ${product.modelName}. Available: ${product.stock}, Ordered:${item.quantity}`,
           'InsufficientStock',
         );
       }

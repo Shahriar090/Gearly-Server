@@ -52,7 +52,7 @@ const addToCart = async (userId: string, payload: TCart) => {
     if (newItem.quantity > product.stock) {
       throw new AppError(
         httpStatus.BAD_REQUEST,
-        `Only ${product.stock} units available for ${product.name}`,
+        `Only ${product.stock} units available for ${product.modelName}`,
         'OutOfStock',
       );
     }
