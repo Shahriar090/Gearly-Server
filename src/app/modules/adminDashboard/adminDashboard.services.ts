@@ -21,4 +21,20 @@ const getTotalSalesAndRevenue = async () => {
   return totalSales;
 };
 
-export const adminDashboardServices = { getTotalSalesAndRevenue };
+// get total orders grouped by order status
+const getTotalOrders = async () => {
+  const orderStats = await Order.aggregate([
+    {
+      $group: {
+        _id: '$orderStatus',
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+  return orderStats;
+};
+
+export const adminDashboardServices = {
+  getTotalSalesAndRevenue,
+  getTotalOrders,
+};
