@@ -42,5 +42,13 @@ router
 router
   .route('/lowest-stock-products')
   .get(auth(USER_ROLES.Admin), adminDashboardControllers.getLowStockProducts);
+
+// get best selling products
+router
+  .route('/best-selling-products')
+  .get(
+    auth(USER_ROLES.Admin),
+    adminDashboardControllers.getBestSellingProducts,
+  );
 // ------------------------------------
 export const adminDashboardRoutes = router;

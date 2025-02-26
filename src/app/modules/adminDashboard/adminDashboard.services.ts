@@ -91,6 +91,50 @@ const getLowStockProducts = async () => {
   return lowStockProducts;
 };
 
+// track best selling products
+const getBestSellingProducts = async () => {
+  const bestSellingProducts = await Order.aggregate([
+    {
+      $unwind: '$items',
+    },
+    {
+      $group: {
+        _id: '$items.product',
+        totalSold: { $sum: '$items.quantity' },
+      },
+    },
+    {
+      $sort: { totalSold: -1 },
+    },
+    {
+      $limit: 10,
+    },
+    {
+      $lookup: {
+        from: 'products',
+        localField: '_id',
+        foreignField: '_id',
+        as: 'productInfo',
+      },
+    },
+    {
+      $unwind: '$productInfo',
+    },
+    {
+      $project: {
+        _id: 0,
+        name: '$productInfo.modelName',
+        image: '$productInfo.images',
+        totalSold: 1,
+        category: '$productInfo.category',
+        brand: '$productInfo.brand',
+      },
+    },
+  ]);
+
+  return bestSellingProducts;
+};
+
 export const adminDashboardServices = {
   getTotalSalesAndRevenue,
   getTotalOrders,
@@ -98,4 +142,5 @@ export const adminDashboardServices = {
   getProductsWithStatus,
   getTotalCategoriesAndBrands,
   getLowStockProducts,
+  getBestSellingProducts,
 };

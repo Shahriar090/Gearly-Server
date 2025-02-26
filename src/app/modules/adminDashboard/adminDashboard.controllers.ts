@@ -74,6 +74,18 @@ const getLowStockProducts = asyncHandler(async (req, res) => {
   });
 });
 
+// get best selling products
+const getBestSellingProducts = asyncHandler(async (req, res) => {
+  const result = await adminDashboardServices.getBestSellingProducts();
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'All Time Best Selling Products',
+    data: result,
+  });
+});
+
 // -----------------------------------------
 export const adminDashboardControllers = {
   getTotalSalesAndRevenue,
@@ -82,4 +94,5 @@ export const adminDashboardControllers = {
   getProductsWithStatus,
   getTotalCategoriesAndBrands,
   getLowStockProducts,
+  getBestSellingProducts,
 };
