@@ -80,10 +80,22 @@ const getTotalCategoriesAndBrands = async () => {
   };
 };
 
+// low stock products
+const getLowStockProducts = async () => {
+  const lowStockProducts = await Product.find({ stock: { $lte: 5 } })
+    .sort({ stock: 1 })
+    .select('modelName brandName category subCategory stock')
+    .populate('category', 'name')
+    .populate('subCategory', 'brandName');
+
+  return lowStockProducts;
+};
+
 export const adminDashboardServices = {
   getTotalSalesAndRevenue,
   getTotalOrders,
   getTotalUsersAndNewSignUp,
   getProductsWithStatus,
   getTotalCategoriesAndBrands,
+  getLowStockProducts,
 };

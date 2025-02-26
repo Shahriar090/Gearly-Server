@@ -37,5 +37,10 @@ router
     auth(USER_ROLES.Admin),
     adminDashboardControllers.getTotalCategoriesAndBrands,
   );
+
+// get lowest stock products
+router
+  .route('/lowest-stock-products')
+  .get(auth(USER_ROLES.Admin), adminDashboardControllers.getLowStockProducts);
 // ------------------------------------
 export const adminDashboardRoutes = router;

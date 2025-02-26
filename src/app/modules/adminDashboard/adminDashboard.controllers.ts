@@ -62,6 +62,18 @@ const getTotalCategoriesAndBrands = asyncHandler(async (req, res) => {
   });
 });
 
+// get low stock products
+const getLowStockProducts = asyncHandler(async (req, res) => {
+  const result = await adminDashboardServices.getLowStockProducts();
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'All Products With Lowest Stock Available',
+    data: result,
+  });
+});
+
 // -----------------------------------------
 export const adminDashboardControllers = {
   getTotalSalesAndRevenue,
@@ -69,4 +81,5 @@ export const adminDashboardControllers = {
   getTotalUsersAndNewSignUp,
   getProductsWithStatus,
   getTotalCategoriesAndBrands,
+  getLowStockProducts,
 };
