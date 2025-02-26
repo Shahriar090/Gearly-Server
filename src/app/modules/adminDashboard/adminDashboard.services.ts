@@ -1,7 +1,9 @@
 // aggregation queries for dashboard states
 
+import { Category } from '../category/category.model';
 import { Order } from '../order/order.model';
 import { Product } from '../productModel/productModel.model';
+import { SubCategory } from '../subCategories/subCategories.model';
 import { User } from '../user/user.model';
 
 // get total sales and revenue
@@ -67,9 +69,21 @@ const getProductsWithStatus = async () => {
   };
 };
 
+// get total categories and brands
+const getTotalCategoriesAndBrands = async () => {
+  const totalCategories = await Category.countDocuments();
+  const totalSubCategories = await SubCategory.countDocuments();
+
+  return {
+    totalCategories,
+    totalBrands: totalSubCategories,
+  };
+};
+
 export const adminDashboardServices = {
   getTotalSalesAndRevenue,
   getTotalOrders,
   getTotalUsersAndNewSignUp,
   getProductsWithStatus,
+  getTotalCategoriesAndBrands,
 };

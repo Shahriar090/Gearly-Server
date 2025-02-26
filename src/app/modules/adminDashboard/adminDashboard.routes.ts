@@ -29,4 +29,13 @@ router
 router
   .route('/products-availability-status')
   .get(auth(USER_ROLES.Admin), adminDashboardControllers.getProductsWithStatus);
+
+// get total categories and brands (sub categories)
+router
+  .route('/total-categories-and-brands')
+  .get(
+    auth(USER_ROLES.Admin),
+    adminDashboardControllers.getTotalCategoriesAndBrands,
+  );
+// ------------------------------------
 export const adminDashboardRoutes = router;

@@ -49,9 +49,24 @@ const getProductsWithStatus = asyncHandler(async (req, res) => {
     data: result,
   });
 });
+
+// get total categories and brands
+const getTotalCategoriesAndBrands = asyncHandler(async (req, res) => {
+  const result = await adminDashboardServices.getTotalCategoriesAndBrands();
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'All Available Categories And Sub Categories',
+    data: result,
+  });
+});
+
+// -----------------------------------------
 export const adminDashboardControllers = {
   getTotalSalesAndRevenue,
   getTotalOrders,
   getTotalUsersAndNewSignUp,
   getProductsWithStatus,
+  getTotalCategoriesAndBrands,
 };
