@@ -86,6 +86,18 @@ const getBestSellingProducts = asyncHandler(async (req, res) => {
   });
 });
 
+// get top performing categories
+const getTopPerformingCategories = asyncHandler(async (req, res) => {
+  const result = await adminDashboardServices.getTopPerformingCategories();
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'All Top Performing Categories',
+    data: result,
+  });
+});
+
 // -----------------------------------------
 export const adminDashboardControllers = {
   getTotalSalesAndRevenue,
@@ -95,4 +107,5 @@ export const adminDashboardControllers = {
   getTotalCategoriesAndBrands,
   getLowStockProducts,
   getBestSellingProducts,
+  getTopPerformingCategories,
 };

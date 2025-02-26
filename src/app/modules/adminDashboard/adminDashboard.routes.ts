@@ -50,5 +50,13 @@ router
     auth(USER_ROLES.Admin),
     adminDashboardControllers.getBestSellingProducts,
   );
+
+// top performing categories
+router
+  .route('/top-performing-categories')
+  .get(
+    auth(USER_ROLES.Admin),
+    adminDashboardControllers.getTopPerformingCategories,
+  );
 // ------------------------------------
 export const adminDashboardRoutes = router;

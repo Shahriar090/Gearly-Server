@@ -135,6 +135,62 @@ const getBestSellingProducts = async () => {
   return bestSellingProducts;
 };
 
+// top performing categories
+const getTopPerformingCategories = async () => {
+  const topCategories = await Order.aggregate([
+    {
+      $unwind: '$items',
+    },
+    {
+      $lookup: {
+        from: 'products',
+        localField: 'items.product',
+        foreignField: '_id',
+        as: 'productInfo',
+      },
+    },
+    {
+      $unwind: '$productInfo',
+    },
+    {
+      $group: {
+        _id: '$productInfo.category',
+        totalRevenue: {
+          $sum: { $multiply: ['$items.quantity', '$items.price'] },
+        },
+      },
+    },
+    {
+      $lookup: {
+        from: 'categories',
+        localField: '_id',
+        foreignField: '_id',
+        as: 'categoryInfo',
+      },
+    },
+    {
+      $unwind: '$categoryInfo',
+    },
+    {
+      $project: {
+        _id: 0,
+        categoryName: '$categoryInfo.name',
+        categoryDescription: '$categoryInfo.description',
+        imageUrl: '$categoryInfo.imageUrl',
+        totalRevenue: 1,
+      },
+    },
+    {
+      $sort: { totalRevenue: -1 },
+    },
+    {
+      $limit: 5,
+    },
+  ]);
+
+  return topCategories;
+};
+
 export const adminDashboardServices = {
   getTotalSalesAndRevenue,
   getTotalOrders,
@@ -143,4 +199,5 @@ export const adminDashboardServices = {
   getTotalCategoriesAndBrands,
   getLowStockProducts,
   getBestSellingProducts,
+  getTopPerformingCategories,
 };
