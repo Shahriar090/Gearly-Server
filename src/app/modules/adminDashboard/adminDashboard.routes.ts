@@ -17,4 +17,11 @@ router
   .route('/total-orders')
   .get(auth(USER_ROLES.Admin), adminDashboardControllers.getTotalOrders);
 
+//   total users and new sign up
+router
+  .route('/total-users-and-new-sign-up')
+  .get(
+    auth(USER_ROLES.Admin),
+    adminDashboardControllers.getTotalUsersAndNewSignUp,
+  );
 export const adminDashboardRoutes = router;

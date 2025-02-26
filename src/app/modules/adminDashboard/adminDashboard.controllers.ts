@@ -26,7 +26,19 @@ const getTotalOrders = asyncHandler(async (req, res) => {
   });
 });
 
+// get total users and new sign ups
+const getTotalUsersAndNewSignUp = asyncHandler(async (req, res) => {
+  const result = await adminDashboardServices.getTotalUsersAndNewSignUp();
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Total Users And New Sign Up Data.',
+    data: result,
+  });
+});
 export const adminDashboardControllers = {
   getTotalSalesAndRevenue,
   getTotalOrders,
+  getTotalUsersAndNewSignUp,
 };
