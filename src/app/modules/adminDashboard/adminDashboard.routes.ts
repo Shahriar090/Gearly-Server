@@ -24,4 +24,9 @@ router
     auth(USER_ROLES.Admin),
     adminDashboardControllers.getTotalUsersAndNewSignUp,
   );
+
+// products with their availability status
+router
+  .route('/products-availability-status')
+  .get(auth(USER_ROLES.Admin), adminDashboardControllers.getProductsWithStatus);
 export const adminDashboardRoutes = router;

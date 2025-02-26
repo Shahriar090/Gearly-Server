@@ -37,8 +37,21 @@ const getTotalUsersAndNewSignUp = asyncHandler(async (req, res) => {
     data: result,
   });
 });
+
+// get products with status (available, out of stock)
+const getProductsWithStatus = asyncHandler(async (req, res) => {
+  const result = await adminDashboardServices.getProductsWithStatus();
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'All Products With Their Availability Status',
+    data: result,
+  });
+});
 export const adminDashboardControllers = {
   getTotalSalesAndRevenue,
   getTotalOrders,
   getTotalUsersAndNewSignUp,
+  getProductsWithStatus,
 };
