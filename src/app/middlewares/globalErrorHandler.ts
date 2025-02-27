@@ -8,7 +8,8 @@ import handleDuplicateError from '../errors/handleDuplicateError';
 import AppError from '../errors/appError';
 import config from '../config';
 
-const globalErrorHandler: ErrorRequestHandler = (err, req, res, _next) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   console.log('Global error handler triggered');
   console.error(err.stack);
   let statusCode = err.statusCode || 500;
