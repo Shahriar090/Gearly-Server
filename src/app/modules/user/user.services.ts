@@ -4,9 +4,11 @@ import { User } from './user.model';
 import httpStatus from 'http-status';
 import bcrypt from 'bcrypt';
 import config from '../../config';
+import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary';
 
 // create user
-const createUserIntoDb = async (payload: IUser) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const createUserIntoDb = async (payload: IUser, file: any) => {
   const isUserExist = await User.isUserExists(payload.email);
   if (isUserExist) {
     throw new AppError(
@@ -15,6 +17,17 @@ const createUserIntoDb = async (payload: IUser) => {
       'UserAlreadyExists',
     );
   }
+
+  if (file) {
+    const imageName = `${payload.name}`;
+    const imagePath = file.path;
+
+    // send image to cloudinary
+    const categoryImage = await sendImageToCloudinary(imageName, imagePath);
+    const { secure_url } = categoryImage;
+    payload.profileImage = secure_url as string;
+  }
+
   const result = await User.create(payload);
   return result;
 };

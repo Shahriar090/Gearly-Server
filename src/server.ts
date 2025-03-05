@@ -34,7 +34,8 @@ process.on('unhandledRejection', () => {
 });
 
 // synchronous operation error handling
-process.on('uncaughtException', () => {
+process.on('uncaughtException', (err) => {
   console.log('Uncaught Exception. Shutting Down');
+  console.log(err);
   process.exit(1);
 });

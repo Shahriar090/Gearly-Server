@@ -6,7 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "start:dev": "ts-node-dev --respawn --transpile-only ./src/server.ts",
-    "start:prod": "./dist/server.js",
+    "start:prod": "node ./dist/server.js",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "prettier": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
@@ -55,3 +55,4 @@
     "zod": "^3.24.1"
   }
 }
+
