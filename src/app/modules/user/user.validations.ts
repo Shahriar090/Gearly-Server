@@ -39,17 +39,14 @@ const createUserValidationSchema = z.object({
       role: z
         .enum([USER_ROLES.Admin, USER_ROLES.Customer])
         .optional()
-        .default(USER_ROLES.Customer),
+        .default(USER_ROLES.Customer)
+        .optional(),
       status: z
         .enum([USER_STATUS.Active, USER_STATUS.Blocked])
         .optional()
-        .default(USER_STATUS.Active),
-      isDeleted: z
-        .boolean()
-        .optional()
-        .default(false)
-        .optional()
-        .default(false),
+        .default(USER_STATUS.Active)
+        .optional(),
+      isDeleted: z.boolean().optional().default(false).default(false),
     }),
   }),
 });

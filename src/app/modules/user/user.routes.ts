@@ -14,8 +14,8 @@ router.route('/create-user').post(
     req.body = JSON.parse(req.body.data);
     next();
   },
-  validateRequest(userValidations.createUserValidationSchema),
-  userControllers.createUser,
+  // validateRequest(userValidations.createUserValidationSchema),
+  // userControllers.createUser,
 );
 // get all users
 router.route('/').get(auth(USER_ROLES.Admin), userControllers.getAllUsers);
