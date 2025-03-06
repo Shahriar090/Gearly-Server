@@ -1,57 +1,88 @@
 import config from '../config';
+import AppError from '../errors/appError';
 import { verifyJwtToken } from '../modules/auth/auth.utils';
 import { TUserRole } from '../modules/user/user.interface';
 import { User } from '../modules/user/user.model';
 import asyncHandler from '../utils/asyncHandler';
-import { JwtPayload } from 'jsonwebtoken';
+import { JwtPayload, TokenExpiredError } from 'jsonwebtoken';
+import httpStatus from 'http-status';
 
 const auth = (...requiredRoles: TUserRole[]) => {
   return asyncHandler(async (req, res, next) => {
     const token = req.headers.authorization;
 
     if (!token) {
-      throw new Error('You Are Unauthorized. No Token Found.!');
+      throw new AppError(
+        httpStatus.UNAUTHORIZED,
+        'You Are Unauthorized. No Token Found.!',
+        'NoToken',
+      );
     }
 
-    // verify the token
-    const decoded = verifyJwtToken(
-      token,
-      config.access_token_secret as string,
-    ) as JwtPayload;
+    let decoded: JwtPayload;
+
+    try {
+      decoded = verifyJwtToken(
+        token,
+        config.access_token_secret as string,
+      ) as JwtPayload;
+    } catch (error) {
+      if (error instanceof TokenExpiredError) {
+        throw new AppError(
+          httpStatus.UNAUTHORIZED,
+          'Your Token Has Expired. Please Login Again',
+          'JwtExpired',
+        );
+      }
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        'Invalid Token',
+        'InvalidToken',
+      );
+    }
 
     const { role, email } = decoded;
 
-    if (!decoded || !('email' in decoded)) {
-      throw new Error('Invalid Token.');
-    }
-
-    // check if the user is exists or not
+    // Check if user exists
     const user = await User.isUserExists(email);
-
     if (!user) {
-      throw new Error('This User Does Not Exist.!');
+      throw new AppError(
+        httpStatus.NOT_FOUND,
+        'This User Does Not Exist.!',
+        'UserNotFound',
+      );
     }
 
-    // check if the user is deleted
-    const isDeleted = user?.isDeleted;
-
-    if (isDeleted) {
-      throw new Error('No User Found. This User Is Deleted.!');
+    // Check if user is deleted
+    if (user.isDeleted) {
+      throw new AppError(
+        httpStatus.NOT_FOUND,
+        'No User Found. This User Is Deleted.!',
+        'UserDeleted',
+      );
     }
 
-    // check if the user is blocked
-    const userStatus = user?.status;
-
-    if (userStatus === 'Blocked') {
-      throw new Error('This User Is Blocked.!');
+    // Check if user is blocked
+    if (user.status === 'Blocked') {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        'This User Is Blocked.!',
+        'UserBlocked',
+      );
     }
 
+    // Role check
     if (
       requiredRoles.length > 0 &&
       !requiredRoles.includes(role as TUserRole)
     ) {
-      throw new Error('You Are Not Authorized.!');
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        'You Are Not Authorized.!',
+        'UnauthorizedRole',
+      );
     }
+
     req.user = decoded as JwtPayload;
     next();
   });
