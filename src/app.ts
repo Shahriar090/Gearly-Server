@@ -8,7 +8,18 @@ const app: Application = express();
 // parser
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ origin: ['http://localhost:5173'] }));
+
+// allowed origins
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://gearly-e-commerce.netlify.app/',
+];
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  }),
+);
 
 // application routes
 app.use('/api/v1', router);
