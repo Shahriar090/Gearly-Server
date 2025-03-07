@@ -35,7 +35,6 @@ const createUserValidationSchema = z.object({
       password: z
         .string()
         .min(6, 'Password Must Be At Least 6 Characters Long'),
-      profileImage: z.string().optional(),
       role: z
         .enum([USER_ROLES.Admin, USER_ROLES.Customer])
         .optional()
