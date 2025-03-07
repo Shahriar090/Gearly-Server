@@ -8,21 +8,17 @@ import { upload } from '../../utils/sendImageToCloudinary';
 
 const router = express.Router();
 // create user
-// router.route('/create-user').post(
-//   upload.single('file'),
-//   (req: Request, res: Response, next: NextFunction) => {
-//     req.body = JSON.parse(req.body.data);
-
-//     next();
-//   },
-router
-  .route('/create-user')
-  .post(
-    validateRequest(userValidations.createUserValidationSchema),
-    userControllers.createUser,
-  );
+router.route('/create-user').post(
+  upload.single('file'),
+  (req: Request, res: Response, next: NextFunction) => {
+    req.body = JSON.parse(req.body.data);
+    next();
+  },
+  validateRequest(userValidations.createUserValidationSchema),
+  userControllers.createUser,
+);
 // get all users
-router.route('/').get(userControllers.getAllUsers);
+router.route('/').get(auth(USER_ROLES.Admin), userControllers.getAllUsers);
 // get single user
 router.route('/get-single-user/:id').get(userControllers.getSingleUser);
 // update a user

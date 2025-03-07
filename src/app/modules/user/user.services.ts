@@ -8,7 +8,7 @@ import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary';
 
 // create user
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const createUserIntoDb = async (payload: IUser) => {
+const createUserIntoDb = async (payload: IUser, file: any) => {
   const isUserExist = await User.isUserExists(payload.email);
   if (isUserExist) {
     throw new AppError(
@@ -18,15 +18,21 @@ const createUserIntoDb = async (payload: IUser) => {
     );
   }
 
-  // if (file) {
-  //   const imageName = `${payload.name.firstName}`;
-  //   const imagePath = file.path;
+  if (file) {
+    const imageName = `${payload.name.firstName}`;
+    // const imagePath = file.path;
 
-  //   // send image to cloudinary
-  //   const categoryImage = await sendImageToCloudinary(imageName, imagePath);
-  //   const { secure_url } = categoryImage;
-  //   payload.profileImage = secure_url as string;
-  // }
+    // send image to cloudinary
+    const categoryImage = await sendImageToCloudinary(imageName, file.buffer);
+    if (!categoryImage || !categoryImage.secure_url) {
+      throw new AppError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        'Image Upload Failed',
+        'ImageUploadFailed',
+      );
+    }
+    payload.profileImage = categoryImage.secure_url as string;
+  }
 
   const result = await User.create(payload);
   return result;
