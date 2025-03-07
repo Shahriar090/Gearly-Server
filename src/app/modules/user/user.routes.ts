@@ -11,11 +11,21 @@ const router = express.Router();
 router.route('/create-user').post(
   upload.single('file'),
   (req: Request, res: Response, next: NextFunction) => {
-    req.body = JSON.parse(req.body.data.user);
-    next();
+    try {
+      const bodyData = JSON.parse(req.body.data);
+
+      req.body = { user: bodyData.user };
+      next();
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: 'Invalid JSON data',
+        error,
+      });
+    }
   },
-  validateRequest(userValidations.createUserValidationSchema),
-  userControllers.createUser,
+  validateRequest(userValidations.createUserValidationSchema), // Validate the 'user' field
+  userControllers.createUser, // Handle user creation
 );
 // get all users
 router.route('/').get(auth(USER_ROLES.Admin), userControllers.getAllUsers);
