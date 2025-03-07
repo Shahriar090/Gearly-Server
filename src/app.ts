@@ -12,7 +12,7 @@ app.use(cookieParser());
 // allowed origins
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://gearly-e-commerce.netlify.app/',
+  'https://gearly-e-commerce.netlify.app',
 ];
 app.use(
   cors({
