@@ -67,10 +67,25 @@ const deleteUser = asyncHandler(async (req, res) => {
   });
 });
 
+// get user profile
+const getUserProfile = asyncHandler(async (req, res) => {
+  const { id } = req.user;
+
+  const result = await userServices.getUserProfileFromDb(id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User Info Retrieved Successfully',
+    data: result,
+  });
+});
+
 export const userControllers = {
   createUser,
   getAllUsers,
   getSingleUser,
   updateUser,
   deleteUser,
+  getUserProfile,
 };

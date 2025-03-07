@@ -18,17 +18,25 @@ router.route('/create-user').post(
   userControllers.createUser,
 );
 // get all users
-router.route('/').get(auth(USER_ROLES.Admin), userControllers.getAllUsers);
+router.route('/').get(userControllers.getAllUsers);
 // get single user
-router.route('/:id').get(userControllers.getSingleUser);
+router.route('/get-single-user/:id').get(userControllers.getSingleUser);
 // update a user
 router
-  .route('/:id')
+  .route('/update-user/:id')
   .put(
     validateRequest(userValidations.updateUserValidationSchema),
     userControllers.updateUser,
   );
 // delete a user
-router.route('/:id').delete(userControllers.deleteUser);
+router.route('/delete-user/:id').delete(userControllers.deleteUser);
+
+// user profile
+router
+  .route('/profile')
+  .get(
+    auth(USER_ROLES.Admin, USER_ROLES.Customer),
+    userControllers.getUserProfile,
+  );
 
 export const userRoutes = router;

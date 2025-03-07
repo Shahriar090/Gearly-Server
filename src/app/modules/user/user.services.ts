@@ -106,10 +106,22 @@ const deleteUserFromDb = async (id: string) => {
   return result;
 };
 
+// my profile
+const getUserProfileFromDb = async (userId: string) => {
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'No User Found', 'NoUserFound');
+  }
+
+  return user;
+};
+
 export const userServices = {
   createUserIntoDb,
   getAllUsersFromDb,
   getSingleUserFromDb,
   updateUserIntoDb,
   deleteUserFromDb,
+  getUserProfileFromDb,
 };
