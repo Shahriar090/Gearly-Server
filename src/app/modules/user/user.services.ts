@@ -20,18 +20,12 @@ const createUserIntoDb = async (payload: IUser, file: any) => {
 
   if (file) {
     const imageName = `${payload.name.firstName}`;
-    // const imagePath = file.path;
+    const imagePath = file.path;
 
     // send image to cloudinary
-    const categoryImage = await sendImageToCloudinary(imageName, file.buffer);
-    if (!categoryImage || !categoryImage.secure_url) {
-      throw new AppError(
-        httpStatus.INTERNAL_SERVER_ERROR,
-        'Image Upload Failed',
-        'ImageUploadFailed',
-      );
-    }
-    payload.profileImage = categoryImage.secure_url as string;
+    const profileImage = await sendImageToCloudinary(imageName, imagePath);
+    const { secure_url } = profileImage;
+    payload.profileImage = secure_url as string;
   }
 
   const result = await User.create(payload);
