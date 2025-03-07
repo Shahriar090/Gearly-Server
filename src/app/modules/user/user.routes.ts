@@ -5,6 +5,7 @@ import { userValidations } from './user.validations';
 import auth from '../../middlewares/auth';
 import { USER_ROLES } from './user.constant';
 import { upload } from '../../utils/sendImageToCloudinary';
+// validateRequest(userValidations.createUserValidationSchema)
 
 const router = express.Router();
 // create user
@@ -12,10 +13,10 @@ router.route('/create-user').post(
   upload.single('file'),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = JSON.parse(req.body.data);
-    console.log(req.body);
+
     next();
   },
-  validateRequest(userValidations.createUserValidationSchema),
+
   userControllers.createUser,
 );
 // get all users
