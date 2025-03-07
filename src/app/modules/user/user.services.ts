@@ -19,7 +19,7 @@ const createUserIntoDb = async (payload: IUser, file: any) => {
   }
 
   if (file) {
-    const imageName = `${payload.name}`;
+    const imageName = `${payload.name.firstName}`;
     const imagePath = file.path;
 
     // send image to cloudinary
