@@ -12,9 +12,10 @@
       "headers": {
         "Access-Control-Allow-Origin": "https://gearly-e-commerce.netlify.app",
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization,X-Requested-With, Accept",
         "Access-Control-Allow-Credentials": "true"
       },
+      "methods": ["OPTIONS", "GET", "POST", "PUT", "DELETE"],
       "dest": "dist/server.js"
     },
     {

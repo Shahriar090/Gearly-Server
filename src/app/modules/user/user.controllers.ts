@@ -70,6 +70,7 @@ const deleteUser = asyncHandler(async (req, res) => {
 // get user profile
 const getUserProfile = asyncHandler(async (req, res) => {
   const { id } = req.user;
+  console.log(id, 'from controller---------------');
 
   const result = await userServices.getUserProfileFromDb(id);
 
