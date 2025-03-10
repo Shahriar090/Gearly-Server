@@ -32,7 +32,7 @@ app.use(
 app.use('/api/v1', router);
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('👋 Hello From Gearly E-Commerce Server!');
+  res.send('👋 Hello From Gearly E-Commerce Server! Find Your Products');
 });
 
 app.get('/test-error', (req, res, next) => {
