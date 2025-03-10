@@ -16,19 +16,19 @@ router.route('/create-user').post(
   validateRequest(userValidations.createUserValidationSchema),
   userControllers.createUser,
 );
-// get all users
-router.route('/').get(auth(USER_ROLES.Admin), userControllers.getAllUsers);
-// get single user
-router.route('/get-single-user/:id').get(userControllers.getSingleUser);
-// update a user
-router
-  .route('/update-user/:id')
-  .put(
-    validateRequest(userValidations.updateUserValidationSchema),
-    userControllers.updateUser,
-  );
-// delete a user
-router.route('/delete-user/:id').delete(userControllers.deleteUser);
+// // get all users
+// router.route('/').get(auth(USER_ROLES.Admin), userControllers.getAllUsers);
+// // get single user
+// router.route('/get-single-user/:id').get(userControllers.getSingleUser);
+// // update a user
+// router
+//   .route('/update-user/:id')
+//   .put(
+//     validateRequest(userValidations.updateUserValidationSchema),
+//     userControllers.updateUser,
+//   );
+// // delete a user
+// router.route('/delete-user/:id').delete(userControllers.deleteUser);
 
 // user profile
 router
