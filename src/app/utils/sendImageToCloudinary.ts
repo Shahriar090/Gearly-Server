@@ -2,6 +2,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import config from '../config';
 import multer from 'multer';
 import fs from 'fs';
+import path from 'path';
 import { Request } from 'express';
 
 // cloudinary configuration
@@ -11,18 +12,26 @@ cloudinary.config({
   api_secret: config.cloudinary_api_secret,
 });
 
-// disk storage configuration
-// multer configuration
+// Disk storage configuration for multer
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, process.cwd() + '/src/uploads');
+    // Define the upload path based on environment
+    const uploadPath = path.join(process.cwd(), 'src/uploads');
+
+    // Ensure that the directory exists, create it if not
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+
+    cb(null, uploadPath); // Set the destination folder dynamically
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, file.fieldname + '-' + uniqueSuffix);
+    cb(null, file.fieldname + '-' + uniqueSuffix); // Set the filename
   },
 });
 
+// Cloudinary upload function
 export const sendImageToCloudinary = async (
   imageName: string,
   path: string,
@@ -32,7 +41,7 @@ export const sendImageToCloudinary = async (
       public_id: imageName,
     });
 
-    // delete local file after upload
+    // Delete local file after upload
     await fs.promises.unlink(path);
     console.log('Upload Successful And Local File Deleted', uploadResult);
     return uploadResult;
@@ -43,7 +52,7 @@ export const sendImageToCloudinary = async (
   }
 };
 
-// function to upload multiple images
+// Function to handle multiple image uploads to Cloudinary
 export const uploadImagesToCloudinary = async (
   images: Express.Multer.File[],
 ): Promise<string[]> => {
@@ -53,12 +62,16 @@ export const uploadImagesToCloudinary = async (
       image.originalname,
       image.path,
     );
-    uploadResults.push(uploadResult.secure_url as string);
+    if (uploadResult && uploadResult.secure_url) {
+      uploadResults.push(uploadResult.secure_url as string);
+    } else {
+      throw new Error('Failed to upload image to Cloudinary');
+    }
   }
   return uploadResults;
 };
 
-// single or multiple upload logic
+// Handle image upload logic for both single and multiple images
 export const handleImageUpload = async (req: Request) => {
   let images: Express.Multer.File[] = [];
 
@@ -99,66 +112,14 @@ export const handleImageUpload = async (req: Request) => {
   return uploadResults;
 };
 
-// multer configuration to handle both single and multiple uploads
+// Multer configuration to handle both single and multiple uploads
 export const upload = multer({
   storage: storage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB limit
   fileFilter: (req, file, cb) => {
     if (!file.mimetype.startsWith('image/')) {
-      return cb(null, false);
+      return cb(null, false); // Reject files that are not images
     }
-    cb(null, true);
+    cb(null, true); // Accept image files
   },
 });
-
-// memory storage
-// Function to send image to Cloudinary
-
-// Function to send image to Cloudinary
-// export const sendImageToCloudinary = async (
-//   imageName: string,
-//   buffer: Buffer,
-// ): Promise<Record<string, unknown> | undefined> => {
-//   return new Promise((resolve, reject) => {
-//     cloudinary.uploader
-//       .upload_stream(
-//         {
-//           public_id: imageName,
-//           resource_type: 'auto',
-//         },
-//         (error, result) => {
-//           if (error) {
-//             console.error('Upload Failed', error);
-//             reject({
-//               success: false,
-//               message: 'Upload Failed',
-//               error: error.message,
-//             });
-//           } else {
-//             if (result) {
-//               console.log('Upload Successful', result);
-//               resolve(result);
-//             } else {
-//               console.error('Upload failed, no result returned');
-//               resolve(undefined);
-//             }
-//           }
-//         },
-//       )
-//       .end(buffer);
-//   });
-// };
-
-// // Use multer's memory storage to store files in memory
-// const storage = multer.memoryStorage(); // Use memory storage instead of diskStorage
-
-// export const upload = multer({
-//   storage: storage,
-//   limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB limit
-//   fileFilter: (req, file, cb) => {
-//     if (!file.mimetype.startsWith('image/')) {
-//       return cb(null, false);
-//     }
-//     cb(null, true);
-//   },
-// });
