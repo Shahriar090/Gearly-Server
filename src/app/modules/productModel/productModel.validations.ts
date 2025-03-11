@@ -73,7 +73,8 @@ const createProductValidationSchema = z.object({
       brand: z.string().trim().optional(),
       images: z
         .array(z.string().url('Invalid Image URL'))
-        .nonempty('At least one image is required'),
+        .nonempty('At least one image is required')
+        .optional(),
       // ratings: z.number().min(0).max(5).default(0),
       // reviews: z.array(createReviewValidationSchema).default([]),
       isFeatured: z.boolean().default(false),

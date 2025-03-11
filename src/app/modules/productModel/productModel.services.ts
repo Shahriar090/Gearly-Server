@@ -56,6 +56,7 @@ const createProductIntoDb = async (payload: TProductModel) => {
     ...payload,
     subCategory: subCategory._id,
     category: parentCategory._id,
+    images: payload.images,
   });
 
   const result = await newProduct.save();

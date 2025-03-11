@@ -1,4 +1,6 @@
+import AppError from '../../errors/appError';
 import asyncHandler from '../../utils/asyncHandler';
+import { handleImageUpload } from '../../utils/sendImageToCloudinary';
 import sendResponse from '../../utils/sendResponse';
 import { productServices } from './productModel.services';
 import httpStatus from 'http-status';
@@ -6,6 +8,15 @@ import httpStatus from 'http-status';
 // create a product
 const createProduct = asyncHandler(async (req, res) => {
   const { product } = req.body;
+  const uploadedImages = await handleImageUpload(req);
+  if (!Array.isArray(uploadedImages) || uploadedImages.length === 0) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Image upload failed.',
+      'ImageUploadError',
+    );
+  }
+  product.images = uploadedImages;
   const result = await productServices.createProductIntoDb(product);
 
   sendResponse(res, {

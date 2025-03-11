@@ -4,13 +4,37 @@ import validateRequest from '../../middlewares/validateRequest';
 import { productValidations } from './productModel.validations';
 import auth from '../../middlewares/auth';
 import { USER_ROLES } from '../user/user.constant';
+import { upload } from '../../utils/sendImageToCloudinary';
+import { parseFormData } from '../../utils/parseFormData';
 const router = express.Router();
 
+// const parseFormData = (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction,
+// ): void => {
+//   try {
+//     if (req.body.data) {
+//       req.body = JSON.parse(req.body.data);
+//     }
+//     next();
+//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//   } catch (error: any) {
+//     // Send the error response without returning it
+//     res.status(400).json({
+//       success: false,
+//       message: 'Invalid JSON data in form-data',
+//       error: error.message,
+//     });
+//   }
+// };
 // create a product
 router
   .route('/create-product')
   .post(
     auth(USER_ROLES.Admin),
+    upload.array('images', 5),
+    parseFormData,
     validateRequest(productValidations.createProductValidationSchema),
     productControllers.createProduct,
   );

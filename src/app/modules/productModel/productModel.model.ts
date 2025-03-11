@@ -43,7 +43,7 @@ const productSchema = new Schema<TProductModel>(
     category: { type: Schema.Types.ObjectId, ref: 'Category' },
     subCategory: { type: Schema.Types.ObjectId, ref: 'SubCategory' },
     brand: { type: String, required: true },
-    images: { type: [String], required: true },
+    images: { type: [String] },
     reviews: [
       {
         type: Schema.Types.ObjectId,
