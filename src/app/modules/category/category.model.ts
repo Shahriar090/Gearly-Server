@@ -1,7 +1,17 @@
 import { model, Schema } from 'mongoose';
-import { TCategory, TCategoryStatus } from './category.interface';
+import {
+  TCategory,
+  TCategoryStatus,
+  TSpecifications,
+} from './category.interface';
 import { CATEGORY_STATUS } from './category.constants';
 import slugify from 'slugify';
+
+const specificationsSchema = new Schema<TSpecifications>({
+  name: { type: String, required: true },
+  type: { type: String, enum: ['string', 'number', 'boolean'], required: true },
+  required: { type: Boolean, default: false },
+});
 
 const categorySchema = new Schema<TCategory>(
   {
@@ -30,6 +40,7 @@ const categorySchema = new Schema<TCategory>(
       enum: Object.values(CATEGORY_STATUS) as TCategoryStatus[],
       default: CATEGORY_STATUS.Active,
     },
+    specifications: { type: [specificationsSchema], default: [] },
     isDeleted: {
       type: Boolean,
       default: false,
