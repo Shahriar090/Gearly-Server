@@ -1,4 +1,6 @@
+import AppError from '../../errors/appError';
 import asyncHandler from '../../utils/asyncHandler';
+import { handleImageUpload } from '../../utils/sendImageToCloudinary';
 import sendResponse from '../../utils/sendResponse';
 import { categoryServices } from './category.services';
 import httpStatus from 'http-status';
@@ -6,10 +8,19 @@ import httpStatus from 'http-status';
 // create category
 const createCategory = asyncHandler(async (req, res) => {
   const { category } = req.body;
-  const result = await categoryServices.createCategoryIntoDb(
-    category,
-    req.file,
-  );
+  // file uploading
+  const uploadImage = await handleImageUpload(req);
+
+  if (!uploadImage) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Image upload failed.',
+      'ImageUploadError',
+    );
+  }
+  category.imageUrl = uploadImage;
+
+  const result = await categoryServices.createCategoryIntoDb(category);
 
   sendResponse(res, {
     statusCode: httpStatus.CREATED,

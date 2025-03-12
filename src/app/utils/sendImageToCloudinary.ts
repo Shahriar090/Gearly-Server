@@ -52,64 +52,40 @@ export const sendImageToCloudinary = async (
   }
 };
 
-// Function to handle multiple image uploads to Cloudinary
-export const uploadImagesToCloudinary = async (
-  images: Express.Multer.File[],
-): Promise<string[]> => {
-  const uploadResults: string[] = [];
-  for (const image of images) {
-    const uploadResult = await sendImageToCloudinary(
-      image.originalname,
-      image.path,
-    );
-    if (uploadResult && uploadResult.secure_url) {
-      uploadResults.push(uploadResult.secure_url as string);
-    } else {
-      throw new Error('Failed to upload image to Cloudinary');
-    }
-  }
-  return uploadResults;
-};
-
 // Handle image upload logic for both single and multiple images
+
 export const handleImageUpload = async (req: Request) => {
+  if (!req.file && !req.files) {
+    return null; // No file uploaded
+  }
+
   let images: Express.Multer.File[] = [];
 
-  // Check if req.files exists
-  if (!req.files) {
-    return { success: false, message: 'No Images Uploaded' };
-  }
-
-  if (Array.isArray(req.files)) {
-    images = req.files; // If it's an array, assign directly
-  } else {
-    // If it's an object, get the values (i.e., the array of files from the field)
-    const fieldNames = Object.keys(req.files);
-    if (fieldNames.length > 0) {
-      images = req.files[fieldNames[0]] as Express.Multer.File[];
-    }
+  if (req.file) {
+    images = [req.file]; // Single file
+  } else if (Array.isArray(req.files)) {
+    images = req.files; // Multiple files
   }
 
   if (images.length === 0) {
-    return { success: false, message: 'No Images Uploaded' };
+    return null;
   }
 
-  // Handle image upload (single or multiple)
-  const uploadResults: string[] = [];
+  // Upload to Cloudinary
+  const uploadResults = [];
   for (const image of images) {
     const uploadResult = await sendImageToCloudinary(
       image.originalname,
       image.path,
     );
-
-    if (uploadResult && uploadResult.secure_url) {
-      uploadResults.push(uploadResult.secure_url as string);
+    if (uploadResult?.secure_url) {
+      uploadResults.push(uploadResult.secure_url);
     } else {
-      throw new Error('Failed to upload image to Cloudinary');
+      return null;
     }
   }
 
-  return uploadResults;
+  return images.length === 1 ? uploadResults[0] : uploadResults;
 };
 
 // Multer configuration to handle both single and multiple uploads

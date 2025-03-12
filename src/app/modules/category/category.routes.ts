@@ -1,23 +1,24 @@
-import express, { NextFunction, Request, Response } from 'express';
+import express from 'express';
 import validateRequest from '../../middlewares/validateRequest';
 import { categoryValidations } from './category.validations';
 import { categoryControllers } from './category.controllers';
 import auth from '../../middlewares/auth';
 import { USER_ROLES } from '../user/user.constant';
 import { upload } from '../../utils/sendImageToCloudinary';
+import { parseFormData } from '../../utils/parseFormData';
+
 const router = express.Router();
 
 // create category
-router.route('/create-category').post(
-  auth(USER_ROLES.Admin),
-  upload.single('file'),
-  (req: Request, res: Response, next: NextFunction) => {
-    req.body = JSON.parse(req.body.data);
-    next();
-  },
-  validateRequest(categoryValidations.createCategoryValidationSchema),
-  categoryControllers.createCategory,
-);
+router
+  .route('/create-category')
+  .post(
+    auth(USER_ROLES.Admin),
+    upload.single('image'),
+    parseFormData,
+    validateRequest(categoryValidations.createCategoryValidationSchema),
+    categoryControllers.createCategory,
+  );
 
 // get all categories
 router

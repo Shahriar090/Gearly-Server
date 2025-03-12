@@ -9,6 +9,7 @@ import httpStatus from 'http-status';
 const createProduct = asyncHandler(async (req, res) => {
   const { product } = req.body;
   const uploadedImages = await handleImageUpload(req);
+
   if (!Array.isArray(uploadedImages) || uploadedImages.length === 0) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
