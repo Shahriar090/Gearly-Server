@@ -2,25 +2,7 @@ import { model, Schema } from 'mongoose';
 import { TProductModel } from './productModel.interface';
 import slugify from 'slugify';
 import { AVAILABILITY_STATUS } from './productModel.constants';
-
-// specifications schema => Previous
-// const specificationsSchema = new Schema<
-//   Record<string, string | string[] | boolean | number>
-// >({
-//   colors: { type: [String], required: true },
-//   storage: { type: String, required: true },
-//   display: { type: String, required: true },
-//   camera: { type: String, required: true },
-//   battery: { type: String, required: true },
-//   weight: { type: Number, required: true },
-//   warranty: { type: String },
-//   dimensions: { type: String, required: true },
-// });
-
-// Dynamic specifications schema : Experimental
-const specificationsSchema = new Schema<
-  Record<string, string | string[] | number | boolean>
->({}, { _id: false });
+import { Category } from '../category/category.model';
 
 const productSchema = new Schema<TProductModel>(
   {
@@ -32,11 +14,16 @@ const productSchema = new Schema<TProductModel>(
     discount: { type: Number },
     discountPrice: { type: Number },
     saved: { type: Number },
-    specifications: { type: specificationsSchema, required: false },
+    specifications: {
+      type: Object,
+      of: Schema.Types.Mixed,
+      required: true,
+    },
+
     tags: { type: [String], default: [] },
     availabilityStatus: {
       type: String,
-      enum: Object.values(AVAILABILITY_STATUS), // Enum from the AVAILABILITY_STATUS constants
+      enum: Object.values(AVAILABILITY_STATUS),
       required: true,
     },
     stock: { type: Number, required: true },
@@ -85,6 +72,39 @@ productSchema.pre('save', function (next) {
     this.slug = slugify(this.modelName, { lower: true, strict: true });
   }
   next();
+});
+
+// before saving, ensuring it includes all required specifications
+productSchema.pre('save', async function (next) {
+  try {
+    const category = await Category.findById(this.category);
+    if (!category || !Array.isArray(category.specifications)) {
+      return next(new Error('Category Or Its Specifications Are Missing'));
+    }
+
+    if (category.specifications.length > 0) {
+      const requiredSpecs = category.specifications
+        .filter((spec: { name: string; required: boolean }) => spec.required)
+        .map((spec) => spec.name);
+
+      const productSpecs = Object.keys(this.specifications || {});
+
+      const missingSpecs = requiredSpecs.filter(
+        (spec: string) => !productSpecs.includes(spec),
+      );
+      if (missingSpecs.length > 0) {
+        return next(
+          new Error(
+            `Missing Required Specifications: ${missingSpecs.join(', ')}`,
+          ),
+        );
+      }
+    }
+    next();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    next(error);
+  }
 });
 
 // model
