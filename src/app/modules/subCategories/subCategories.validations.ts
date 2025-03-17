@@ -12,7 +12,8 @@ const createSubCategoryValidationSchema = z.object({
         .string()
         .trim()
         .url('Invalid Image Url')
-        .min(1, 'Image Is Required'),
+        .min(1, 'Image Is Required')
+        .optional(),
       category: z.string().trim().min(1).optional(),
       isDeleted: z.boolean().optional(),
     }),

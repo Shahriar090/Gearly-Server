@@ -40,6 +40,7 @@ const createSubCategoryIntoDb = async (payload: TSubCategory) => {
 
   const subCategoryData = {
     ...payload,
+    imageUrl: payload.imageUrl,
     category: category._id,
   };
   const result = await SubCategory.create(subCategoryData);

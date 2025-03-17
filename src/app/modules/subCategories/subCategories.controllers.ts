@@ -1,4 +1,6 @@
+import AppError from '../../errors/appError';
 import asyncHandler from '../../utils/asyncHandler';
+import { handleImageUpload } from '../../utils/sendImageToCloudinary';
 import sendResponse from '../../utils/sendResponse';
 import { subCategoriesServices } from './subCategories.services';
 import httpStatus from 'http-status';
@@ -6,6 +8,19 @@ import httpStatus from 'http-status';
 // create a sub category
 const createSubCategory = asyncHandler(async (req, res) => {
   const { subCategory } = req.body;
+
+  // file uploading
+  const uploadImage = await handleImageUpload(req);
+
+  if (!uploadImage) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Image upload failed.',
+      'ImageUploadError',
+    );
+  }
+  subCategory.imageUrl = uploadImage;
+
   const result =
     await subCategoriesServices.createSubCategoryIntoDb(subCategory);
 

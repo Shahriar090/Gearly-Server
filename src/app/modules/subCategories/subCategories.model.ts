@@ -31,7 +31,6 @@ const subCategorySchema = new Schema<TSubCategory>(
     category: {
       type: Schema.Types.ObjectId,
       ref: 'Category',
-      required: true,
     },
     isDeleted: {
       type: Boolean,
