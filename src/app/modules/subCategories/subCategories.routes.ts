@@ -21,7 +21,10 @@ router.route('/create-sub-category').post(
 // get all
 router
   .route('/')
-  .get(auth(USER_ROLES.Admin), subCategoryControllers.getAllSubCategories);
+  .get(
+    auth(USER_ROLES.Admin),
+    subCategoryControllers.getAllSubCategoriesWithProductCount,
+  );
 
 // get single
 router
@@ -41,5 +44,6 @@ router
 router
   .route('/:id')
   .delete(auth(USER_ROLES.Admin), subCategoryControllers.deleteSubCategory);
+
 // -----------------------------------------------------------------------
 export const subCategoryRoutes = router;

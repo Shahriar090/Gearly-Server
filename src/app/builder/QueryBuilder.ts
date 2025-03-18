@@ -1,91 +1,166 @@
-import { FilterQuery, Query } from 'mongoose';
+// upgraded query builder to handle query and aggregation
+
+import { PipelineStage, Query } from 'mongoose';
+import { Model } from 'mongoose';
 
 class QueryBuilder<T> {
-  // mongoose query object (Product, User, etc.). it can return an array of object or a single object.
-  public modelQuery: Query<T[], T>;
-  //   query parameters that comes from the client.(req.query)
-  public query: Record<string, unknown>;
+  private model: Model<T>;
+  private modelQuery: Query<T[], T> | PipelineStage[];
+  private query: Record<string, unknown>;
+  private isAggregation: boolean;
 
-  constructor(modelQuery: Query<T[], T>, query: Record<string, unknown>) {
-    this.modelQuery = modelQuery;
+  constructor(
+    model: Model<T>,
+    query: Record<string, unknown>,
+    useAggregation: boolean = false,
+  ) {
+    this.model = model;
     this.query = query;
+    this.isAggregation = useAggregation;
+    this.modelQuery = useAggregation ? [] : this.model.find();
   }
 
-  //   methods
-
-  //   search logic
+  // search
   search(searchableFields: string[]) {
-    const searchTerm = this?.query?.searchTerm;
+    if (this.query?.searchTerm) {
+      const searchTerm = this.query.searchTerm as string;
+      // $or for searching multiple fields, regex (regular expressions) for partial match and options 'i' for ensure case insensitive.
+      const searchQuery = {
+        $or: searchableFields.map((field) => ({
+          // field = name, email etc. within searchable fields array.
+          [field]: { $regex: searchTerm, $options: 'i' },
+        })),
+      };
 
-    if (searchTerm) {
-      this.modelQuery = this.modelQuery.find({
-        $or: searchableFields.map(
-          (field) =>
-            ({
-              [field]: { $regex: searchTerm, $options: 'i' },
-            }) as FilterQuery<T>,
-        ),
-      });
+      if (this.isAggregation) {
+        (this.modelQuery as PipelineStage[]).push({ $match: searchQuery });
+      } else {
+        this.modelQuery = (this.modelQuery as Query<T[], T>).find(searchQuery);
+      }
     }
     return this;
   }
 
-  //   filter logic
+  // filter
   filter() {
-    const queryObject = { ...this.query }; //copy of original query object
-
+    // creating a copy object of query object
+    const queryObject = { ...this.query };
+    //excluding fields which are not going to mongodb query for filtering
     const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
+    // removing fields from queryObject which are not allowed to use in mongodb filtering
+    excludeFields.forEach((field) => delete queryObject[field]);
 
-    excludeFields.forEach((elem) => delete queryObject[elem]);
-
-    this.modelQuery = this.modelQuery.find(queryObject);
+    // if isAggregation is true, then $match stage is adding in the modelQuery where queryObject is being used.
+    if (this.isAggregation) {
+      (this.modelQuery as PipelineStage[]).push({ $match: queryObject });
+    } else {
+      this.modelQuery = (this.modelQuery as Query<T[], T>).find(queryObject);
+    }
 
     return this;
   }
 
-  //   sort logic
+  // sorting
   sort() {
-    const sort =
-      (this?.query?.sort as string)?.split(',').join(' ') || '-createdAt';
+    const sortBy =
+      (this.query?.sort as string)?.split(',').join(' ') || '-createdAt';
 
-    this.modelQuery = this.modelQuery.sort(sort as string);
-
+    if (this.isAggregation) {
+      (this.modelQuery as PipelineStage[]).push({ $sort: { createdAt: -1 } });
+    } else {
+      this.modelQuery = (this.modelQuery as Query<T[], T>).sort(sortBy);
+    }
     return this;
   }
 
-  //   pagination logic
+  // pagination
   paginate() {
-    const page = Number(this?.query?.page) || 1;
-    const limit = Number(this?.query?.limit) || 10;
+    const page = Number(this.query?.page) || 1;
+    const limit = Number(this.query?.limit) || 10;
     const skip = (page - 1) * limit;
 
-    this.modelQuery = this.modelQuery.skip(skip).limit(limit);
+    if (this.isAggregation) {
+      (this.modelQuery as PipelineStage[]).push(
+        { $skip: skip },
+        { $limit: limit },
+      );
+    } else {
+      this.modelQuery = (this.modelQuery as Query<T[], T>)
+        .skip(skip)
+        .limit(limit);
+    }
     return this;
   }
 
-  //   fields limit logic
+  // fields selection
+
   fields() {
-    const fields = this?.query?.fields
-      ? (this.query.fields as string).split(',').join(' ')
-      : '-__v';
+    const fields = this.query?.fields
+      ? (this.query.fields as string).split(',').reduce(
+          (acc, field) => {
+            acc[field] = 1;
+            return acc;
+          },
+          {} as Record<string, number>,
+        )
+      : { __v: 0 };
 
-    this.modelQuery = this.modelQuery.select(fields);
+    if (this.isAggregation) {
+      (this.modelQuery as PipelineStage[]).push({ $project: fields });
+    } else {
+      this.modelQuery = (this.modelQuery as Query<T[], T>).select(
+        Object.keys(fields).join(' '),
+      );
+    }
+
     return this;
   }
 
-  async countTotal() {
-    const totalQueries = this.modelQuery.getFilter();
-    const total = await this.modelQuery.model.countDocuments(totalQueries);
-    const page = Number(this?.query?.page) || 1;
-    const limit = Number(this?.query?.limit) || 1;
-    const totalPage = Math.ceil(total / limit);
+  // execute query
+  async exec() {
+    if (this.isAggregation) {
+      return await this.model.aggregate(this.modelQuery as PipelineStage[]);
+    }
+    return await (this.modelQuery as Query<T[], T>).exec();
+  }
 
-    return {
-      page,
-      limit,
-      total,
-      totalPage,
-    };
+  // get total count
+  async countTotal() {
+    if (this.isAggregation) {
+      // for aggregation, use $count stage
+      const countPipeline = [...(this.modelQuery as PipelineStage[])];
+      countPipeline.push({ $count: 'total' }); // Add the $count stage
+
+      // execute the aggregation to get the count
+      const countResult = await this.model.aggregate(countPipeline);
+
+      const total = countResult.length > 0 ? countResult[0].total : 0;
+      const page = Number(this.query?.page) || 1;
+      const limit = Number(this.query?.limit) || 10;
+      const totalPage = Math.ceil(total / limit);
+
+      return {
+        page,
+        limit,
+        total,
+        totalPage,
+      };
+    } else {
+      // for regular queries, use countDocuments
+      const totalQueries = (this.modelQuery as Query<T[], T>).getFilter();
+      const total = await this.model.countDocuments(totalQueries);
+
+      const page = Number(this.query?.page) || 1;
+      const limit = Number(this.query?.limit) || 6;
+      const totalPage = Math.ceil(total / limit);
+
+      return {
+        page,
+        limit,
+        total,
+        totalPage,
+      };
+    }
   }
 }
 

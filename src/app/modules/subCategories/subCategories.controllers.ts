@@ -32,16 +32,15 @@ const createSubCategory = asyncHandler(async (req, res) => {
   });
 });
 
-// get all sub categories
-const getAllSubCategories = asyncHandler(async (req, res) => {
-  const result = await subCategoriesServices.getAllSubCategoriesFromDb(
-    req.query,
-  );
+// get all sub categories with product count
+const getAllSubCategoriesWithProductCount = asyncHandler(async (req, res) => {
+  const result =
+    await subCategoriesServices.getAllSubCategoriesWithProductCount(req.query);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'All Sub-Categories Are Retrieved Successfully',
+    message: 'All Sub-Categories Are Retrieved With Product Count Successfully',
     data: result,
   });
 });
@@ -86,7 +85,7 @@ const deleteSubCategory = asyncHandler(async (req, res) => {
 
 export const subCategoryControllers = {
   createSubCategory,
-  getAllSubCategories,
+  getAllSubCategoriesWithProductCount,
   getSubCategoryFromDb,
   updateSubCategory,
   deleteSubCategory,

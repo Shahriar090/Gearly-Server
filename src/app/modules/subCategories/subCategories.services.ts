@@ -1,6 +1,7 @@
 import QueryBuilder from '../../builder/QueryBuilder';
 import AppError from '../../errors/appError';
 import { Category } from '../category/category.model';
+import { Product } from '../productModel/productModel.model';
 import { SUB_CATEGORIES_SEARCHABLE_FIELDS } from './subCategories.constants';
 import { TSubCategory } from './subCategories.interface';
 import { SubCategory } from './subCategories.model';
@@ -47,39 +48,55 @@ const createSubCategoryIntoDb = async (payload: TSubCategory) => {
   return result;
 };
 
-// get all sub categories
-const getAllSubCategoriesFromDb = async (query: Record<string, unknown>) => {
-  // const result = await SubCategory.find();
-  // if (!result) {
-  //   throw new AppError(
-  //     httpStatus.NOT_FOUND,
-  //     'Failed To Fetch Sub Categories.!',
-  //     'SubCategoriesNotFound',
-  //   );
-  // }
-  // return result;
-
-  const subCategoryQuery = new QueryBuilder(SubCategory.find(), query)
+// get all sub categories with product count
+const getAllSubCategoriesWithProductCount = async (
+  query: Record<string, unknown>,
+) => {
+  const subCategoryQuery = new QueryBuilder(SubCategory, query, true)
     .search(SUB_CATEGORIES_SEARCHABLE_FIELDS)
     .filter()
     .sort()
     .paginate()
     .fields();
 
-  const result = await subCategoryQuery.modelQuery;
+  const subCategories = await subCategoryQuery.exec();
+
+  // get product counts per sub-category using aggregation
+
+  const productCounts = await Product.aggregate([
+    {
+      $group: {
+        _id: '$subCategory',
+        productCount: { $sum: 1 },
+      },
+    },
+  ]);
+
+  // merging product count into sub-categories response
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const mergeResult = subCategories.map((subCategory: any) => {
+    const productCountData = productCounts.find(
+      (product) => String(product._id) === String(subCategory._id),
+    );
+    return {
+      ...subCategory,
+      productCount: productCountData ? productCountData.productCount : 0,
+    };
+  });
+
   const meta = await subCategoryQuery.countTotal();
 
-  if (!result.length) {
+  if (!mergeResult.length) {
     throw new AppError(
       httpStatus.NOT_FOUND,
       'No Sub Category Found.!',
-      'ProductsNotFound',
+      'SubCategoryNotFound',
     );
   }
 
   return {
     meta,
-    result,
+    result: mergeResult,
   };
 };
 
@@ -163,9 +180,11 @@ const deleteSubcategoryFromDb = async (id: string) => {
 
   return subCategory;
 };
+
+// --------------------------------------------
 export const subCategoriesServices = {
   createSubCategoryIntoDb,
-  getAllSubCategoriesFromDb,
+  getAllSubCategoriesWithProductCount,
   getSubCategoryFromDb,
   updateSubCategory,
   deleteSubcategoryFromDb,
