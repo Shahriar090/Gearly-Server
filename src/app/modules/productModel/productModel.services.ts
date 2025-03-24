@@ -65,14 +65,14 @@ const createProductIntoDb = async (payload: TProductModel) => {
 
 // get all products
 const getAllProductsFromDb = async (query: Record<string, unknown>) => {
-  const productQuery = new QueryBuilder(Product.find(), query)
+  const productQuery = new QueryBuilder(Product, query, true)
     .search(PRODUCT_SEARCHABLE_FIELDS)
     .filter()
     .sort()
     .paginate()
     .fields();
 
-  const products = await productQuery.modelQuery;
+  const products = await productQuery.exec();
   const meta = await productQuery.countTotal();
 
   if (!products.length) {
