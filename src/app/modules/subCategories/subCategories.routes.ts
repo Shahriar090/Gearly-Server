@@ -28,17 +28,22 @@ router
 
 // get single
 router
-  .route('/:id')
+  .route('/get-single-sub-category/:id')
   .get(auth(USER_ROLES.Admin), subCategoryControllers.getSubCategoryFromDb);
 
 // update a sub category
 router
-  .route('/:id')
+  .route('/update-sub-category/:id')
   .put(
     validateRequest(subCategoryValidations.createSubCategoryValidationSchema),
     auth(USER_ROLES.Admin),
     subCategoryControllers.updateSubCategory,
   );
+
+// get sub category by category
+router
+  .route('/sub-category-by-category')
+  .get(subCategoryControllers.getSubCategoryByCategory);
 
 // delete a sub category
 router

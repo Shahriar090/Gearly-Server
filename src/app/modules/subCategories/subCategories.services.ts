@@ -114,6 +114,21 @@ const getSubCategoryFromDb = async (id: string) => {
   return result;
 };
 
+// get a sub category by category
+const getSubCategoryByCategory = async (category: string) => {
+  const result = await SubCategory.find({ category: category });
+
+  if (!result) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'No Sub Category Found With This Category.!',
+      'SubCategoryNotFound',
+    );
+  }
+
+  return result;
+};
+
 // update a sub category
 const updateSubCategory = async (
   id: string,
@@ -185,6 +200,7 @@ const deleteSubcategoryFromDb = async (id: string) => {
 export const subCategoriesServices = {
   createSubCategoryIntoDb,
   getAllSubCategoriesWithProductCount,
+  getSubCategoryByCategory,
   getSubCategoryFromDb,
   updateSubCategory,
   deleteSubcategoryFromDb,
