@@ -4,6 +4,8 @@ import validateRequest from '../../middlewares/validateRequest';
 import { userValidations } from './user.validations';
 import auth from '../../middlewares/auth';
 import { USER_ROLES } from './user.constant';
+import { upload } from '../../utils/sendImageToCloudinary';
+import { parseFormData } from '../../utils/parseFormData';
 
 const router = express.Router();
 // create user
@@ -33,6 +35,16 @@ router
   .get(
     auth(USER_ROLES.Admin, USER_ROLES.Customer),
     userControllers.getUserProfile,
+  );
+
+// upload profile picture
+router
+  .route('/profile-image')
+  .patch(
+    auth(USER_ROLES.Admin, USER_ROLES.Customer),
+    upload.single('image'),
+    parseFormData,
+    userControllers.updateProfileImage,
   );
 
 export const userRoutes = router;

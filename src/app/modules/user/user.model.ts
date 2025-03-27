@@ -63,9 +63,7 @@ const userSchema = new Schema<IUser, UserModel>(
     passwordChangedAt: {
       type: Date,
     },
-    profileImage: {
-      type: String,
-    },
+
     role: {
       type: String,
       enum: Object.values(USER_ROLES) as TUserRole[],
@@ -75,6 +73,11 @@ const userSchema = new Schema<IUser, UserModel>(
       type: String,
       enum: Object.values(USER_STATUS) as TUserStatus[],
       default: USER_STATUS.Active,
+    },
+    // Meta is for profile related some fields like, profile image, bio, any links etc.
+    meta: {
+      type: Schema.Types.Mixed,
+      default: {},
     },
     isDeleted: {
       type: Boolean,

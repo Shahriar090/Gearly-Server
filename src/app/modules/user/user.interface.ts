@@ -25,9 +25,10 @@ export interface IUser {
   email: string;
   password: string;
   passwordChangedAt?: Date;
-  profileImage: string;
   role: TUserRole;
   status: TUserStatus;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  meta: any;
   isDeleted: boolean;
 }
 

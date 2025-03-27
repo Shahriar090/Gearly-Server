@@ -2,6 +2,8 @@ import { userServices } from './user.services';
 import httpStatus from 'http-status';
 import sendResponse from '../../utils/sendResponse';
 import asyncHandler from '../../utils/asyncHandler';
+import { handleImageUpload } from '../../utils/sendImageToCloudinary';
+import AppError from '../../errors/appError';
 
 // create user
 const createUser = asyncHandler(async (req, res) => {
@@ -81,6 +83,34 @@ const getUserProfile = asyncHandler(async (req, res) => {
   });
 });
 
+// update profile image
+const updateProfileImage = asyncHandler(async (req, res) => {
+  const { id } = req.user;
+  const uploadedImageUrl = await handleImageUpload(req);
+
+  if (!uploadedImageUrl) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Image Upload Failed',
+      'ImageUploadError',
+    );
+  }
+  const result = await userServices.updateProfilePicture(
+    id,
+    uploadedImageUrl as string,
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Profile image updated successfully',
+    data: {
+      profileImage: result.profileImage,
+      user: result.user,
+    },
+  });
+});
+
 export const userControllers = {
   createUser,
   getAllUsers,
@@ -88,4 +118,5 @@ export const userControllers = {
   updateUser,
   deleteUser,
   getUserProfile,
+  updateProfileImage,
 };

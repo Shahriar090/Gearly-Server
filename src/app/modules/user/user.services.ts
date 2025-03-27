@@ -106,6 +106,32 @@ const getUserProfileFromDb = async (userId: string) => {
   return user;
 };
 
+// update user profile picture
+const updateProfilePicture = async (userId: string, imageUrl: string) => {
+  // const currentUser = await User.findById(userId);
+  // const currentImage = currentUser?.meta?.profileImage;
+
+  const updatedUser = await User.findByIdAndUpdate(
+    userId,
+    {
+      $set: {
+        'meta.profileImage': imageUrl,
+        'meta.imageLastUpdated': new Date().toISOString(),
+      },
+    },
+    { new: true },
+  ).select('-password');
+
+  if (!updatedUser) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  return {
+    profileImage: imageUrl,
+    user: updatedUser,
+  };
+};
+
 export const userServices = {
   createUserIntoDb,
   getAllUsersFromDb,
@@ -113,4 +139,5 @@ export const userServices = {
   updateUserIntoDb,
   deleteUserFromDb,
   getUserProfileFromDb,
+  updateProfilePicture,
 };
