@@ -9,6 +9,7 @@ import { orderRoutes } from '../modules/order/order.routes';
 import { cartRoutes } from '../modules/cart/cart.routes';
 import { wishListRoutes } from '../modules/wishlist/wishlist.routes';
 import { adminDashboardRoutes } from '../modules/adminDashboard/adminDashboard.routes';
+import { flashSalesRoutes } from '../modules/flash-sales/flashSales.routes';
 const router = express.Router();
 
 const moduleRoutes = [
@@ -51,6 +52,10 @@ const moduleRoutes = [
   {
     path: '/admin-dashboard',
     route: adminDashboardRoutes,
+  },
+  {
+    path: '/flash-sales',
+    route: flashSalesRoutes,
   },
 ];
 
