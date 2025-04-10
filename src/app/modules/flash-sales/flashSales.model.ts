@@ -20,6 +20,10 @@ const flashSalesSchema = new Schema<TFlashSales>(
       type: Date,
       required: true,
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true },
 );

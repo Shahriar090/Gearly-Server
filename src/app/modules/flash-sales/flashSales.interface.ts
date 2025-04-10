@@ -5,4 +5,5 @@ export type TFlashSales = {
   discount: number;
   startTime: Date;
   endTime: Date;
+  isDeleted: boolean;
 };
