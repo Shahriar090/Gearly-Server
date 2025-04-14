@@ -163,7 +163,10 @@ const getSingleProductFromDb = async (id: string) => {
   }
 
   // fetching all reviews of the product
-  const reviews = await Review.find({ product: id }).populate('user');
+  const reviews = await Review.find({ product: id }).populate({
+    path: 'user',
+    select: 'name gender profileImage status',
+  });
 
   // calculate average rating
   const totalRatings = reviews.reduce((sum, review) => sum + review.rating, 0);
