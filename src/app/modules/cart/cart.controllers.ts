@@ -19,8 +19,8 @@ const addToCart = asyncHandler(async (req, res) => {
 
 // get user specific cart
 const getCart = asyncHandler(async (req, res) => {
-  const { userId } = req.params;
-  const result = await cartServices.getCart(userId);
+  const { id } = req.user;
+  const result = await cartServices.getCart(id);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

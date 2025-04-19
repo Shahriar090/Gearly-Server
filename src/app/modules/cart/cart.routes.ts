@@ -11,7 +11,7 @@ router
 
 // get user specific cart
 router
-  .route('/get-cart/:userId')
+  .route('/get-cart')
   .get(auth(USER_ROLES.Customer), cartControllers.getCart);
 
 // update cart item
