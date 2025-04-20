@@ -84,7 +84,10 @@ const addToCart = async (userId: string, payload: TCart) => {
 
 // get user specific cart
 const getCart = async (userId: string) => {
-  const cart = await Cart.findOne({ user: userId });
+  const cart = await Cart.findOne({ user: userId }).populate({
+    path: 'items.product',
+    select: 'modelName brandName images price discountPrice availabilityStatus',
+  });
 
   if (!cart) {
     throw new AppError(httpStatus.NOT_FOUND, 'Cart Not Found', 'CartNotFound');
