@@ -3,6 +3,7 @@ import {
   ORDER_STATUS,
   PAYMENT_METHODS,
   PAYMENT_STATUS,
+  DELIVERY_METHODS,
 } from './order.constants';
 
 const createItemValidationSchema = z.object({
@@ -10,69 +11,40 @@ const createItemValidationSchema = z.object({
     .string()
     .min(1, 'You Have To Add At Least One Product To Place An Order'),
   quantity: z.number().min(1, 'Quantity Must Be At Least 1'),
-  // price: z.number().min(0.0, 'Price Must Be A Positive Number').optional(),
-  // discount: z.number().optional(),
-  // saved: z.number().optional(),
-  // totalPrice: z.number().optional(),
+  price: z.number().min(0, 'Price Must Be A Positive Number').optional(),
+  discount: z.number().min(0).optional(),
+  saved: z.number().min(0).optional(),
+  totalPrice: z.number().min(0).optional(),
 });
 
-const updateItemValidationSchema = z.object({
-  product: z.string().optional(),
-  quantity: z.number().min(1, 'Quantity Must Be At Least 1').optional(),
-  // price: z.number().min(0.0, 'Price Must Be A Positive Number').optional(),
-  // discount: z.number().optional(),
-  // saved: z.number().optional(),
-  // totalPrice: z.number().optional(),
+const updateItemValidationSchema = createItemValidationSchema.partial();
+
+const customerInfoSchema = z.object({
+  firstName: z.string().min(1, 'First Name is required'),
+  middleName: z.string().optional(),
+  lastName: z.string().min(1, 'Last Name is required'),
+  address: z.string().min(1, 'Address is required'),
+  mobile: z.string().min(1, 'Mobile number is required'),
+  email: z.string().email('Invalid email address'),
+  city: z.string().min(1, 'City is required'),
+  zone: z.string().min(1, 'Zone is required'),
+  comment: z.string().optional(),
 });
 
-const addressSchema = z.object({
-  street: z.string().min(1, 'Street Is Required'),
-  city: z.string().min(1, 'City Is Required'),
-  postalCode: z.string().min(1, 'Postal Code Is Required'),
-  country: z.string().min(1, 'Country Is Required'),
-  contactNo: z.string().min(1, 'Contact No Is Required'),
-  email: z.string().min(1, 'Email Is Required'),
-});
-
-// create order validation schema
+// Create Order Validation Schema
 const createOrderValidationSchema = z.object({
   body: z.object({
     order: z.object({
       user: z.string().optional(),
-      // trackingId: z.string().optional(),
+      trackingId: z.string().optional(),
       items: z
         .array(createItemValidationSchema)
         .nonempty('Order Must Have At Least One Item'),
-      // discount: z.number().optional(),
-      // orderStatus: z
-      //   .enum(Object.values(ORDER_STATUS) as [string, ...string[]])
-      //   .optional(),
-      // paymentStatus: z
-      //   .enum(Object.values(PAYMENT_STATUS) as [string, ...string[]])
-      //   .optional(),
-      // paymentMethod: z
-      //   .enum(Object.values(PAYMENT_METHODS) as [string, ...string[]])
-      //   .optional(),
-      address: addressSchema,
-      isDeleted: z.boolean().optional(),
-    }),
-  }),
-});
-
-// update order validation schema
-const updateOrderValidationSchema = z.object({
-  body: z.object({
-    order: z.object({
-      user: z.string().optional(),
-      // trackingId: z.string().optional(),
-      item: z
-        .array(updateItemValidationSchema)
-        .nonempty('Order Must Have At Least One Item')
-        .optional(),
-      totalAmount: z
-        .number()
-        .min(0, 'Total Amount Must Be A Positive Number')
-        .optional(),
+      discount: z.number().min(0).optional(),
+      totalSaved: z.number().min(0).optional(),
+      tax: z.number().min(0).optional(),
+      shippingCharge: z.number().min(0).optional(),
+      grandTotal: z.number().min(0).optional(),
       orderStatus: z
         .enum(Object.values(ORDER_STATUS) as [string, ...string[]])
         .optional(),
@@ -82,7 +54,43 @@ const updateOrderValidationSchema = z.object({
       paymentMethod: z
         .enum(Object.values(PAYMENT_METHODS) as [string, ...string[]])
         .optional(),
-      address: addressSchema.optional(),
+      deliveryMethod: z
+        .enum(Object.values(DELIVERY_METHODS) as [string, ...string[]])
+        .optional(),
+      customerInfo: customerInfoSchema,
+      isDeleted: z.boolean().optional(),
+    }),
+  }),
+});
+
+// Update Order Validation Schema
+const updateOrderValidationSchema = z.object({
+  body: z.object({
+    order: z.object({
+      user: z.string().optional(),
+      trackingId: z.string().optional(),
+      items: z
+        .array(updateItemValidationSchema)
+        .nonempty('Order Must Have At Least One Item')
+        .optional(),
+      discount: z.number().min(0).optional(),
+      totalSaved: z.number().min(0).optional(),
+      tax: z.number().min(0).optional(),
+      shippingCharge: z.number().min(0).optional(),
+      grandTotal: z.number().min(0).optional(),
+      orderStatus: z
+        .enum(Object.values(ORDER_STATUS) as [string, ...string[]])
+        .optional(),
+      paymentStatus: z
+        .enum(Object.values(PAYMENT_STATUS) as [string, ...string[]])
+        .optional(),
+      paymentMethod: z
+        .enum(Object.values(PAYMENT_METHODS) as [string, ...string[]])
+        .optional(),
+      deliveryMethod: z
+        .enum(Object.values(DELIVERY_METHODS) as [string, ...string[]])
+        .optional(),
+      customerInfo: customerInfoSchema.optional(),
       isDeleted: z.boolean().optional(),
     }),
   }),

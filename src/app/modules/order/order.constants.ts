@@ -13,7 +13,13 @@ export const PAYMENT_STATUS = {
 } as const;
 
 export const PAYMENT_METHODS = {
-  Card: 'Card',
-  Paypal: 'Paypal',
-  Online_Banking: 'Online_Banking',
+  CashOnDelivery: 'Cash On Delivery',
+  OnlinePayment: 'Online Payment',
+  POSonDelivery: 'POS On Delivery',
+} as const;
+
+export const DELIVERY_METHODS = {
+  HomeDelivery: 'Home Delivery',
+  StorePickup: 'Store Pickup',
+  RequestExpress: 'Request Express',
 };

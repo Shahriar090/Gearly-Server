@@ -100,7 +100,7 @@ const createOrderIntoDb = async (payload: TOrder, userId: string) => {
       orderStatus: ORDER_STATUS.Pending,
       paymentStatus: PAYMENT_STATUS.Pending,
       paymentMethod: payload.paymentMethod,
-      address: payload.address,
+      customerInfo: payload.customerInfo,
     });
 
     await order.save({ session });

@@ -1,13 +1,15 @@
 import { model, Schema } from 'mongoose';
 import {
-  TAddress,
+  TCustomerInfo,
   TItems,
   TOrder,
   TOrderStatus,
   TPaymentMethod,
   TPaymentStatus,
+  TDeliveryMethod,
 } from './order.interface';
 import {
+  DELIVERY_METHODS,
   ORDER_STATUS,
   PAYMENT_METHODS,
   PAYMENT_STATUS,
@@ -39,18 +41,40 @@ const itemSchema = new Schema<TItems>({
   },
 });
 
-const addressSchema = new Schema<TAddress>({
-  street: String,
-  city: String,
-  postalCode: String,
-  country: String,
-  contactNo: {
+const customerInfoSchema = new Schema<TCustomerInfo>({
+  firstName: {
+    type: String,
+    required: true,
+  },
+  middleName: {
+    type: String,
+  },
+  lastName: {
+    type: String,
+    required: true,
+  },
+  address: {
+    type: String,
+    required: true,
+  },
+  mobile: {
     type: String,
     required: true,
   },
   email: {
     type: String,
     required: true,
+  },
+  city: {
+    type: String,
+    required: true,
+  },
+  zone: {
+    type: String,
+    required: true,
+  },
+  comment: {
+    type: String,
   },
 });
 
@@ -97,7 +121,11 @@ const orderSchema = new Schema<TOrder>(
       type: String,
       enum: Object.values(PAYMENT_METHODS) as TPaymentMethod[],
     },
-    address: addressSchema,
+    deliveryMethod: {
+      type: String,
+      enum: Object.values(DELIVERY_METHODS) as TDeliveryMethod[],
+    },
+    customerInfo: customerInfoSchema,
     isDeleted: {
       type: Boolean,
       default: false,
