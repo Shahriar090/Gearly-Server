@@ -160,7 +160,7 @@ const forgetPassword = async (email: string) => {
     config.access_token_secret as string,
     '10m',
   );
-  const resetPasswordLink = `${config.front_end_url}/reset-password?token=${resetToken}`;
+  const resetPasswordLink = `${config.front_end_deployed_url}/reset-password?token=${resetToken}`;
 
   const emailInfo = {
     to: user.email,
