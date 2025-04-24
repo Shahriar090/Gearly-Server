@@ -10,6 +10,7 @@ import { cartRoutes } from '../modules/cart/cart.routes';
 import { wishListRoutes } from '../modules/wishlist/wishlist.routes';
 import { adminDashboardRoutes } from '../modules/adminDashboard/adminDashboard.routes';
 import { flashSalesRoutes } from '../modules/flash-sales/flashSales.routes';
+import { paymentRoutes } from '../modules/payment/payment.routes';
 const router = express.Router();
 
 const moduleRoutes = [
@@ -56,6 +57,10 @@ const moduleRoutes = [
   {
     path: '/flash-sales',
     route: flashSalesRoutes,
+  },
+  {
+    path: '/payment',
+    route: paymentRoutes,
   },
 ];
 
