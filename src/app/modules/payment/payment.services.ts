@@ -9,7 +9,7 @@ import { isPopulatedCategory } from './payment.utils';
 
 const store_id = config.ssl_store_id;
 const store_passwd = config.ssl_store_password;
-const is_live = true; // true for live, false for sandbox
+const is_live = false; // true for live, false for sandbox
 
 const initSslCommerzPayment = async (payload: TPayment) => {
   const cartItems = payload.products;
