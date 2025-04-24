@@ -58,8 +58,8 @@ const initSslCommerzPayment = async (payload: TPayment) => {
     tran_id: payload.trackingId, // use unique tran_id for each api call
     success_url: `${config.back_end_deployed_url}/payment/payment-success/${payload.trackingId}`,
     fail_url: `${config.back_end_deployed_url}/payment/payment-failed/${payload.trackingId}`,
-    cancel_url: 'http://localhost:3030/cancel',
-    ipn_url: 'http://localhost:3030/ipn',
+    cancel_url: `${config.back_end_deployed_url}/payment/payment-cancelled/${payload.trackingId}`,
+    ipn_url: `${config.back_end_deployed_url}/payment/ipn`,
     shipping_method: payload.deliveryMethod,
     product_name: productName,
     product_category: productCategory || '',
