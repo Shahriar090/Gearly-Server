@@ -6,7 +6,6 @@ import httpStatus from 'http-status';
 
 const initPayment = asyncHandler(async (req, res) => {
   const gatewayUrl = await sslPaymentServices.initSslCommerzPayment(req.body);
-  console.log(gatewayUrl, 'from controller');
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
