@@ -86,7 +86,9 @@ const initSslCommerzPayment = async (payload: TPayment) => {
   const sslcz = new SSLCommerzPayment(store_id, store_passwd, is_live);
 
   const apiResponse = await sslcz.init(data);
-  return apiResponse.GatewayPageURL;
+  console.log('SSLCommerz API Response:', apiResponse);
+  console.log('Gateway Page URL:', apiResponse?.GatewayPageURL);
+  return apiResponse?.GatewayPageURL;
 };
 
 // payment success
