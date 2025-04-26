@@ -56,7 +56,7 @@ const initSslCommerzPayment = async (payload: TPayment) => {
     total_amount: payload.totalAmount,
     currency: 'BDT',
     tran_id: payload.trackingId, // use unique tran_id for each api call
-    success_url: `${config.back_end_deployed_url}/payment/payment-success/${payload.trackingId}`,
+    success_url: `${config.back_end_local_url}/payment/payment-success/${payload.trackingId}`,
     fail_url: `${config.back_end_deployed_url}/payment/payment-failed/${payload.trackingId}`,
     cancel_url: `${config.back_end_deployed_url}/payment/payment-cancelled/${payload.trackingId}`,
     ipn_url: `${config.back_end_deployed_url}/payment/ipn`,

@@ -8,6 +8,7 @@ import slugify from 'slugify';
 import { Review } from '../productReviews/productReviews.model';
 import QueryBuilder from '../../builder/QueryBuilder';
 import { PRODUCT_SEARCHABLE_FIELDS } from './productModel.constants';
+import { Category } from '../category/category.model';
 
 // create a product
 const createProductIntoDb = async (payload: TProductModel) => {
@@ -267,10 +268,34 @@ const deleteProductFromDb = async (id: string) => {
   return result;
 };
 
+// get product by category slug
+const getProductByCategorySlug = async (slug: string) => {
+  const category = await Category.findOne({ slug: slug });
+
+  if (!category) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'No Category Found With This Slug',
+      'NoCategoryFound',
+    );
+  }
+
+  const products = await Product.find({
+    category: category._id,
+    isDeleted: false,
+  }).populate({
+    path: 'category',
+    select: '-specifications',
+  });
+
+  return products;
+};
+
 export const productServices = {
   createProductIntoDb,
   getAllProductsFromDb,
   getSingleProductFromDb,
   updateProductIntoDb,
   deleteProductFromDb,
+  getProductByCategorySlug,
 };

@@ -80,10 +80,24 @@ const deleteProduct = asyncHandler(async (req, res) => {
   });
 });
 
+// get products by category slug
+const getProductByCategorySlug = asyncHandler(async (req, res) => {
+  const { slug } = req.params;
+  const result = await productServices.getProductByCategorySlug(slug);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Products Fetched Successfully By Category',
+    data: result,
+  });
+});
+
 export const productControllers = {
   createProduct,
   getAllProducts,
   getSingleProduct,
   updateProduct,
   deleteProduct,
+  getProductByCategorySlug,
 };

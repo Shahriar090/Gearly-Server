@@ -43,17 +43,22 @@ router
 router.route('/').get(productControllers.getAllProducts);
 
 // get a single product
-router.route('/:id').get(productControllers.getSingleProduct);
+router.route('/product/:id').get(productControllers.getSingleProduct);
 
 // update a product
 router
-  .route('/:id')
+  .route('/update-product/:id')
   .put(
     validateRequest(productValidations.updateProductValidationSchema),
     productControllers.updateProduct,
   );
 
 // delete a product
-router.route('/:id').delete(productControllers.deleteProduct);
+router.route('/delete-product/:id').delete(productControllers.deleteProduct);
+
+// get products by category slug
+router
+  .route('/category/:slug')
+  .get(productControllers.getProductByCategorySlug);
 // ---------------------------------
 export const productRoutes = router;

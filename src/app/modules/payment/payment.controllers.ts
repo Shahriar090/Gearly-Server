@@ -18,9 +18,7 @@ const initPayment = asyncHandler(async (req, res) => {
 const paymentSuccess = asyncHandler(async (req, res) => {
   const { tranId } = req.params;
   await sslPaymentServices.paymentSuccess(tranId);
-  res.redirect(
-    `${config.front_end_deployed_url}/users/payment-success/${tranId}`,
-  );
+  res.redirect(`${config.front_end_local_url}/users/payment-success/${tranId}`);
 });
 
 // payment failed
