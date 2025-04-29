@@ -21,10 +21,7 @@ router.route('/create-sub-category').post(
 // get all
 router
   .route('/')
-  .get(
-    auth(USER_ROLES.Admin),
-    subCategoryControllers.getAllSubCategoriesWithProductCount,
-  );
+  .get(subCategoryControllers.getAllSubCategoriesWithProductCount);
 
 // get single
 router

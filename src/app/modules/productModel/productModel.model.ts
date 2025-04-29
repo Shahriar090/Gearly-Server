@@ -1,9 +1,25 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { model, Schema } from 'mongoose';
 import { TProductModel } from './productModel.interface';
 import slugify from 'slugify';
 import { AVAILABILITY_STATUS } from './productModel.constants';
 import { Category } from '../category/category.model';
 
+const productSpecificationFieldSchema = new Schema(
+  {
+    name: { type: String, required: true },
+    value: { type: Schema.Types.Mixed, required: true }, // Can be string, number, boolean, etc.
+  },
+  { _id: false },
+);
+
+const productSpecificationGroupSchema = new Schema(
+  {
+    groupName: { type: String },
+    fields: { type: [productSpecificationFieldSchema], required: true },
+  },
+  { _id: false },
+);
 const productSchema = new Schema<TProductModel>(
   {
     modelName: { type: String, required: true },
@@ -15,8 +31,7 @@ const productSchema = new Schema<TProductModel>(
     discountPrice: { type: Number },
     saved: { type: Number },
     specifications: {
-      type: Object,
-      of: Schema.Types.Mixed,
+      type: [productSpecificationGroupSchema],
       required: true,
     },
 
@@ -74,34 +89,47 @@ productSchema.pre('save', function (next) {
   next();
 });
 
-// before saving, ensuring it includes all required specifications
+// Ensuring all required specifications are included (Updated for the new structure)
 productSchema.pre('save', async function (next) {
   try {
+    if (!this.category) {
+      return next(new Error('Category is missing.'));
+    }
+
     const category = await Category.findById(this.category);
+
     if (!category || !Array.isArray(category.specifications)) {
-      return next(new Error('Category Or Its Specifications Are Missing'));
+      return next(new Error('Category or its specifications are missing.'));
     }
 
-    if (category.specifications.length > 0) {
-      const requiredSpecs = category.specifications
-        .filter((spec: { name: string; required: boolean }) => spec.required)
-        .map((spec) => spec.name);
+    if (!this.specifications || !Array.isArray(this.specifications)) {
+      return next(new Error('Product specifications are missing.'));
+    }
 
-      const productSpecs = Object.keys(this.specifications || {});
+    // Extract field names from product specifications
+    const productSpecs = this.specifications.flatMap((group: any) =>
+      Array.isArray(group.fields)
+        ? group.fields.map((field: any) => field.name)
+        : [],
+    );
 
-      const missingSpecs = requiredSpecs.filter(
-        (spec: string) => !productSpecs.includes(spec),
+    const requiredSpecs = category.specifications
+      .filter((spec: { name: string; required: boolean }) => spec.required)
+      .map((spec) => spec.name);
+
+    const missingSpecs = requiredSpecs.filter(
+      (spec: string) => !productSpecs.includes(spec),
+    );
+
+    if (missingSpecs.length > 0) {
+      return next(
+        new Error(
+          `Missing Required Specifications: ${missingSpecs.join(', ')}`,
+        ),
       );
-      if (missingSpecs.length > 0) {
-        return next(
-          new Error(
-            `Missing Required Specifications: ${missingSpecs.join(', ')}`,
-          ),
-        );
-      }
     }
+
     next();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     next(error);
   }

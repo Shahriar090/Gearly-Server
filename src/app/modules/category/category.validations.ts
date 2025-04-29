@@ -1,14 +1,23 @@
 import { z } from 'zod';
 import { CATEGORY_STATUS } from './category.constants';
 
-const specificationSchema = z.object({
-  name: z.string().min(1, 'Specification name is required'), // Ensure name is a non-empty string
+// For each field inside a group
+const specificationFieldSchema = z.object({
+  name: z.string().min(1, 'Specification field name is required'),
   type: z.enum(['string', 'number', 'boolean'], {
     errorMap: () => ({
       message: 'Invalid type, must be string, number, or boolean',
     }),
   }),
   required: z.boolean().default(false),
+});
+
+// For each group of fields
+const specificationGroupSchema = z.object({
+  groupName: z.string().min(1, 'Group name is required'),
+  fields: z
+    .array(specificationFieldSchema)
+    .min(1, 'At least one field is required in a group'),
 });
 
 // create
@@ -20,7 +29,7 @@ const createCategoryValidationSchema = z.object({
       status: z
         .enum(Object.values(CATEGORY_STATUS) as [string, ...string[]])
         .optional(),
-      specifications: z.array(specificationSchema).optional(),
+      specifications: z.array(specificationGroupSchema).optional(), // <- updated here
       isDeleted: z.boolean().optional(),
     }),
   }),
@@ -44,6 +53,7 @@ const updateCategoryValidationSchema = z.object({
       status: z
         .enum(Object.values(CATEGORY_STATUS) as [string, ...string[]])
         .optional(),
+      specifications: z.array(specificationGroupSchema).optional(), // <- you should allow updating specs too
       isDeleted: z.boolean().optional(),
     }),
   }),

@@ -13,7 +13,6 @@ const router = express.Router();
 router
   .route('/create-category')
   .post(
-    auth(USER_ROLES.Admin),
     upload.single('image'),
     parseFormData,
     validateRequest(categoryValidations.createCategoryValidationSchema),

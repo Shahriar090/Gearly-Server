@@ -283,10 +283,12 @@ const getProductByCategorySlug = async (slug: string) => {
   const products = await Product.find({
     category: category._id,
     isDeleted: false,
-  }).populate({
-    path: 'category',
-    select: '-specifications',
-  });
+  })
+    .populate({
+      path: 'category',
+      select: '-specifications',
+    })
+    .populate('subCategory');
 
   return products;
 };

@@ -1,16 +1,30 @@
 import { model, Schema } from 'mongoose';
-import {
-  TCategory,
-  TCategoryStatus,
-  TSpecifications,
-} from './category.interface';
+import { TCategory, TCategoryStatus } from './category.interface';
 import { CATEGORY_STATUS } from './category.constants';
 import slugify from 'slugify';
 
-const specificationsSchema = new Schema<TSpecifications>({
+//**---------------------------------------------------------------------------
+// Structure of the specifications:
+// 1) Category has specifications which is an array
+// 2) Each specification is a group with group name and fields
+// 3) Fields is another array
+// 4) Each field is an object with name, type and required.
+// ** Array of groups => Each group has a name and an array of fields => Each field describes a specific detail like, screen size, ram etc.
+// */-------------------------------------------------------------------------
+
+const specificationFieldSchema = new Schema({
   name: { type: String, required: true },
-  type: { type: String, enum: ['string', 'number', 'boolean'], required: true },
+  type: {
+    type: String,
+    enum: ['string', 'number', 'boolean'],
+    required: true,
+  },
   required: { type: Boolean, default: false },
+});
+
+const specificationGroupSchema = new Schema({
+  groupName: { type: String, required: true },
+  fields: { type: [specificationFieldSchema], required: true },
 });
 
 const categorySchema = new Schema<TCategory>(
@@ -41,7 +55,7 @@ const categorySchema = new Schema<TCategory>(
       enum: Object.values(CATEGORY_STATUS) as TCategoryStatus[],
       default: CATEGORY_STATUS.Active,
     },
-    specifications: { type: [specificationsSchema], default: [] },
+    specifications: { type: [specificationGroupSchema], default: [] },
     isDeleted: {
       type: Boolean,
       default: false,
