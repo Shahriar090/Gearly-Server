@@ -29,7 +29,7 @@ const createCategoryValidationSchema = z.object({
       status: z
         .enum(Object.values(CATEGORY_STATUS) as [string, ...string[]])
         .optional(),
-      specifications: z.array(specificationGroupSchema).optional(), // <- updated here
+      specifications: z.array(specificationGroupSchema).optional(),
       isDeleted: z.boolean().optional(),
     }),
   }),

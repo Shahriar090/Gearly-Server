@@ -269,7 +269,10 @@ const deleteProductFromDb = async (id: string) => {
 };
 
 // get product by category slug
-const getProductByCategorySlug = async (slug: string) => {
+const getProductByCategorySlug = async (
+  slug: string,
+  query: Record<string, any>,
+) => {
   const category = await Category.findOne({ slug: slug });
 
   if (!category) {
@@ -280,17 +283,37 @@ const getProductByCategorySlug = async (slug: string) => {
     );
   }
 
-  const products = await Product.find({
-    category: category._id,
+  // query logic
+  const builder = new QueryBuilder(Product, {
+    ...query,
+    category: category._id, //filter to this category
     isDeleted: false,
-  })
-    .populate({
-      path: 'category',
-      select: '-specifications',
-    })
-    .populate('subCategory');
+  });
 
-  return products;
+  const queryBuilder = builder
+    .search(['modelName', 'brandName', 'description'])
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  // execute query and populate logic
+  const products = await queryBuilder.exec();
+
+  const populateProducts = await Product.populate(products, [
+    { path: 'category', select: '-specifications' },
+    { path: 'subCategory' },
+  ]);
+
+  if (populateProducts.length === 0) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'No Products Found In This Category',
+      'NoProductsFound',
+    );
+  }
+
+  return populateProducts;
 };
 
 export const productServices = {

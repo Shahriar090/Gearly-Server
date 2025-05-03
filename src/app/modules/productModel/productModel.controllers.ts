@@ -83,7 +83,10 @@ const deleteProduct = asyncHandler(async (req, res) => {
 // get products by category slug
 const getProductByCategorySlug = asyncHandler(async (req, res) => {
   const { slug } = req.params;
-  const result = await productServices.getProductByCategorySlug(slug);
+  const result = await productServices.getProductByCategorySlug(
+    slug,
+    req.query,
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

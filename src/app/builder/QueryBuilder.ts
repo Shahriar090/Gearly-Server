@@ -50,11 +50,18 @@ class QueryBuilder<T> {
     // removing fields from queryObject which are not allowed to use in mongodb filtering
     excludeFields.forEach((field) => delete queryObject[field]);
 
-    // if isAggregation is true, then $match stage is adding in the modelQuery where queryObject is being used.
+    // converting operators (e.g., gte → $gte)
+    const queryStr = JSON.stringify(queryObject);
+    const formattedStr = queryStr.replace(
+      /\b(gte|gt|lte|lt|ne|in|nin)\b/g,
+      (match) => `$${match}`,
+    );
+    const parseQuery = JSON.parse(formattedStr);
+
     if (this.isAggregation) {
-      (this.modelQuery as PipelineStage[]).push({ $match: queryObject });
+      (this.modelQuery as PipelineStage[]).push({ $match: parseQuery });
     } else {
-      this.modelQuery = (this.modelQuery as Query<T[], T>).find(queryObject);
+      this.modelQuery = (this.modelQuery as Query<T[], T>).find(parseQuery);
     }
 
     return this;
@@ -103,7 +110,7 @@ class QueryBuilder<T> {
           },
           {} as Record<string, number>,
         )
-      : { __v: 0 };
+      : {};
 
     if (this.isAggregation) {
       (this.modelQuery as PipelineStage[]).push({ $project: fields });

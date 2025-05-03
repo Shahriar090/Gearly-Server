@@ -60,9 +60,9 @@ const getSubCategoryFromDb = asyncHandler(async (req, res) => {
 
 // get sub category by category
 const getSubCategoryByCategory = asyncHandler(async (req, res) => {
-  const { category } = req.query;
+  const { category: slug } = req.query;
   const result = await subCategoriesServices.getSubCategoryByCategory(
-    category as string,
+    slug as string,
   );
 
   sendResponse(res, {

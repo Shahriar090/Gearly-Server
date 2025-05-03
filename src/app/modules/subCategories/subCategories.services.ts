@@ -115,17 +115,21 @@ const getSubCategoryFromDb = async (id: string) => {
 };
 
 // get a sub category by category
-const getSubCategoryByCategory = async (category: string) => {
-  const result = await SubCategory.find({ category: category });
+const getSubCategoryByCategory = async (slug: string) => {
+  const category = await Category.findOne({ slug });
 
-  if (!result) {
+  if (!category) {
+    throw new AppError(httpStatus.NOT_FOUND, 'No Category Found.!');
+  }
+  const result = await SubCategory.find({ category: category._id });
+
+  if (result.length === 0) {
     throw new AppError(
       httpStatus.NOT_FOUND,
-      'No Sub Category Found With This Category.!',
+      'No Sub Category Found With This Category.',
       'SubCategoryNotFound',
     );
   }
-
   return result;
 };
 
