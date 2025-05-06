@@ -1,5 +1,9 @@
 import { model, Schema } from 'mongoose';
-import { TCategory, TCategoryStatus } from './category.interface';
+import {
+  TCategory,
+  TCategoryStatus,
+  TFilteringFields,
+} from './category.interface';
 import { CATEGORY_STATUS } from './category.constants';
 import slugify from 'slugify';
 
@@ -25,6 +29,11 @@ const specificationFieldSchema = new Schema({
 const specificationGroupSchema = new Schema({
   groupName: { type: String, required: true },
   fields: { type: [specificationFieldSchema], required: true },
+});
+
+const filteringFieldsSchema = new Schema<TFilteringFields>({
+  groupName: { type: String, required: true },
+  value: { type: [String], required: true },
 });
 
 const categorySchema = new Schema<TCategory>(
@@ -56,6 +65,7 @@ const categorySchema = new Schema<TCategory>(
       default: CATEGORY_STATUS.Active,
     },
     specifications: { type: [specificationGroupSchema], default: [] },
+    filteringFields: [filteringFieldsSchema],
     isDeleted: {
       type: Boolean,
       default: false,

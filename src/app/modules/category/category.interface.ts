@@ -9,6 +9,11 @@ export type TSpecifications = {
   required: boolean;
 };
 
+export type TFilteringFields = {
+  groupName: string;
+  value: string[];
+};
+
 export type TCategory = {
   name: string;
   slug: string;
@@ -16,5 +21,6 @@ export type TCategory = {
   imageUrl: string;
   status: TCategoryStatus;
   specifications?: TSpecifications[];
+  filteringFields: TFilteringFields[];
   isDeleted: boolean;
 };

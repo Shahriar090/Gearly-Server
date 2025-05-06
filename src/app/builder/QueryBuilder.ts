@@ -110,14 +110,16 @@ class QueryBuilder<T> {
           },
           {} as Record<string, number>,
         )
-      : {};
+      : null;
 
-    if (this.isAggregation) {
-      (this.modelQuery as PipelineStage[]).push({ $project: fields });
-    } else {
-      this.modelQuery = (this.modelQuery as Query<T[], T>).select(
-        Object.keys(fields).join(' '),
-      );
+    if (fields) {
+      if (this.isAggregation) {
+        (this.modelQuery as PipelineStage[]).push({ $project: fields });
+      } else {
+        this.modelQuery = (this.modelQuery as Query<T[], T>).select(
+          Object.keys(fields).join(' '),
+        );
+      }
     }
 
     return this;
