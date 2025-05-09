@@ -40,8 +40,8 @@ const getAllCategoriesFromDb = async () => {
 };
 
 // get single category
-const getCategoryFromDb = async (id: string) => {
-  const result = await Category.findById(id);
+const getCategoryFromDb = async (slug: string) => {
+  const result = await Category.findOne({ slug: slug });
 
   if (!result) {
     throw new AppError(

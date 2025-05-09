@@ -50,6 +50,31 @@ class QueryBuilder<T> {
     // removing fields from queryObject which are not allowed to use in mongodb filtering
     excludeFields.forEach((field) => delete queryObject[field]);
 
+    // specifications filtering logic
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const specialConditions: any = {};
+
+    // Custom filter logic for 'specifications'
+    for (const key in queryObject) {
+      if (key.startsWith('specifications.')) {
+        const specName = key.split('.')[1];
+        const value = queryObject[key];
+
+        specialConditions.specifications = {
+          $elemMatch: {
+            fields: {
+              $elemMatch: {
+                name: { $regex: new RegExp(specName, 'i') },
+                value: value,
+              },
+            },
+          },
+        };
+
+        delete queryObject[key];
+      }
+    }
+
     // converting operators (e.g., gte → $gte)
     const queryStr = JSON.stringify(queryObject);
     const formattedStr = queryStr.replace(
@@ -58,10 +83,15 @@ class QueryBuilder<T> {
     );
     const parseQuery = JSON.parse(formattedStr);
 
+    const finalQuery = {
+      ...parseQuery,
+      ...specialConditions,
+    };
+
     if (this.isAggregation) {
-      (this.modelQuery as PipelineStage[]).push({ $match: parseQuery });
+      (this.modelQuery as PipelineStage[]).push({ $match: finalQuery });
     } else {
-      this.modelQuery = (this.modelQuery as Query<T[], T>).find(parseQuery);
+      this.modelQuery = (this.modelQuery as Query<T[], T>).find(finalQuery);
     }
 
     return this;

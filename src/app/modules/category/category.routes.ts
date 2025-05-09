@@ -23,7 +23,7 @@ router
 router.route('/').get(categoryControllers.getAllCategories);
 
 // get single category
-router.route('/:id').get(categoryControllers.getCategory);
+router.route('/:slug').get(categoryControllers.getCategory);
 
 // update a category
 router

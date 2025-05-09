@@ -44,8 +44,8 @@ const getAllCategories = asyncHandler(async (req, res) => {
 
 // get single category
 const getCategory = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const result = await categoryServices.getCategoryFromDb(id);
+  const { slug } = req.params;
+  const result = await categoryServices.getCategoryFromDb(slug);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
