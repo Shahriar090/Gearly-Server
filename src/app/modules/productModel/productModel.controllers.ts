@@ -17,6 +17,7 @@ const createProduct = asyncHandler(async (req, res) => {
       'ImageUploadError',
     );
   }
+
   product.images = uploadedImages;
   const result = await productServices.createProductIntoDb(product);
 
