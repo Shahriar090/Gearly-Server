@@ -10,13 +10,16 @@
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "prettier": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
-    "prettier:fix": "prettier --write src"
+    "prettier:fix": "prettier --write src",
+    "prepare": "husky install"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
     "@eslint/js": "^9.17.0",
     "@types/cors": "^2.8.17",
     "@types/dotenv": "^8.2.3",
@@ -29,6 +32,7 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "globals": "^15.14.0",
+    "husky": "^9.1.7",
     "multer": "^1.4.5-lts.1",
     "prettier": "^3.4.2",
     "ts-node-dev": "^2.0.0",
@@ -57,3 +61,4 @@
     "zod": "^3.24.1"
   }
 }
+
