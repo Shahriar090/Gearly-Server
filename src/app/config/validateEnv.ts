@@ -2,8 +2,11 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { z } from 'zod';
 
+// ✅ Dynamically choose the correct .env file based on NODE_ENV
+const NODE_ENV = process.env.NODE_ENV || 'development';
+
 // ✅ Load environment variables from .env file located in root directory
-dotenv.config({ path: path.join(process.cwd(), '.env') });
+dotenv.config({ path: path.join(process.cwd(), `.env.${NODE_ENV}.local`) });
 
 // ✅ Helper function to validate and convert string env variables to integer numbers
 // This ensures that even though values are loaded as strings, we treat them as numbers safely
@@ -28,9 +31,11 @@ const envValidationSchema = z.object({
 
   // ✅ Frontend and Backend URLs (for CORS, redirects, etc.)
   FRONT_END_LOCAL_URL: z.string().url(),
-  FRONT_END_DEPLOYED_URL: z.string().url(),
+  FRONT_END_DEPLOYED_URL:
+    NODE_ENV === 'development' ? z.string().optional() : z.string().url(),
   BACK_END_LOCAL_URL: z.string().url(),
-  BACK_END_DEPLOYED_URL: z.string().url(),
+  BACK_END_DEPLOYED_URL:
+    NODE_ENV === 'development' ? z.string().optional() : z.string().url(),
 
   // ✅ Email config (e.g., for nodemailer)
   NODE_MAILER_SENDER_EMAIL: z.string().email(),
