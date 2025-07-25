@@ -1,5 +1,10 @@
 import { Model } from 'mongoose';
-import { USER_GENDER, USER_ROLES, USER_STATUS } from './user.constant';
+import {
+  Auth_Provider,
+  USER_GENDER,
+  USER_ROLES,
+  USER_STATUS,
+} from './user.constant';
 
 // interface for user name
 export interface IUserName {
@@ -15,6 +20,8 @@ export type TUserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES];
 export type TUserGender = (typeof USER_GENDER)[keyof typeof USER_GENDER];
 export type TUserStatus = (typeof USER_STATUS)[keyof typeof USER_STATUS];
 
+export type TAuthProvider = (typeof Auth_Provider)[keyof typeof Auth_Provider];
+
 export interface IUser {
   _id: string;
   name: IUserName;
@@ -23,7 +30,12 @@ export interface IUser {
   contactNo: string;
   address: string;
   email: string;
-  password: string;
+  // OAuth----------
+  googleId?: string;
+  githubId?: string;
+  authProvider: TAuthProvider;
+  // ---------------
+  password?: string;
   passwordChangedAt?: Date;
   role: TUserRole;
   status: TUserStatus;

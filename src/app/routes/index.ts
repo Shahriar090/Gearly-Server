@@ -1,16 +1,17 @@
 import express from 'express';
-import { userRoutes } from '../modules/user/user.routes';
+import { adminDashboardRoutes } from '../modules/adminDashboard/adminDashboard.routes';
 import { authRoutes } from '../modules/auth/auth.routes';
+import { cartRoutes } from '../modules/cart/cart.routes';
 import { categoryRoutes } from '../modules/category/category.routes';
-import { subCategoryRoutes } from '../modules/subCategories/subCategories.routes';
+import { flashSalesRoutes } from '../modules/flash-sales/flashSales.routes';
+import { oAuthRoutes } from '../modules/o_auth/o_auth.routes';
+import { orderRoutes } from '../modules/order/order.routes';
+import { paymentRoutes } from '../modules/payment/payment.routes';
 import { productRoutes } from '../modules/productModel/productModel.routes';
 import { reviewRoutes } from '../modules/productReviews/productReviews.routes';
-import { orderRoutes } from '../modules/order/order.routes';
-import { cartRoutes } from '../modules/cart/cart.routes';
+import { subCategoryRoutes } from '../modules/subCategories/subCategories.routes';
+import { userRoutes } from '../modules/user/user.routes';
 import { wishListRoutes } from '../modules/wishlist/wishlist.routes';
-import { adminDashboardRoutes } from '../modules/adminDashboard/adminDashboard.routes';
-import { flashSalesRoutes } from '../modules/flash-sales/flashSales.routes';
-import { paymentRoutes } from '../modules/payment/payment.routes';
 const router = express.Router();
 
 const moduleRoutes = [
@@ -61,6 +62,10 @@ const moduleRoutes = [
   {
     path: '/payment',
     route: paymentRoutes,
+  },
+  {
+    path: '/o-auth',
+    route: oAuthRoutes,
   },
 ];
 

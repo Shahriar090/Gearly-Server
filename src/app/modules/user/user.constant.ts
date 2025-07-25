@@ -13,3 +13,9 @@ export const USER_STATUS = {
   Active: 'Active',
   Blocked: 'Blocked',
 } as const;
+
+export const Auth_Provider = {
+  Local: 'Local',
+  Google: 'Google',
+  GitHub: 'GitHub',
+};

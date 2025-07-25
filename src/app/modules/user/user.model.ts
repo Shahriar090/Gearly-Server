@@ -1,15 +1,21 @@
+import bcrypt from 'bcrypt';
 import { model, Schema } from 'mongoose';
+import config from '../../config';
+import {
+  Auth_Provider,
+  USER_GENDER,
+  USER_ROLES,
+  USER_STATUS,
+} from './user.constant';
 import {
   IUser,
   IUserName,
+  TAuthProvider,
   TUserGender,
   TUserRole,
   TUserStatus,
   UserModel,
 } from './user.interface';
-import bcrypt from 'bcrypt';
-import config from '../../config';
-import { USER_GENDER, USER_ROLES, USER_STATUS } from './user.constant';
 
 const userNameSchema = new Schema<IUserName>({
   firstName: {
@@ -55,6 +61,16 @@ const userSchema = new Schema<IUser, UserModel>(
       trim: true,
       index: true,
     },
+    googleId: {
+      type: String,
+    },
+    githubId: {
+      type: String,
+    },
+    authProvider: {
+      type: String,
+      enum: Object.values(Auth_Provider) as TAuthProvider[],
+    },
     password: {
       type: String,
       required: true,
@@ -91,7 +107,7 @@ const userSchema = new Schema<IUser, UserModel>(
 // hashing the password before save the doc
 
 userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
+  if (!this.isModified('password') || !this.password) return next();
   this.password = await bcrypt.hash(
     this.password,
     Number(config.bcrypt_salt_round),
