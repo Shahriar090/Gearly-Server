@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import AppError from '../../errors/appError';
 import { SubCategory } from '../subCategories/subCategories.model';
-import { TProductModel } from './productModel.interface';
+import type { TProductModel } from './productModel.interface';
 import httpStatus from 'http-status';
 import { Product } from './productModel.model';
 import slugify from 'slugify';
@@ -12,315 +12,259 @@ import { Category } from '../category/category.model';
 
 // create a product
 const createProductIntoDb = async (payload: TProductModel) => {
-  // generating slug from sub category name to find the sub category using its slug
-  const subCategorySlug = slugify(payload.brandName, {
-    lower: true,
-    strict: true,
-  });
+	// generating slug from sub category name to find the sub category using its slug
+	const subCategorySlug = slugify(payload.brandName, {
+		lower: true,
+		strict: true,
+	});
 
-  // find the sub category (brand: like Apple, Samsung) using the generated slug
-  const subCategory = await SubCategory.findOne({
-    slug: subCategorySlug,
-  });
-  if (!subCategory) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      'Sub Category Not Found.!',
-      'SubCategoryNotFound',
-    );
-  }
+	// find the sub category (brand: like Apple, Samsung) using the generated slug
+	const subCategory = await SubCategory.findOne({
+		slug: subCategorySlug,
+	});
+	if (!subCategory) {
+		throw new AppError(httpStatus.NOT_FOUND, 'Sub Category Not Found.!', 'SubCategoryNotFound');
+	}
 
-  // find the parent category from the sub category
-  const parentCategory = subCategory?.category;
+	// find the parent category from the sub category
+	const parentCategory = subCategory?.category;
 
-  if (!parentCategory) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      'Parent Category Not Found.!',
-      'ParentCategoryNotFound',
-    );
-  }
+	if (!parentCategory) {
+		throw new AppError(httpStatus.NOT_FOUND, 'Parent Category Not Found.!', 'ParentCategoryNotFound');
+	}
 
-  // check if the product is already exists or not
-  const isExists = await Product.findOne({ name: payload.modelName });
+	// check if the product is already exists or not
+	const isExists = await Product.findOne({ name: payload.modelName });
 
-  if (isExists) {
-    throw new AppError(
-      httpStatus.BAD_REQUEST,
-      'This Product Is Already Exists.!',
-      'ProductExists',
-    );
-  }
+	if (isExists) {
+		throw new AppError(httpStatus.BAD_REQUEST, 'This Product Is Already Exists.!', 'ProductExists');
+	}
 
-  // create new product
-  const newProduct = new Product({
-    ...payload,
-    subCategory: subCategory._id,
-    category: parentCategory._id,
-    images: payload.images,
-  });
+	// create new product
+	const newProduct = new Product({
+		...payload,
+		subCategory: subCategory._id,
+		category: parentCategory._id,
+		images: payload.images,
+	});
 
-  const result = await newProduct.save();
-  return result;
+	const result = await newProduct.save();
+	return result;
 };
 
 // get all products
 const getAllProductsFromDb = async (query: Record<string, unknown>) => {
-  const productQuery = new QueryBuilder(Product, query, true)
-    .search(PRODUCT_SEARCHABLE_FIELDS)
-    .filter()
-    .sort()
-    .paginate()
-    .fields();
+	const productQuery = new QueryBuilder(Product, query, true)
+		.search(PRODUCT_SEARCHABLE_FIELDS)
+		.filter()
+		.sort()
+		.paginate()
+		.fields();
 
-  const products = await productQuery.exec();
-  const meta = await productQuery.countTotal();
+	const products = await productQuery.exec();
+	const meta = await productQuery.countTotal();
 
-  if (!products.length) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      'No Products Found',
-      'ProductsNotFound',
-    );
-  }
+	if (!products.length) {
+		throw new AppError(httpStatus.NOT_FOUND, 'No Products Found', 'ProductsNotFound');
+	}
 
-  // using aggregation to populate category, subCategory (each brand) and fetch reviews.
+	// using aggregation to populate category, subCategory (each brand) and fetch reviews.
 
-  const productsWithDetails = await Product.aggregate([
-    {
-      $match: { _id: { $in: products.map((product) => product._id) } },
-    },
+	const productsWithDetails = await Product.aggregate([
+		{
+			$match: { _id: { $in: products.map((product) => product._id) } },
+		},
 
-    // populating category
-    {
-      $lookup: {
-        from: 'categories',
-        localField: 'category',
-        foreignField: '_id',
-        as: 'category',
-      },
-    },
-    { $unwind: { path: '$category', preserveNullAndEmptyArrays: true } },
+		// populating category
+		{
+			$lookup: {
+				from: 'categories',
+				localField: 'category',
+				foreignField: '_id',
+				as: 'category',
+			},
+		},
+		{ $unwind: { path: '$category', preserveNullAndEmptyArrays: true } },
 
-    // populating sub category (each brand)
+		// populating sub category (each brand)
 
-    {
-      $lookup: {
-        from: 'subcategories',
-        localField: 'subCategory',
-        foreignField: '_id',
-        as: 'subCategory',
-      },
-    },
-    { $unwind: { path: '$subCategory', preserveNullAndEmptyArrays: true } },
+		{
+			$lookup: {
+				from: 'subcategories',
+				localField: 'subCategory',
+				foreignField: '_id',
+				as: 'subCategory',
+			},
+		},
+		{ $unwind: { path: '$subCategory', preserveNullAndEmptyArrays: true } },
 
-    // populating reviews
-    {
-      $lookup: {
-        from: 'productreviews',
-        localField: 'reviews',
-        foreignField: '_id',
-        as: 'reviews',
-      },
-    },
+		// populating reviews
+		{
+			$lookup: {
+				from: 'productreviews',
+				localField: 'reviews',
+				foreignField: '_id',
+				as: 'reviews',
+			},
+		},
 
-    // calculating average rating
-    {
-      $addFields: {
-        averageRating: {
-          $cond: {
-            if: { $gt: [{ $size: '$reviews' }, 0] },
-            then: { $avg: '$reviews.rating' },
-            else: 0,
-          },
-        },
-      },
-    },
+		// calculating average rating
+		{
+			$addFields: {
+				averageRating: {
+					$cond: {
+						if: { $gt: [{ $size: '$reviews' }, 0] },
+						then: { $avg: '$reviews.rating' },
+						else: 0,
+					},
+				},
+			},
+		},
 
-    // hide password in reviews
-    {
-      $project: {
-        'reviews.user.password': 0,
-      },
-    },
-  ]);
+		// hide password in reviews
+		{
+			$project: {
+				'reviews.user.password': 0,
+			},
+		},
+	]);
 
-  return { meta, products: productsWithDetails };
+	return { meta, products: productsWithDetails };
 };
 
 // get a single product
 const getSingleProductFromDb = async (id: string) => {
-  // check if the product is exists or not
-  const product = await Product.findById(id)
-    .populate('category')
-    .populate('subCategory');
+	// check if the product is exists or not
+	const product = await Product.findById(id).populate('category').populate('subCategory');
 
-  if (!product || product.isDeleted) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      'No Product Found.!',
-      'ProductNotFound',
-    );
-  }
+	if (!product || product.isDeleted) {
+		throw new AppError(httpStatus.NOT_FOUND, 'No Product Found.!', 'ProductNotFound');
+	}
 
-  // fetching all reviews of the product
-  const reviews = await Review.find({ product: id }).populate({
-    path: 'user',
-    select: 'name gender profileImage status',
-  });
+	// fetching all reviews of the product
+	const reviews = await Review.find({ product: id }).populate({
+		path: 'user',
+		select: 'name gender profileImage status',
+	});
 
-  // calculate average rating
-  const totalRatings = reviews.reduce((sum, review) => sum + review.rating, 0);
-  const averageRating = reviews.length ? totalRatings / reviews.length : 0;
+	// calculate average rating
+	const totalRatings = reviews.reduce((sum, review) => sum + review.rating, 0);
+	const averageRating = reviews.length ? totalRatings / reviews.length : 0;
 
-  return { ...product.toObject(), reviews, averageRating };
+	return { ...product.toObject(), reviews, averageRating };
 };
 
 // update a product
-const updateProductIntoDb = async (
-  id: string,
-  payload: Partial<TProductModel>,
-) => {
-  const { specifications, tags, images, ...remainingData } = payload;
+const updateProductIntoDb = async (id: string, payload: Partial<TProductModel>) => {
+	const { specifications, tags, images, ...remainingData } = payload;
 
-  const modifiedUpdatedData: Record<string, unknown> = { ...remainingData };
+	const modifiedUpdatedData: Record<string, unknown> = { ...remainingData };
 
-  if (!modifiedUpdatedData.$addToSet) {
-    modifiedUpdatedData.$addToSet = {};
-  }
+	if (!modifiedUpdatedData.$addToSet) {
+		modifiedUpdatedData.$addToSet = {};
+	}
 
-  // specifications is and object which is holding an array of colors
+	// specifications is and object which is holding an array of colors
 
-  if (specifications && typeof specifications === 'object') {
-    for (const [key, value] of Object.entries(specifications)) {
-      // adding new color without replacing existing colors in the colors array.
-      if (key === 'colors' && Array.isArray(value)) {
-        (modifiedUpdatedData.$addToSet as Record<string, any>)[
-          `specifications.colors`
-        ] = { $each: value };
-      } else {
-        (modifiedUpdatedData as Record<string, any>)[`specifications.${key}`] =
-          value;
-      }
-    }
-  }
+	if (specifications && typeof specifications === 'object') {
+		for (const [key, value] of Object.entries(specifications)) {
+			// adding new color without replacing existing colors in the colors array.
+			if (key === 'colors' && Array.isArray(value)) {
+				(modifiedUpdatedData.$addToSet as Record<string, any>)['specifications.colors'] = { $each: value };
+			} else {
+				(modifiedUpdatedData as Record<string, any>)[`specifications.${key}`] = value;
+			}
+		}
+	}
 
-  // updating arrays
-  const arrayUpdatesOperation: Record<string, { $each: string[] }> = {};
+	// updating arrays
+	const arrayUpdatesOperation: Record<string, { $each: string[] }> = {};
 
-  if (tags && tags.length) {
-    const lowerCaseTags = tags.map((tag) => tag.toLowerCase());
-    arrayUpdatesOperation.tags = { $each: lowerCaseTags };
-  }
+	if (tags && tags.length) {
+		const lowerCaseTags = tags.map((tag) => tag.toLowerCase());
+		arrayUpdatesOperation.tags = { $each: lowerCaseTags };
+	}
 
-  if (images && images.length) {
-    arrayUpdatesOperation.images = { $each: images };
-  }
+	if (images && images.length) {
+		arrayUpdatesOperation.images = { $each: images };
+	}
 
-  if (Object.keys(arrayUpdatesOperation).length > 0) {
-    const addToSet = modifiedUpdatedData.$addToSet as Record<string, any>;
+	if (Object.keys(arrayUpdatesOperation).length > 0) {
+		const addToSet = modifiedUpdatedData.$addToSet as Record<string, any>;
 
-    modifiedUpdatedData.$addToSet = {
-      ...addToSet,
-      ...arrayUpdatesOperation,
-    };
-  }
+		modifiedUpdatedData.$addToSet = {
+			...addToSet,
+			...arrayUpdatesOperation,
+		};
+	}
 
-  const result = await Product.findByIdAndUpdate(id, modifiedUpdatedData, {
-    new: true,
-    runValidators: true,
-  });
+	const result = await Product.findByIdAndUpdate(id, modifiedUpdatedData, {
+		new: true,
+		runValidators: true,
+	});
 
-  if (!result) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      'Failed To Update The Product.!',
-      'ProductUpdateFailed',
-    );
-  }
+	if (!result) {
+		throw new AppError(httpStatus.NOT_FOUND, 'Failed To Update The Product.!', 'ProductUpdateFailed');
+	}
 
-  return result;
+	return result;
 };
 
 // delete a product
 const deleteProductFromDb = async (id: string) => {
-  const product = await Product.findById(id);
+	const product = await Product.findById(id);
 
-  if (!product) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      'No Product Found.!',
-      'ProductNotFound',
-    );
-  }
+	if (!product) {
+		throw new AppError(httpStatus.NOT_FOUND, 'No Product Found.!', 'ProductNotFound');
+	}
 
-  product.isDeleted = true;
-  const result = await product.save();
+	product.isDeleted = true;
+	const result = await product.save();
 
-  if (!result) {
-    throw new AppError(
-      httpStatus.INTERNAL_SERVER_ERROR,
-      'Failed To Delete The Product.!',
-      'ProductDeleteFailed',
-    );
-  }
+	if (!result) {
+		throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, 'Failed To Delete The Product.!', 'ProductDeleteFailed');
+	}
 
-  return result;
+	return result;
 };
 
 // get product by category slug
-const getProductByCategorySlug = async (
-  slug: string,
-  query: Record<string, any>,
-) => {
-  const category = await Category.findOne({ slug: slug });
+const getProductByCategorySlug = async (slug: string, query: Record<string, any>) => {
+	const category = await Category.findOne({ slug: slug });
 
-  if (!category) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      'No Category Found With This Slug',
-      'NoCategoryFound',
-    );
-  }
+	if (!category) {
+		throw new AppError(httpStatus.NOT_FOUND, 'No Category Found With This Slug', 'NoCategoryFound');
+	}
 
-  // query logic
-  const builder = new QueryBuilder(Product, {
-    ...query,
-    category: category._id, //filter to this category
-    isDeleted: false,
-  });
+	// query logic
+	const builder = new QueryBuilder(Product, {
+		...query,
+		category: category._id, //filter to this category
+		isDeleted: false,
+	});
 
-  const queryBuilder = builder
-    .search(['modelName', 'brandName', 'description'])
-    .filter()
-    .sort()
-    .paginate()
-    .fields();
+	const queryBuilder = builder.search(['modelName', 'brandName', 'description']).filter().sort().paginate().fields();
 
-  // execute query and populate logic
-  const products = await queryBuilder.exec();
+	// execute query and populate logic
+	const products = await queryBuilder.exec();
 
-  const populateProducts = await Product.populate(products, [
-    { path: 'category', select: '-specifications' },
-    { path: 'subCategory' },
-  ]);
+	const populateProducts = await Product.populate(products, [
+		{ path: 'category', select: '-specifications' },
+		{ path: 'subCategory' },
+	]);
 
-  if (populateProducts.length === 0) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      'No Products Found In This Category',
-      'NoProductsFound',
-    );
-  }
+	if (populateProducts.length === 0) {
+		throw new AppError(httpStatus.NOT_FOUND, 'No Products Found In This Category', 'NoProductsFound');
+	}
 
-  return populateProducts;
+	return populateProducts;
 };
 
 export const productServices = {
-  createProductIntoDb,
-  getAllProductsFromDb,
-  getSingleProductFromDb,
-  updateProductIntoDb,
-  deleteProductFromDb,
-  getProductByCategorySlug,
+	createProductIntoDb,
+	getAllProductsFromDb,
+	getSingleProductFromDb,
+	updateProductIntoDb,
+	deleteProductFromDb,
+	getProductByCategorySlug,
 };

@@ -2,9 +2,7 @@ import express from 'express';
 import { flashSalesControllers } from './flashSales.controllers';
 const router = express.Router();
 
-router
-  .route('/create-flash-sales')
-  .post(flashSalesControllers.createFlashSales);
+router.route('/create-flash-sales').post(flashSalesControllers.createFlashSales);
 
 // get all flash sales
 router.route('/').get(flashSalesControllers.getAllFlashSales);

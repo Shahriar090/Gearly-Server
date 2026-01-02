@@ -30,14 +30,14 @@ const router = express.Router();
 // };
 // create a product
 router
-  .route('/create-product')
-  .post(
-    auth(USER_ROLES.Admin),
-    upload.array('images', 5),
-    parseFormData,
-    validateRequest(productValidations.createProductValidationSchema),
-    productControllers.createProduct,
-  );
+	.route('/create-product')
+	.post(
+		auth(USER_ROLES.Admin),
+		upload.array('images', 5),
+		parseFormData,
+		validateRequest(productValidations.createProductValidationSchema),
+		productControllers.createProduct,
+	);
 
 // get all products
 router.route('/').get(productControllers.getAllProducts);
@@ -47,18 +47,13 @@ router.route('/product/:id').get(productControllers.getSingleProduct);
 
 // update a product
 router
-  .route('/update-product/:id')
-  .put(
-    validateRequest(productValidations.updateProductValidationSchema),
-    productControllers.updateProduct,
-  );
+	.route('/update-product/:id')
+	.put(validateRequest(productValidations.updateProductValidationSchema), productControllers.updateProduct);
 
 // delete a product
 router.route('/delete-product/:id').delete(productControllers.deleteProduct);
 
 // get products by category slug
-router
-  .route('/category/:slug')
-  .get(productControllers.getProductByCategorySlug);
+router.route('/category/:slug').get(productControllers.getProductByCategorySlug);
 // ---------------------------------
 export const productRoutes = router;

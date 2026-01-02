@@ -1,4 +1,4 @@
-import express, { Application, Request, Response } from 'express';
+import express, { type Application, type Request, type Response } from 'express';
 import cors from 'cors';
 import notFound from './app/middlewares/notFound';
 import router from './app/routes';
@@ -10,34 +10,26 @@ app.use(express.json());
 app.use(cookieParser());
 
 // allowed origins
-const allowedOrigins = [
-  'http://localhost:5173',
-  'https://gearly-e-commerce.netlify.app',
-];
+const allowedOrigins = ['http://localhost:5173', 'https://gearly-e-commerce.netlify.app'];
 app.use(
-  cors({
-    origin: allowedOrigins,
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: [
-      'Content-Type',
-      'Authorization',
-      'X-Requested-With',
-      'Accept',
-    ],
-  }),
+	cors({
+		origin: allowedOrigins,
+		credentials: true,
+		methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+		allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+	}),
 );
 
 // application routes
 app.use('/api/v1', router);
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('👋 Hello From Gearly E-Commerce Server! Find Your Products');
+	res.send('👋 Hello From Gearly E-Commerce Server! Find Your Products');
 });
 
 app.get('/test-error', (req, res, next) => {
-  const err = new Error('This is a test error');
-  next(err);
+	const err = new Error('This is a test error');
+	next(err);
 });
 
 // not found route

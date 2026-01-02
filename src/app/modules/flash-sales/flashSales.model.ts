@@ -1,31 +1,31 @@
 import { model, Schema } from 'mongoose';
-import { TFlashSales } from './flashSales.interface';
+import type { TFlashSales } from './flashSales.interface';
 
 const flashSalesSchema = new Schema<TFlashSales>(
-  {
-    productId: {
-      type: Schema.Types.ObjectId,
-      ref: 'Product',
-      required: true,
-    },
-    discount: {
-      type: Number,
-      required: true,
-    },
-    startTime: {
-      type: Date,
-      required: true,
-    },
-    endTime: {
-      type: Date,
-      required: true,
-    },
-    isDeleted: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  { timestamps: true },
+	{
+		productId: {
+			type: Schema.Types.ObjectId,
+			ref: 'Product',
+			required: true,
+		},
+		discount: {
+			type: Number,
+			required: true,
+		},
+		startTime: {
+			type: Date,
+			required: true,
+		},
+		endTime: {
+			type: Date,
+			required: true,
+		},
+		isDeleted: {
+			type: Boolean,
+			default: false,
+		},
+	},
+	{ timestamps: true },
 );
 
 // model

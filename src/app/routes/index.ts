@@ -14,54 +14,54 @@ import { paymentRoutes } from '../modules/payment/payment.routes';
 const router = express.Router();
 
 const moduleRoutes = [
-  {
-    path: '/users',
-    route: userRoutes,
-  },
-  {
-    path: '/auth',
-    route: authRoutes,
-  },
-  {
-    path: '/categories',
-    route: categoryRoutes,
-  },
-  {
-    path: '/sub-categories',
-    route: subCategoryRoutes,
-  },
-  {
-    path: '/products',
-    route: productRoutes,
-  },
-  {
-    path: '/reviews',
-    route: reviewRoutes,
-  },
-  {
-    path: '/orders',
-    route: orderRoutes,
-  },
-  {
-    path: '/cart',
-    route: cartRoutes,
-  },
-  {
-    path: '/wish-list',
-    route: wishListRoutes,
-  },
-  {
-    path: '/admin-dashboard',
-    route: adminDashboardRoutes,
-  },
-  {
-    path: '/flash-sales',
-    route: flashSalesRoutes,
-  },
-  {
-    path: '/payment',
-    route: paymentRoutes,
-  },
+	{
+		path: '/users',
+		route: userRoutes,
+	},
+	{
+		path: '/auth',
+		route: authRoutes,
+	},
+	{
+		path: '/categories',
+		route: categoryRoutes,
+	},
+	{
+		path: '/sub-categories',
+		route: subCategoryRoutes,
+	},
+	{
+		path: '/products',
+		route: productRoutes,
+	},
+	{
+		path: '/reviews',
+		route: reviewRoutes,
+	},
+	{
+		path: '/orders',
+		route: orderRoutes,
+	},
+	{
+		path: '/cart',
+		route: cartRoutes,
+	},
+	{
+		path: '/wish-list',
+		route: wishListRoutes,
+	},
+	{
+		path: '/admin-dashboard',
+		route: adminDashboardRoutes,
+	},
+	{
+		path: '/flash-sales',
+		route: flashSalesRoutes,
+	},
+	{
+		path: '/payment',
+		route: paymentRoutes,
+	},
 ];
 
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
