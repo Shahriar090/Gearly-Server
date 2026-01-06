@@ -3,7 +3,7 @@ import asyncHandler from '../../utils/asyncHandler';
 import sendResponse from '../../utils/sendResponse';
 import { adminDashboardServices } from './adminDashboard.services';
 
-const getTotalSalesAndRevenue = asyncHandler(async (req, res) => {
+const getTotalSalesAndRevenue = asyncHandler(async (_req, res) => {
 	const result = await adminDashboardServices.getTotalSalesAndRevenue();
 
 	sendResponse(res, {
@@ -27,7 +27,7 @@ const getTotalOrders = asyncHandler(async (_req, res) => {
 });
 
 // get total users and new sign ups
-const getTotalUsersAndNewSignUp = asyncHandler(async (req, res) => {
+const getTotalUsersAndNewSignUp = asyncHandler(async (_req, res) => {
 	const result = await adminDashboardServices.getTotalUsersAndNewSignUp();
 
 	sendResponse(res, {
@@ -39,7 +39,7 @@ const getTotalUsersAndNewSignUp = asyncHandler(async (req, res) => {
 });
 
 // get products with status (available, out of stock)
-const getProductsWithStatus = asyncHandler(async (req, res) => {
+const getProductsWithStatus = asyncHandler(async (_req, res) => {
 	const result = await adminDashboardServices.getProductsWithStatus();
 
 	sendResponse(res, {
@@ -51,7 +51,7 @@ const getProductsWithStatus = asyncHandler(async (req, res) => {
 });
 
 // get total categories and brands
-const getTotalCategoriesAndBrands = asyncHandler(async (req, res) => {
+const getTotalCategoriesAndBrands = asyncHandler(async (_req, res) => {
 	const result = await adminDashboardServices.getTotalCategoriesAndBrands();
 
 	sendResponse(res, {
@@ -75,7 +75,7 @@ const getLowStockProducts = asyncHandler(async (_req, res) => {
 });
 
 // get best selling products
-const getBestSellingProducts = asyncHandler(async (req, res) => {
+const getBestSellingProducts = asyncHandler(async (_req, res) => {
 	const result = await adminDashboardServices.getBestSellingProducts();
 
 	sendResponse(res, {
@@ -87,7 +87,7 @@ const getBestSellingProducts = asyncHandler(async (req, res) => {
 });
 
 // get top performing categories
-const getTopPerformingCategories = asyncHandler(async (req, res) => {
+const getTopPerformingCategories = asyncHandler(async (_req, res) => {
 	const result = await adminDashboardServices.getTopPerformingCategories();
 
 	sendResponse(res, {

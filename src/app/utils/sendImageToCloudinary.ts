@@ -1,9 +1,9 @@
 import { v2 as cloudinary } from 'cloudinary';
-import config from '../config';
-import multer from 'multer';
-import fs from 'fs';
-import path from 'path';
 import type { Request } from 'express';
+import multer from 'multer';
+import fs from 'node:fs';
+import path from 'node:path';
+import config from '../config';
 
 // cloudinary configuration
 cloudinary.config({
@@ -14,7 +14,7 @@ cloudinary.config({
 
 // Disk storage configuration for multer
 const storage = multer.diskStorage({
-	destination: (req, file, cb) => {
+	destination: (_req, _file, cb) => {
 		// Define the upload path based on environment
 		const uploadPath = path.join(process.cwd(), 'src/uploads');
 
@@ -25,7 +25,7 @@ const storage = multer.diskStorage({
 
 		cb(null, uploadPath); // Set the destination folder dynamically
 	},
-	filename: (req, file, cb) => {
+	filename: (_req, file, cb) => {
 		const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
 		cb(null, file.fieldname + '-' + uniqueSuffix); // Set the filename
 	},
@@ -42,10 +42,10 @@ export const sendImageToCloudinary = async (imageName: string, path: string): Pr
 		await fs.promises.unlink(path);
 		console.log('Upload Successful And Local File Deleted', uploadResult);
 		return uploadResult;
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Upload Failed', error);
-		return { success: false, message: 'Upload Failed', error: error.message };
+		const errorMessage = error instanceof Error ? error.message : 'An Unknown Error Occured';
+		return { success: false, message: 'Upload Failed', error: errorMessage };
 	}
 };
 
@@ -86,7 +86,7 @@ export const handleImageUpload = async (req: Request) => {
 export const upload = multer({
 	storage: storage,
 	limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB limit
-	fileFilter: (req, file, cb) => {
+	fileFilter: (_req, file, cb) => {
 		if (!file.mimetype.startsWith('image/')) {
 			return cb(null, false); // Reject files that are not images
 		}

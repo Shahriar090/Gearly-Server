@@ -1,7 +1,6 @@
 // upgraded query builder to handle query and aggregation
 
-import type { PipelineStage, Query } from 'mongoose';
-import type { Model } from 'mongoose';
+import type { Model, PipelineStage, Query } from 'mongoose';
 
 class QueryBuilder<T> {
 	private model: Model<T>;
@@ -44,10 +43,11 @@ class QueryBuilder<T> {
 		//excluding fields which are not going to mongodb query for filtering
 		const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
 		// removing fields from queryObject which are not allowed to use in mongodb filtering
-		excludeFields.forEach((field) => delete queryObject[field]);
+		excludeFields.forEach((field) => {
+			delete queryObject[field];
+		});
 
 		// specifications filtering logic
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const specialConditions: any = {};
 
 		// Custom filter logic for 'specifications'

@@ -5,10 +5,10 @@ import type { TErrorSource, TGenericErrorResponse } from '../globalInterface/err
 //   code: number;
 // };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const handleDuplicateError = (err: any): TGenericErrorResponse => {
-	const match = err.message.match(/(["'])(?:(?=(\\?))\2.)*?\1/);
-	const extractedMsg = match && match[1];
+const handleDuplicateError = (err: unknown): TGenericErrorResponse => {
+	const errorMessage = err instanceof Error ? err.message : 'An Unknown Error Occured';
+	const match = errorMessage.match(/(["'])(?:(?=(\\?))\2.)*?\1/);
+	const extractedMsg = match?.[1];
 	const errorSource: TErrorSource = [
 		{
 			path: '',

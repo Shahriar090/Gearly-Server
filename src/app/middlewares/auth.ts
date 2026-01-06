@@ -1,14 +1,14 @@
+import httpStatus from 'http-status';
+import { type JwtPayload, TokenExpiredError } from 'jsonwebtoken';
 import config from '../config';
 import AppError from '../errors/appError';
 import { verifyJwtToken } from '../modules/auth/auth.utils';
 import type { TUserRole } from '../modules/user/user.interface';
 import { User } from '../modules/user/user.model';
 import asyncHandler from '../utils/asyncHandler';
-import { type JwtPayload, TokenExpiredError } from 'jsonwebtoken';
-import httpStatus from 'http-status';
 
 const auth = (...requiredRoles: TUserRole[]) => {
-	return asyncHandler(async (req, res, next) => {
+	return asyncHandler(async (req, _res, next) => {
 		const token = req.headers.authorization;
 
 		if (!token) {
