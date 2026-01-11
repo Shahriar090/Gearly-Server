@@ -1,9 +1,9 @@
+import httpStatus from 'http-status';
 import AppError from '../../errors/appError';
 import asyncHandler from '../../utils/asyncHandler';
 import { handleImageUpload } from '../../utils/sendImageToCloudinary';
 import sendResponse from '../../utils/sendResponse';
 import { categoryServices } from './category.services';
-import httpStatus from 'http-status';
 
 // create category
 const createCategory = asyncHandler(async (req, res) => {
@@ -27,7 +27,7 @@ const createCategory = asyncHandler(async (req, res) => {
 });
 
 // get all categories
-const getAllCategories = asyncHandler(async (req, res) => {
+const getAllCategories = asyncHandler(async (_req, res) => {
 	const result = await categoryServices.getAllCategoriesFromDb();
 
 	sendResponse(res, {

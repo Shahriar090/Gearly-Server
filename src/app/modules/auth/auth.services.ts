@@ -1,12 +1,12 @@
+import bcrypt from 'bcrypt';
+import httpStatus from 'http-status';
 import type { JwtPayload } from 'jsonwebtoken';
 import config from '../../config';
 import AppError from '../../errors/appError';
+import { sendEmail } from '../../utils/sendEmail';
 import { User } from '../user/user.model';
 import type { TLoginUser } from './auth.interface';
 import { generateJwtToken, verifyJwtToken } from './auth.utils';
-import httpStatus from 'http-status';
-import { sendEmail } from '../../utils/sendEmail';
-import bcrypt from 'bcrypt';
 
 const loginUser = async (payload: TLoginUser) => {
 	// check if the user is exists or not
@@ -15,7 +15,7 @@ const loginUser = async (payload: TLoginUser) => {
 		throw new Error('User Not Found');
 	}
 
-	// check if the user is blocked
+	// check if the user is deleted
 	const isDeleted = user?.isDeleted;
 	if (isDeleted) {
 		throw new Error('This User Is Deleted.!');

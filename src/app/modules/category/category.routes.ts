@@ -1,11 +1,11 @@
 import express from 'express';
-import validateRequest from '../../middlewares/validateRequest';
-import { categoryValidations } from './category.validations';
-import { categoryControllers } from './category.controllers';
 import auth from '../../middlewares/auth';
-import { USER_ROLES } from '../user/user.constant';
-import { upload } from '../../utils/sendImageToCloudinary';
+import validateRequest from '../../middlewares/validateRequest';
 import { parseFormData } from '../../utils/parseFormData';
+import { upload } from '../../utils/sendImageToCloudinary';
+import { USER_ROLES } from '../user/user.constant';
+import { categoryControllers } from './category.controllers';
+import { categoryValidations } from './category.validations';
 
 const router = express.Router();
 
@@ -20,7 +20,7 @@ router
 	);
 
 // get all categories
-router.route('/').get(categoryControllers.getAllCategories);
+router.route('/').get(auth(USER_ROLES.Customer, USER_ROLES.Admin), categoryControllers.getAllCategories);
 
 // get single category
 router.route('/:slug').get(categoryControllers.getCategory);

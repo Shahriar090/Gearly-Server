@@ -1,7 +1,8 @@
+import httpStatus from 'http-status';
+import config from '../../config';
 import asyncHandler from '../../utils/asyncHandler';
 import sendResponse from '../../utils/sendResponse';
 import { authServices } from './auth.services';
-import httpStatus from 'http-status';
 
 const loginUser = asyncHandler(async (req, res) => {
 	const result = await authServices.loginUser(req.body);
@@ -10,8 +11,8 @@ const loginUser = asyncHandler(async (req, res) => {
 	// HTTP only cookie for refresh token
 	res.cookie('refreshToken', refreshToken, {
 		httpOnly: true,
-		secure: process.env.NODE_ENV === 'production',
-		sameSite: 'none',
+		secure: config.node_env === 'production',
+		sameSite: config.node_env === 'production' ? 'none' : 'lax',
 		path: '/',
 		maxAge: 7 * 24 * 60 * 60 * 1000, //7days
 	});
@@ -20,7 +21,7 @@ const loginUser = asyncHandler(async (req, res) => {
 		success: true,
 		message: 'User Login Successful.',
 		data: {
-			tokens: { accessToken, refreshToken },
+			tokens: { accessToken },
 			user: { id: user?._id, email: user?.email, role: user?.role },
 		},
 	});
