@@ -1,11 +1,12 @@
-import { JwtPayload } from 'jsonwebtoken';
+/** biome-ignore-all lint/style/noNamespace: <will fix namespace related error  later> */
+import type { JwtPayload } from 'jsonwebtoken';
 
 declare global {
-  namespace Express {
-    interface Request {
-      user: JwtPayload;
-    }
-  }
+	namespace Express {
+		interface Request {
+			user: JwtPayload;
+		}
+	}
 }
 
 /**

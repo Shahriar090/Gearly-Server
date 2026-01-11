@@ -3,95 +3,69 @@ import WishList from './wishlist.model';
 import { Product } from '../productModel/productModel.model';
 import httpStatus from 'http-status';
 import AppError from '../../errors/appError';
-import { TWishList } from './wishlist.interface';
+import type { TWishList } from './wishlist.interface';
 
 // add to wishlist
 const addToWishList = async (userId: string, payload: TWishList) => {
-  if (!payload || !payload.products) {
-    throw new AppError(
-      httpStatus.BAD_REQUEST,
-      'Invalid Request Data',
-      'InvalidRequest',
-    );
-  }
+	if (!payload || !payload.products) {
+		throw new AppError(httpStatus.BAD_REQUEST, 'Invalid Request Data', 'InvalidRequest');
+	}
 
-  const productObjId = new mongoose.Types.ObjectId(payload.products[0]);
+	const productObjId = new mongoose.Types.ObjectId(payload.products[0]);
 
-  // check if the product is exist
-  const isProductExists = await Product.findOne({ _id: productObjId });
+	// check if the product is exist
+	const isProductExists = await Product.findOne({ _id: productObjId });
 
-  if (!isProductExists) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      'Product Not Found',
-      'ProductNotFound',
-    );
-  }
+	if (!isProductExists) {
+		throw new AppError(httpStatus.NOT_FOUND, 'Product Not Found', 'ProductNotFound');
+	}
 
-  // find the user's wishlist
-  let wishList = await WishList.findOne({ user: userId });
+	// find the user's wishlist
+	let wishList = await WishList.findOne({ user: userId });
 
-  if (!wishList) {
-    wishList = new WishList({ user: userId, products: [productObjId] });
-  } else if (!wishList.products.includes(productObjId)) {
-    wishList.products.push(productObjId);
-  }
+	if (!wishList) {
+		wishList = new WishList({ user: userId, products: [productObjId] });
+	} else if (!wishList.products.includes(productObjId)) {
+		wishList.products.push(productObjId);
+	}
 
-  return await wishList.save();
+	return await wishList.save();
 };
 
 // get wish list
 const getWishList = async (userId: string) => {
-  const wishList = await WishList.findOne({ user: userId }).populate(
-    'products',
-  );
+	const wishList = await WishList.findOne({ user: userId }).populate('products');
 
-  if (!wishList) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      'Wish List Not Found',
-      'WishListNotFound',
-    );
-  }
+	if (!wishList) {
+		throw new AppError(httpStatus.NOT_FOUND, 'Wish List Not Found', 'WishListNotFound');
+	}
 
-  return wishList;
+	return wishList;
 };
 
 // delete product from wish list
 const deleteProductFromWishList = async (userId: string, productId: string) => {
-  const productObjId = new mongoose.Types.ObjectId(productId);
+	const productObjId = new mongoose.Types.ObjectId(productId);
 
-  let wishList = await WishList.findOne({ user: userId });
+	let wishList = await WishList.findOne({ user: userId });
 
-  if (!wishList) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      'Wish List Not Found',
-      'WishListNotFound',
-    );
-  }
+	if (!wishList) {
+		throw new AppError(httpStatus.NOT_FOUND, 'Wish List Not Found', 'WishListNotFound');
+	}
 
-  if (!wishList.products.includes(productObjId)) {
-    throw new AppError(
-      httpStatus.BAD_REQUEST,
-      'Product not found in wishlist',
-      'ProductNotInWishlist',
-    );
-  }
+	if (!wishList.products.includes(productObjId)) {
+		throw new AppError(httpStatus.BAD_REQUEST, 'Product not found in wishlist', 'ProductNotInWishlist');
+	}
 
-  // remove the product from the wish list
-  wishList = await WishList.findOneAndUpdate(
-    { user: userId },
-    { $pull: { products: productObjId } },
-    { new: true },
-  );
+	// remove the product from the wish list
+	wishList = await WishList.findOneAndUpdate({ user: userId }, { $pull: { products: productObjId } }, { new: true });
 
-  return wishList;
+	return wishList;
 };
 
 // -----------------------
 export const wishListServices = {
-  addToWishList,
-  getWishList,
-  deleteProductFromWishList,
+	addToWishList,
+	getWishList,
+	deleteProductFromWishList,
 };

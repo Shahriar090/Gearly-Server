@@ -5,58 +5,35 @@ import { adminDashboardControllers } from './adminDashboard.controllers';
 const router = express.Router();
 
 // total sales and revenue
-router
-  .route('/total-sales-and-revenue')
-  .get(
-    auth(USER_ROLES.Admin),
-    adminDashboardControllers.getTotalSalesAndRevenue,
-  );
+router.route('/total-sales-and-revenue').get(auth(USER_ROLES.Admin), adminDashboardControllers.getTotalSalesAndRevenue);
 
 //   get total orders
-router
-  .route('/total-orders')
-  .get(auth(USER_ROLES.Admin), adminDashboardControllers.getTotalOrders);
+router.route('/total-orders').get(auth(USER_ROLES.Admin), adminDashboardControllers.getTotalOrders);
 
 //   total users and new sign up
 router
-  .route('/total-users-and-new-sign-up')
-  .get(
-    auth(USER_ROLES.Admin),
-    adminDashboardControllers.getTotalUsersAndNewSignUp,
-  );
+	.route('/total-users-and-new-sign-up')
+	.get(auth(USER_ROLES.Admin), adminDashboardControllers.getTotalUsersAndNewSignUp);
 
 // products with their availability status
 router
-  .route('/products-availability-status')
-  .get(auth(USER_ROLES.Admin), adminDashboardControllers.getProductsWithStatus);
+	.route('/products-availability-status')
+	.get(auth(USER_ROLES.Admin), adminDashboardControllers.getProductsWithStatus);
 
 // get total categories and brands (sub categories)
 router
-  .route('/total-categories-and-brands')
-  .get(
-    auth(USER_ROLES.Admin),
-    adminDashboardControllers.getTotalCategoriesAndBrands,
-  );
+	.route('/total-categories-and-brands')
+	.get(auth(USER_ROLES.Admin), adminDashboardControllers.getTotalCategoriesAndBrands);
 
 // get lowest stock products
-router
-  .route('/lowest-stock-products')
-  .get(auth(USER_ROLES.Admin), adminDashboardControllers.getLowStockProducts);
+router.route('/lowest-stock-products').get(auth(USER_ROLES.Admin), adminDashboardControllers.getLowStockProducts);
 
 // get best selling products
-router
-  .route('/best-selling-products')
-  .get(
-    auth(USER_ROLES.Admin),
-    adminDashboardControllers.getBestSellingProducts,
-  );
+router.route('/best-selling-products').get(auth(USER_ROLES.Admin), adminDashboardControllers.getBestSellingProducts);
 
 // top performing categories
 router
-  .route('/top-performing-categories')
-  .get(
-    auth(USER_ROLES.Admin),
-    adminDashboardControllers.getTopPerformingCategories,
-  );
+	.route('/top-performing-categories')
+	.get(auth(USER_ROLES.Admin), adminDashboardControllers.getTopPerformingCategories);
 // ------------------------------------
 export const adminDashboardRoutes = router;

@@ -5,28 +5,18 @@ import { cartControllers } from './cart.controllers';
 const router = express.Router();
 
 // add to cart
-router
-  .route('/add-to-cart')
-  .post(auth(USER_ROLES.Customer), cartControllers.addToCart);
+router.route('/add-to-cart').post(auth(USER_ROLES.Customer), cartControllers.addToCart);
 
 // get user specific cart
-router
-  .route('/get-cart')
-  .get(auth(USER_ROLES.Customer), cartControllers.getCart);
+router.route('/get-cart').get(auth(USER_ROLES.Customer), cartControllers.getCart);
 
 // update cart item
-router
-  .route('/update-item/:productId')
-  .patch(auth(USER_ROLES.Customer), cartControllers.updateCartItem);
+router.route('/update-item/:productId').patch(auth(USER_ROLES.Customer), cartControllers.updateCartItem);
 
 // remove cart item
-router
-  .route('/remove-item/:productId')
-  .delete(auth(USER_ROLES.Customer), cartControllers.removeCartItem);
+router.route('/remove-item/:productId').delete(auth(USER_ROLES.Customer), cartControllers.removeCartItem);
 
 // clear cart
-router
-  .route('/clear-cart')
-  .delete(auth(USER_ROLES.Customer), cartControllers.clearCart);
+router.route('/clear-cart').delete(auth(USER_ROLES.Customer), cartControllers.clearCart);
 // ----------------
 export const cartRoutes = router;

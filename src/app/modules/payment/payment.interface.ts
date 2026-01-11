@@ -1,18 +1,18 @@
-import { TCustomerInfo } from '../order/order.interface';
-import { TProductModel } from '../productModel/productModel.interface';
+import type { TCustomerInfo } from '../order/order.interface';
+import type { TProductModel } from '../productModel/productModel.interface';
 
 export type TPayment = {
-  trackingId: string;
-  totalAmount: number;
-  customerInfo: TCustomerInfo;
-  products: {
-    product: TProductModel;
-    quantity: number;
-    price: number;
-    discount: number;
-    saved: number;
-    totalPrice: number;
-  }[];
+	trackingId: string;
+	totalAmount: number;
+	customerInfo: TCustomerInfo;
+	products: {
+		product: TProductModel;
+		quantity: number;
+		price: number;
+		discount: number;
+		saved: number;
+		totalPrice: number;
+	}[];
 
-  deliveryMethod: string;
+	deliveryMethod: string;
 };
