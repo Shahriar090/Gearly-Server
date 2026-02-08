@@ -36,4 +36,4 @@ const attributeTemplateSchema = new Schema<TAttributeTemplate>(
 	{ timestamps: true },
 );
 
-const SmartPhonesAttributeTemplate = model<TAttributeTemplate>('SmartPhonesAttributeTemplate', attributeTemplateSchema);
+export const AttributeTemplate = model<TAttributeTemplate>('SmartPhonesAttributeTemplate', attributeTemplateSchema);
