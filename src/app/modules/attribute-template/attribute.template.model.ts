@@ -1,5 +1,5 @@
 import { model, Schema } from 'mongoose';
-import { TAttribute, TAttributeGroup, TAttributeTemplate } from './interface';
+import { TAttribute, TAttributeGroup, TAttributeTemplate } from './attribute.template.interface';
 
 const attributeSchema = new Schema<TAttribute>(
 	{
