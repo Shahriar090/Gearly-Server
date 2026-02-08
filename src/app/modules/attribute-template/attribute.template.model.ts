@@ -30,10 +30,16 @@ const attributeGroupSchema = new Schema<TAttributeGroup>(
 
 const attributeTemplateSchema = new Schema<TAttributeTemplate>(
 	{
-		name: { type: String, required: true, unique: true },
+		categoryId:{
+			type: Schema.Types.ObjectId,
+			ref:"Category",
+			required:true,
+			unique:true
+		},
+		name: { type: String, required: true, },
 		groups: { type: [attributeGroupSchema], required: true },
 	},
 	{ timestamps: true },
 );
 
-export const AttributeTemplate = model<TAttributeTemplate>('SmartPhonesAttributeTemplate', attributeTemplateSchema);
+export const AttributeTemplate = model<TAttributeTemplate>('AttributeTemplate', attributeTemplateSchema);
