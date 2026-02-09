@@ -3,7 +3,7 @@ import z from 'zod';
 // Base objects
 const attributeBaseObject = z.object({
 	name: z.string().min(1, 'Attribute name is required'),
-	key: z.string().regex(/^[a-z_]+$/, 'Key must be lowercase letters/underscores only'),
+	key: z.string().regex(/^[a-z0-9_]+$/, 'Key must be lowercase letters/underscores only'),
 	type: z.enum(['string', 'number', 'boolean', 'enum']),
 	unit: z.string().optional(),
 	enumValues: z.array(z.string()).optional(),
@@ -50,5 +50,9 @@ const templateBaseObject = z.object({
 	groups: z.array(groupBaseObject).min(1),
 });
 
-export const attributeTemplateCreateSchema = templateBaseObject;
+export const attributeTemplateCreateSchema = z.object({
+	body: z.object({
+		template: templateBaseObject,
+	}),
+});
 export const attributeTemplateUpdateSchema = templateBaseObject.partial({});
