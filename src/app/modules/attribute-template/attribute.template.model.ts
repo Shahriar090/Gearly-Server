@@ -34,7 +34,6 @@ const attributeTemplateSchema = new Schema<TAttributeTemplate>(
 			type: Schema.Types.ObjectId,
 			ref: 'Category',
 			required: true,
-			unique: true,
 		},
 		name: { type: String, required: true },
 		groups: { type: [attributeGroupSchema], required: true },
