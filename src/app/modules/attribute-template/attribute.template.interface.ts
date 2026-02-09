@@ -1,5 +1,5 @@
 export type TAttributeType = 'string' | 'number' | 'boolean' | 'enum';
-import { ObjectId } from "mongodb";
+import { ObjectId } from 'mongodb';
 
 export interface TAttribute {
 	name: string;
@@ -19,7 +19,7 @@ export interface TAttributeGroup {
 }
 
 export interface TAttributeTemplate {
-	categoryId:ObjectId
+	categoryId: ObjectId;
 	name: string;
 	groups: TAttributeGroup[];
 }

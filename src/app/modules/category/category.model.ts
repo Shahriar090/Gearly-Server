@@ -8,7 +8,7 @@ const categorySchema = new Schema<TCategory>(
 		parentId: {
 			type: Schema.Types.ObjectId,
 			ref: 'Category',
-			default:null
+			default: null,
 		},
 		name: {
 			type: String,

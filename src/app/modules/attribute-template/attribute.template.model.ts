@@ -30,13 +30,13 @@ const attributeGroupSchema = new Schema<TAttributeGroup>(
 
 const attributeTemplateSchema = new Schema<TAttributeTemplate>(
 	{
-		categoryId:{
+		categoryId: {
 			type: Schema.Types.ObjectId,
-			ref:"Category",
-			required:true,
-			unique:true
+			ref: 'Category',
+			required: true,
+			unique: true,
 		},
-		name: { type: String, required: true, },
+		name: { type: String, required: true },
 		groups: { type: [attributeGroupSchema], required: true },
 	},
 	{ timestamps: true },
