@@ -3,6 +3,7 @@
 import httpStatus from 'http-status';
 import AppError from '../../errors/appError';
 import { Category } from '../category/category.model';
+import { updateCategoryAttributeTemplate } from '../category/category.utils';
 import { TAttributeTemplate } from './attribute.template.interface';
 import { AttributeTemplate } from './attribute.template.model';
 
@@ -45,7 +46,13 @@ const createAttributeTemplateIntoDb = async (payload: TAttributeTemplate) => {
 	}
 
 	// create a new template
-	return await AttributeTemplate.create(payload);
+	const template = new AttributeTemplate(payload);
+
+	await template.save();
+
+	await updateCategoryAttributeTemplate(categoryId.toString(), template._id.toString());
+
+	return template;
 };
 
 export const AttributeTemplateServices = {
