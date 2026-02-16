@@ -11,7 +11,7 @@ const attributeSchema = new Schema<TAttribute>(
 			required: true,
 		},
 		unit: { type: String },
-		enumValues: { type: [String] },
+		options: { type: [String] },
 		required: { type: Boolean, default: false },
 		filterable: { type: Boolean, default: false },
 		sortable: { type: Boolean, default: false },
