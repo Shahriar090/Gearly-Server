@@ -55,4 +55,9 @@ export const attributeTemplateCreateSchema = z.object({
 		template: templateBaseObject,
 	}),
 });
-export const attributeTemplateUpdateSchema = templateBaseObject.partial({});
+
+export const attributeTemplateUpdateSchema = z.object({
+	body: z.object({
+		template: templateBaseObject.partial({}),
+	}),
+});
