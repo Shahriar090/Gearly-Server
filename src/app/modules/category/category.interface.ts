@@ -5,6 +5,7 @@ export type TCategoryStatus = (typeof CATEGORY_STATUS)[keyof typeof CATEGORY_STA
 
 export type TCategory = {
 	parentId?: ObjectId;
+	attributeTemplateId?: ObjectId;
 	name: string;
 	slug: string;
 	description: string;
