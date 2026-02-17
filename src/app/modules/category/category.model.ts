@@ -10,6 +10,12 @@ const categorySchema = new Schema<TCategory>(
 			ref: 'Category',
 			default: null,
 		},
+		attributeTemplateId: {
+			type: Schema.Types.ObjectId,
+			ref: 'AttributeTemplate',
+			default: null,
+		},
+
 		name: {
 			type: String,
 			required: true,
