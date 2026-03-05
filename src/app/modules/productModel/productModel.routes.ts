@@ -1,11 +1,9 @@
 import express from 'express';
-import { productControllers } from './productModel.controllers';
 import validateRequest from '../../middlewares/validateRequest';
-import { productValidations } from './productModel.validations';
-import auth from '../../middlewares/auth';
-import { USER_ROLES } from '../user/user.constant';
-import { upload } from '../../utils/sendImageToCloudinary';
 import { parseFormData } from '../../utils/parseFormData';
+import { upload } from '../../utils/sendImageToCloudinary';
+import { productControllers } from './productModel.controllers';
+import { productValidations } from './productModel.validations';
 const router = express.Router();
 
 // const parseFormData = (
@@ -32,7 +30,6 @@ const router = express.Router();
 router
 	.route('/create-product')
 	.post(
-		auth(USER_ROLES.Admin),
 		upload.array('images', 5),
 		parseFormData,
 		validateRequest(productValidations.createProductValidationSchema),
