@@ -1,55 +1,66 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import AppError from '../../errors/appError';
-import { SubCategory } from '../subCategories/subCategories.model';
-import type { TProductModel } from './productModel.interface';
 import httpStatus from 'http-status';
-import { Product } from './productModel.model';
-import slugify from 'slugify';
-import { Review } from '../productReviews/productReviews.model';
 import QueryBuilder from '../../builder/QueryBuilder';
-import { PRODUCT_SEARCHABLE_FIELDS } from './productModel.constants';
+import AppError from '../../errors/appError';
+import { validateAttributes } from '../attribute-template/attribute.product.validation';
+import { ValidationResult } from '../attribute-template/attribute.template.interface';
 import { Category } from '../category/category.model';
+import { Review } from '../productReviews/productReviews.model';
+import { PRODUCT_SEARCHABLE_FIELDS } from './productModel.constants';
+import type { CreateProductInput, TProductModel } from './productModel.interface';
+import { Product } from './productModel.model';
+import { createNewProduct, findAttributeTemplateById, findCategoryById } from './productModel.utils';
 
 // create a product
-const createProductIntoDb = async (payload: TProductModel) => {
-	// generating slug from sub category name to find the sub category using its slug
-	const subCategorySlug = slugify(payload.brandName, {
-		lower: true,
-		strict: true,
-	});
+const createProductIntoDb = async (payload: CreateProductInput) => {
+	const { categoryId, attributes = {}, sku } = payload;
 
-	// find the sub category (brand: like Apple, Samsung) using the generated slug
-	const subCategory = await SubCategory.findOne({
-		slug: subCategorySlug,
-	});
-	if (!subCategory) {
-		throw new AppError(httpStatus.NOT_FOUND, 'Sub Category Not Found.!', 'SubCategoryNotFound');
+	const category = await findCategoryById(categoryId);
+
+	if (!category) {
+		throw new AppError(httpStatus.NOT_FOUND, 'Category Not Found', 'CategoryNotFound');
 	}
 
-	// find the parent category from the sub category
-	const parentCategory = subCategory?.category;
-
-	if (!parentCategory) {
-		throw new AppError(httpStatus.NOT_FOUND, 'Parent Category Not Found.!', 'ParentCategoryNotFound');
+	// check attribute template exists
+	if (!category.attributeTemplateId) {
+		throw new AppError(
+			httpStatus.BAD_REQUEST,
+			'Category Does Not Have An Attribute Template',
+			'NoAttributeTemplateFound',
+		);
 	}
 
-	// check if the product is already exists or not
-	const isExists = await Product.findOne({ name: payload.modelName });
+	// get attribute template
+	const template = await findAttributeTemplateById(category.attributeTemplateId.toString());
 
-	if (isExists) {
-		throw new AppError(httpStatus.BAD_REQUEST, 'This Product Is Already Exists.!', 'ProductExists');
+	if (!template) {
+		throw new AppError(httpStatus.NOT_FOUND, 'Attribute Template Not Found', 'AttributeTemplateNotFound');
 	}
+
+	// validate attributes against template - zod
+
+	const validation: ValidationResult = validateAttributes(attributes, template as any);
+
+	if (!validation.isValid) {
+		const error: any = new Error('Attribute Validation Failed');
+		error.ValidationErrors = validation.errors;
+		throw error;
+	}
+
+	// TODO: check SKU uniquness
+
+	// TODO: Generate slug if needed
 
 	// create new product
-	const newProduct = new Product({
+	const newProductToCreate: CreateProductInput = {
 		...payload,
-		subCategory: subCategory._id,
-		category: parentCategory._id,
+		attributes: validation.sanitizedAttributes,
 		images: payload.images,
-	});
+	};
 
-	const result = await newProduct.save();
-	return result;
+	const createdProduct = await createNewProduct(newProductToCreate);
+
+	return createdProduct;
 };
 
 // get all products
