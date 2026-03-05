@@ -1,25 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { model, Schema } from 'mongoose';
-import type { TProductModel } from './productModel.interface';
 import slugify from 'slugify';
 import { AVAILABILITY_STATUS } from './productModel.constants';
-import { Category } from '../category/category.model';
+import type { TProductModel } from './productModel.interface';
 
-const productSpecificationFieldSchema = new Schema(
-	{
-		name: { type: String, required: true },
-		value: { type: Schema.Types.Mixed, required: true }, // Can be string, number, boolean, etc.
-	},
-	{ _id: false },
-);
-
-const productSpecificationGroupSchema = new Schema(
-	{
-		groupName: { type: String },
-		fields: { type: [productSpecificationFieldSchema], required: true },
-	},
-	{ _id: false },
-);
 const productSchema = new Schema<TProductModel>(
 	{
 		modelName: { type: String, required: true },
@@ -30,10 +14,6 @@ const productSchema = new Schema<TProductModel>(
 		discount: { type: Number },
 		discountPrice: { type: Number },
 		saved: { type: Number },
-		specifications: {
-			type: [productSpecificationGroupSchema],
-			required: true,
-		},
 
 		tags: { type: [String], default: [] },
 		availabilityStatus: {
@@ -42,8 +22,7 @@ const productSchema = new Schema<TProductModel>(
 			required: true,
 		},
 		stock: { type: Number, required: true },
-		category: { type: Schema.Types.ObjectId, ref: 'Category' },
-		subCategory: { type: Schema.Types.ObjectId, ref: 'SubCategory' },
+		categoryId: { type: Schema.Types.ObjectId, ref: 'Category' },
 		brand: { type: String, required: false },
 		images: { type: [String] },
 		reviews: [
@@ -54,6 +33,7 @@ const productSchema = new Schema<TProductModel>(
 		],
 		isFeatured: { type: Boolean, required: true },
 		isDeleted: { type: Boolean, default: false },
+		attributes: { type: Map, of: Schema.Types.Mixed },
 	},
 	{ timestamps: true },
 );
@@ -90,42 +70,42 @@ productSchema.pre('save', function (next) {
 });
 
 // Ensuring all required specifications are included (Updated for the new structure)
-productSchema.pre('save', async function (next) {
-	try {
-		if (!this.category) {
-			return next(new Error('Category is missing.'));
-		}
+// productSchema.pre('save', async function (next) {
+// 	try {
+// 		if (!this.category) {
+// 			return next(new Error('Category is missing.'));
+// 		}
 
-		const category = await Category.findById(this.category);
+// 		const category = await Category.findById(this.category);
 
-		if (!category || !Array.isArray(category.specifications)) {
-			return next(new Error('Category or its specifications are missing.'));
-		}
+// 		if (!category || !Array.isArray(category.specifications)) {
+// 			return next(new Error('Category or its specifications are missing.'));
+// 		}
 
-		if (!this.specifications || !Array.isArray(this.specifications)) {
-			return next(new Error('Product specifications are missing.'));
-		}
+// 		if (!this.specifications || !Array.isArray(this.specifications)) {
+// 			return next(new Error('Product specifications are missing.'));
+// 		}
 
-		// Extract field names from product specifications
-		const productSpecs = this.specifications.flatMap((group: any) =>
-			Array.isArray(group.fields) ? group.fields.map((field: any) => field.name) : [],
-		);
+// 		// Extract field names from product specifications
+// 		const productSpecs = this.specifications.flatMap((group: any) =>
+// 			Array.isArray(group.fields) ? group.fields.map((field: any) => field.name) : [],
+// 		);
 
-		const requiredSpecs = category.specifications
-			.filter((spec: { name: string; required: boolean }) => spec.required)
-			.map((spec) => spec.name);
+// 		const requiredSpecs = category.specifications
+// 			.filter((spec: { name: string; required: boolean }) => spec.required)
+// 			.map((spec) => spec.name);
 
-		const missingSpecs = requiredSpecs.filter((spec: string) => !productSpecs.includes(spec));
+// 		const missingSpecs = requiredSpecs.filter((spec: string) => !productSpecs.includes(spec));
 
-		if (missingSpecs.length > 0) {
-			return next(new Error(`Missing Required Specifications: ${missingSpecs.join(', ')}`));
-		}
+// 		if (missingSpecs.length > 0) {
+// 			return next(new Error(`Missing Required Specifications: ${missingSpecs.join(', ')}`));
+// 		}
 
-		next();
-	} catch (error: any) {
-		next(error);
-	}
-});
+// 		next();
+// 	} catch (error: any) {
+// 		next(error);
+// 	}
+// });
 
 // model
 export const Product = model<TProductModel>('Product', productSchema);
