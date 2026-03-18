@@ -1,5 +1,6 @@
 // export type TAttributeType = 'string' | 'number' | 'boolean' | 'enum';
 import { ObjectId } from 'mongodb';
+import { Types } from 'mongoose';
 
 export enum AttributeType {
 	STRING = 'string',
@@ -19,6 +20,7 @@ export type AttributeValidation = {
 };
 
 export interface TAttribute {
+	_id?: Types.ObjectId;
 	name: string;
 	key: string;
 	type: AttributeType;
@@ -31,6 +33,7 @@ export interface TAttribute {
 }
 
 export interface TAttributeGroup {
+	_id?: Types.ObjectId;
 	groupName: string;
 	order: number;
 	attributes: TAttribute[];
