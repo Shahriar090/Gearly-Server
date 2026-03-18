@@ -3,7 +3,7 @@ import z from 'zod';
 // Base objects
 const attributeBaseObject = z.object({
 	name: z.string().min(1, 'Attribute name is required'),
-	key: z.string().regex(/^[a-z0-9_]+$/, 'Key must be lowercase letters/underscores only'),
+	key: z.string().min(1).max(50).regex(/^[a-z0-9_]+$/, 'Key must be lowercase letters/underscores only'),
 	type: z.enum(['string', 'number', 'boolean', 'array', 'select', 'multiSelect']),
 	unit: z.string().optional(),
 	options: z.array(z.string()).optional(),
@@ -22,9 +22,9 @@ const attributeBaseObject = z.object({
 });
 
 // Refine function
-function attributeRefine(attr: any, ctx: z.RefinementCtx) {
+function attributeRefine(attr: Partial<z.infer<typeof attributeBaseObject>>, ctx: z.RefinementCtx) {
 	// options required for select/multiselect
-	if ((attr.type === 'select' || attr.type === 'multiselect') && (!attr.options || attr.options.length === 0)) {
+	if ((attr.type === 'select' || attr.type === 'multiSelect') && (!attr.options || attr.options.length === 0)) {
 		ctx.addIssue({
 			code: z.ZodIssueCode.custom,
 			path: ['options'],
@@ -53,7 +53,10 @@ function attributeRefine(attr: any, ctx: z.RefinementCtx) {
 
 //  Create schema
 export const attributeCreateSchema = attributeBaseObject.superRefine(attributeRefine);
-export const attributeUpdateSchema = attributeBaseObject.partial().superRefine(attributeRefine);
+// Update schema
+export const attributeUpdateSchema = attributeBaseObject.partial().superRefine(attributeRefine).refine(obj => Object.keys(obj).length > 0, {
+	message:"Attribute update cannot be empty"
+});
 
 // Groups
 const groupBaseObject = z.object({
@@ -82,4 +85,76 @@ export const attributeTemplateUpdateSchema = z.object({
 	body: z.object({
 		template: templateBaseObject.partial({}),
 	}),
+});
+
+
+
+
+
+//
+// 🔹 PATCH Schema (Main Part)
+//
+export const attributeTemplatePatchSchema = z.object({
+	body: z
+		.object({
+			templateId: z.string().min(1, 'TemplateId is required'),
+
+			// 🔹 Update group fields (name, order)
+			groupUpdates: z
+				.array(
+					z.object({
+						groupId: z.string().min(1),
+						data: z
+							.object({
+								groupName: z.string().optional(),
+								order: z.number().int().nonnegative().optional(),
+							})
+							.refine(obj => Object.keys(obj).length > 0, {
+								message: 'Group update must contain at least one field',
+							}),
+					})
+				)
+				.optional(),
+
+			// 🔹 Update existing attributes
+			attributeUpdates: z
+				.array(
+					z.object({
+						groupId: z.string().min(1),
+						attributeId: z.string().min(1),
+						data: attributeUpdateSchema,
+					})
+				)
+				.optional(),
+
+			// 🔹 Add new attributes
+			addAttributes: z
+				.array(
+					z.object({
+						groupId: z.string().min(1),
+						attributes: z.array(attributeCreateSchema).min(1),
+					})
+				)
+				.optional(),
+
+			// 🔹 Delete attributes
+			deleteAttributes: z
+				.array(
+					z.object({
+						groupId: z.string().min(1),
+						attributeIds: z.array(z.string().min(1)).min(1),
+					})
+				)
+				.optional(),
+		})
+		.refine(
+			data =>
+				data.groupUpdates ||
+				data.attributeUpdates ||
+				data.addAttributes ||
+				data.deleteAttributes,
+			{
+				message: 'At least one update operation must be provided',
+			}
+		),
 });
