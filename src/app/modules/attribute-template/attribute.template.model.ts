@@ -1,5 +1,5 @@
 import { model, Schema } from 'mongoose';
-import { TAttribute, TAttributeGroup, TAttributeTemplate } from './attribute.template.interface';
+import { AttributeType, TAttribute, TAttributeGroup, TAttributeTemplate } from './attribute.template.interface';
 
 const attributeSchema = new Schema<TAttribute>(
 	{
@@ -7,11 +7,18 @@ const attributeSchema = new Schema<TAttribute>(
 		key: { type: String, required: true },
 		type: {
 			type: String,
-			enum: ['string', 'number', 'boolean', 'enum'],
+			enum: Object.values(AttributeType),
 			required: true,
 		},
 		unit: { type: String },
 		options: { type: [String] },
+		validations: {
+			min: Number,
+			max: Number,
+			pattern: String,
+			minLength: Number,
+			maxLength: Number,
+		},
 		required: { type: Boolean, default: false },
 		filterable: { type: Boolean, default: false },
 		sortable: { type: Boolean, default: false },
