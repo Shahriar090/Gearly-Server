@@ -22,7 +22,8 @@ const attributeSchema = new Schema<TAttribute>(
 		required: { type: Boolean, default: false },
 		filterable: { type: Boolean, default: false },
 		sortable: { type: Boolean, default: false },
-	}
+	},
+	{ _id: true },
 );
 
 const attributeGroupSchema = new Schema<TAttributeGroup>(
@@ -30,7 +31,8 @@ const attributeGroupSchema = new Schema<TAttributeGroup>(
 		groupName: { type: String, required: true },
 		order: { type: Number, required: true },
 		attributes: { type: [attributeSchema], required: true },
-	}
+	},
+	{ _id: true },
 );
 
 const attributeTemplateSchema = new Schema<TAttributeTemplate>(
@@ -39,6 +41,7 @@ const attributeTemplateSchema = new Schema<TAttributeTemplate>(
 			type: Schema.Types.ObjectId,
 			ref: 'Category',
 			required: true,
+			index: true,
 		},
 		name: { type: String, required: true },
 		groups: { type: [attributeGroupSchema], required: true },

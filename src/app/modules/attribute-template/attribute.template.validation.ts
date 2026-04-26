@@ -2,11 +2,15 @@ import z from 'zod';
 
 // Base objects
 const attributeBaseObject = z.object({
-	name: z.string().min(1, 'Attribute name is required'),
-	key: z.string().min(1).max(50).regex(/^[a-z0-9_]+$/, 'Key must be lowercase letters/underscores only'),
+	name: z.string().min(1, 'Attribute name is required'), // human readable (RAM)
+	key: z
+		.string()
+		.min(1)
+		.max(50)
+		.regex(/^[a-z0-9_]+$/, 'Key must be lowercase letters/underscores only'), // system safe identifier (ram_size)
 	type: z.enum(['string', 'number', 'boolean', 'array', 'select', 'multiSelect']),
-	unit: z.string().optional(),
-	options: z.array(z.string()).optional(),
+	unit: z.string().optional(), // unit for numbers (GB, KG)
+	options: z.array(z.string()).optional(), // only for select/multiselect
 	validations: z
 		.object({
 			min: z.number().optional(),
@@ -15,13 +19,14 @@ const attributeBaseObject = z.object({
 			minLength: z.number().optional(),
 			maxLength: z.number().optional(),
 		})
-		.optional(),
-	required: z.boolean().default(false),
-	filterable: z.boolean().default(false),
-	sortable: z.boolean().default(false),
+		.optional(), // allowing custom validation rules per attribute. like RAM: min = 4, max = 64
+	required: z.boolean().default(false), // must user fill it?
+	filterable: z.boolean().default(false), // can it be used in filters?
+	sortable: z.boolean().default(false), // can it be sorted?
 });
 
 // Refine function
+// superRefine = Run custom logic after validation
 function attributeRefine(attr: Partial<z.infer<typeof attributeBaseObject>>, ctx: z.RefinementCtx) {
 	// options required for select/multiselect
 	if ((attr.type === 'select' || attr.type === 'multiSelect') && (!attr.options || attr.options.length === 0)) {
@@ -54,9 +59,12 @@ function attributeRefine(attr: Partial<z.infer<typeof attributeBaseObject>>, ctx
 //  Create schema
 export const attributeCreateSchema = attributeBaseObject.superRefine(attributeRefine);
 // Update schema
-export const attributeUpdateSchema = attributeBaseObject.partial().superRefine(attributeRefine).refine(obj => Object.keys(obj).length > 0, {
-	message:"Attribute update cannot be empty"
-});
+export const attributeUpdateSchema = attributeBaseObject
+	.partial()
+	.superRefine(attributeRefine)
+	.refine((obj) => Object.keys(obj).length > 0, {
+		message: 'Attribute update cannot be empty',
+	});
 
 // Groups
 const groupBaseObject = z.object({
@@ -87,13 +95,8 @@ export const attributeTemplateUpdateSchema = z.object({
 	}),
 });
 
-
-
-
-
-//
 // 🔹 PATCH Schema (Main Part)
-//
+// this schema is for partial, granular updates (Patch) or simply modify specific parts.
 export const attributeTemplatePatchSchema = z.object({
 	body: z
 		.object({
@@ -109,10 +112,10 @@ export const attributeTemplatePatchSchema = z.object({
 								groupName: z.string().optional(),
 								order: z.number().int().nonnegative().optional(),
 							})
-							.refine(obj => Object.keys(obj).length > 0, {
+							.refine((obj) => Object.keys(obj).length > 0, {
 								message: 'Group update must contain at least one field',
 							}),
-					})
+					}),
 				)
 				.optional(),
 
@@ -123,7 +126,7 @@ export const attributeTemplatePatchSchema = z.object({
 						groupId: z.string().min(1),
 						attributeId: z.string().min(1),
 						data: attributeUpdateSchema,
-					})
+					}),
 				)
 				.optional(),
 
@@ -133,7 +136,7 @@ export const attributeTemplatePatchSchema = z.object({
 					z.object({
 						groupId: z.string().min(1),
 						attributes: z.array(attributeCreateSchema).min(1),
-					})
+					}),
 				)
 				.optional(),
 
@@ -143,18 +146,11 @@ export const attributeTemplatePatchSchema = z.object({
 					z.object({
 						groupId: z.string().min(1),
 						attributeIds: z.array(z.string().min(1)).min(1),
-					})
+					}),
 				)
 				.optional(),
 		})
-		.refine(
-			data =>
-				data.groupUpdates ||
-				data.attributeUpdates ||
-				data.addAttributes ||
-				data.deleteAttributes,
-			{
-				message: 'At least one update operation must be provided',
-			}
-		),
+		.refine((data) => data.groupUpdates || data.attributeUpdates || data.addAttributes || data.deleteAttributes, {
+			message: 'At least one update operation must be provided',
+		}),
 });
