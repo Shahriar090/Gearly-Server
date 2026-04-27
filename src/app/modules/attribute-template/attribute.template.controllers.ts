@@ -15,6 +15,19 @@ const createAttributeTemplate = asyncHandler(async (req, res) => {
 	});
 });
 
+// update attribute template
+const updateAttributeTemplate = asyncHandler(async (req, res) => {
+	const result = await AttributeTemplateServices.updateAttributeTemplateIntoDb(req.body);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: 'Attribute template updated successfully',
+		data: result,
+	});
+});
+
 export const AttributeTemplateControllers = {
 	createAttributeTemplate,
+	updateAttributeTemplate,
 };
