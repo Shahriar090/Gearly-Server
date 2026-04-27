@@ -7,6 +7,7 @@ import { updateCategoryAttributeTemplate } from '../category/category.utils';
 import { TAttributeTemplate } from './attribute.template.interface';
 import { AttributeTemplate } from './attribute.template.model';
 
+// create attribute template
 const createAttributeTemplateIntoDb = async (payload: TAttributeTemplate) => {
 	const { categoryId } = payload;
 
@@ -55,6 +56,82 @@ const createAttributeTemplateIntoDb = async (payload: TAttributeTemplate) => {
 	return template;
 };
 
+// update attribute template
+const updateAttributeTemplateIntoDb = async (payload: any) => {
+	const { templateId, groupUpdates, attributeUpdates, addAttributes, deleteAttributes } = payload;
+
+	// check template exists
+	const template = await AttributeTemplate.findById(templateId);
+
+	if (!template) {
+		throw new AppError(httpStatus.NOT_FOUND, 'Attribute template not found', 'TemplateNotFound');
+	}
+
+	// handle group updates
+	if (groupUpdates) {
+		for (const update of groupUpdates) {
+			const group = template.groups.find((group) => group._id?.toString() === update.groupId);
+
+			if (!group) {
+				throw new AppError(httpStatus.NOT_FOUND, 'Group not found', 'GroupNotFound');
+			}
+
+			Object.assign(group, update.data);
+		}
+	}
+
+	// handle attribute updates
+	if (attributeUpdates) {
+		for (const update of attributeUpdates) {
+			const group = template.groups.find((group) => group._id?.toString() === update.groupId);
+
+			if (!group) {
+				throw new AppError(httpStatus.NOT_FOUND, 'Group not found', 'GroupNotFound');
+			}
+
+			const attribute = group.attributes.find((attr) => attr._id?.toString() === update.attributeId);
+
+			if (!attribute) {
+				throw new AppError(httpStatus.NOT_FOUND, 'Attribute not found', 'AttributeNotFound');
+			}
+
+			Object.assign(attribute, update.data);
+		}
+	}
+
+	// handle add attributes
+
+	if (addAttributes) {
+		for (const item of addAttributes) {
+			const group = template.groups.find((group) => group._id?.toString() === item.groupId);
+
+			if (!group) {
+				throw new AppError(httpStatus.NOT_FOUND, 'Group not found', 'GroupNotFound');
+			}
+
+			group.attributes.push(...item.attributes);
+		}
+	}
+
+	// handle delete attributes
+	if (deleteAttributes) {
+		for (const item of deleteAttributes) {
+			const group = template.groups.find((group) => group._id?.toString() === item.groupId);
+
+			if (!group) {
+				throw new AppError(httpStatus.NOT_FOUND, 'Group not found', 'GroupNotFound');
+			}
+
+			group.attributes = group.attributes.filter((attr) => !item.attributeIds.includes(attr._id?.toString()));
+		}
+	}
+
+	// save updated doc
+	await template.save();
+	return template;
+};
+
 export const AttributeTemplateServices = {
 	createAttributeTemplateIntoDb,
+	updateAttributeTemplateIntoDb,
 };
