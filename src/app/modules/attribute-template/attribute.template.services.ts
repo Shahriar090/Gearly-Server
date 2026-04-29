@@ -131,7 +131,34 @@ const updateAttributeTemplateIntoDb = async (payload: any) => {
 	return template;
 };
 
+// get all attribute templates
+const getAllAttributeTemplatesFromDb = async (query: any) => {
+	const { page = 1, limit = 10, categoryId } = query;
+
+	const filter: any = {};
+
+	if (categoryId) {
+		filter.categoryId = categoryId;
+	}
+
+	const result = await AttributeTemplate.find(filter)
+		.skip((page - 1) * limit)
+		.limit(limit)
+		.populate('categoryId');
+	const total = await AttributeTemplate.countDocuments(filter);
+
+	return {
+		meta: {
+			page,
+			limit,
+			total,
+		},
+		data: result,
+	};
+};
+
 export const AttributeTemplateServices = {
 	createAttributeTemplateIntoDb,
 	updateAttributeTemplateIntoDb,
+	getAllAttributeTemplatesFromDb,
 };
