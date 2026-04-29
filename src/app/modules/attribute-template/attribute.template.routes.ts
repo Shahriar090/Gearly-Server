@@ -14,4 +14,7 @@ router
 	.route('/update')
 	.patch(validateRequest(attributeTemplatePatchSchema), AttributeTemplateControllers.updateAttributeTemplate);
 
+// get all attribute templates
+router.route('/').get(AttributeTemplateControllers.getAllAttributeTemplates);
+
 export const templateRoutes = router;
