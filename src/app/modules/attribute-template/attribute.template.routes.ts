@@ -17,4 +17,7 @@ router
 // get all attribute templates
 router.route('/').get(AttributeTemplateControllers.getAllAttributeTemplates);
 
+// get a single attribute template
+router.route('/:templateId').get(AttributeTemplateControllers.getSingleAttributeTemplate);
+
 export const templateRoutes = router;
