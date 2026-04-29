@@ -27,7 +27,22 @@ const updateAttributeTemplate = asyncHandler(async (req, res) => {
 	});
 });
 
+// get all attribute templates from db
+const getAllAttributeTemplates = asyncHandler(async (req, res) => {
+	const query = req.query;
+
+	const result = await AttributeTemplateServices.getAllAttributeTemplatesFromDb(query);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: 'All attribute templates are retrieved successfully',
+		data: result,
+	});
+});
+
 export const AttributeTemplateControllers = {
 	createAttributeTemplate,
 	updateAttributeTemplate,
+	getAllAttributeTemplates,
 };
