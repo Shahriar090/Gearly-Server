@@ -41,8 +41,23 @@ const getAllAttributeTemplates = asyncHandler(async (req, res) => {
 	});
 });
 
+// get a single attribute template from db
+const getSingleAttributeTemplate = asyncHandler(async (req, res) => {
+	const { templateId } = req.params;
+
+	const result = await AttributeTemplateServices.getSingleAttributeTemplateFromDb(templateId);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: 'Attribute template retrieved successfully',
+		data: result,
+	});
+});
+
 export const AttributeTemplateControllers = {
 	createAttributeTemplate,
 	updateAttributeTemplate,
 	getAllAttributeTemplates,
+	getSingleAttributeTemplate,
 };
