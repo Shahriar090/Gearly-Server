@@ -20,4 +20,9 @@ router.route('/').get(AttributeTemplateControllers.getAllAttributeTemplates);
 // get a single attribute template
 router.route('/:templateId').get(AttributeTemplateControllers.getSingleAttributeTemplate);
 
+// get attribute template by category
+router.route('/category/:categoryId').get(AttributeTemplateControllers.getAttributeTemplateByCategory);
+// TODO: There was an error about this catch-all dynamic route
+// Explore more about it later.
+
 export const templateRoutes = router;
