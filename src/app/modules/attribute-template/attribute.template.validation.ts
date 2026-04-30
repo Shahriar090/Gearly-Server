@@ -81,6 +81,7 @@ const templateBaseObject = z.object({
 	categoryId: z.string().min(1, 'CategoryId is required'),
 	name: z.string().min(1),
 	groups: z.array(groupBaseObject).min(1),
+	isDeleted: z.boolean().optional()
 });
 
 export const attributeTemplateCreateSchema = z.object({

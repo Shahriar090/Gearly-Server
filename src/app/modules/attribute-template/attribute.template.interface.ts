@@ -43,6 +43,7 @@ export interface TAttributeTemplate {
 	categoryId: ObjectId;
 	name: string;
 	groups: TAttributeGroup[];
+	isDeleted?: boolean;
 }
 
 export interface ValidationResult {

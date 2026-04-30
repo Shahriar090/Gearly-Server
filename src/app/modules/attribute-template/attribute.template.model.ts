@@ -45,6 +45,7 @@ const attributeTemplateSchema = new Schema<TAttributeTemplate>(
 		},
 		name: { type: String, required: true },
 		groups: { type: [attributeGroupSchema], required: true },
+		isDeleted: {type:Boolean, default:false}
 	},
 	{ timestamps: true },
 );
