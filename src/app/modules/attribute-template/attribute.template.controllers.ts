@@ -55,9 +55,23 @@ const getSingleAttributeTemplate = asyncHandler(async (req, res) => {
 	});
 });
 
+// get attribute template by category
+const getAttributeTemplateByCategory = asyncHandler(async (req, res) => {
+	const { categoryId } = req.params;
+	const result = await AttributeTemplateServices.getAttributeTemplateByCategoryFromDb(categoryId);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: 'Attribute template retrieved successfully',
+		data: result,
+	});
+});
+
 export const AttributeTemplateControllers = {
 	createAttributeTemplate,
 	updateAttributeTemplate,
 	getAllAttributeTemplates,
 	getSingleAttributeTemplate,
+	getAttributeTemplateByCategory,
 };
