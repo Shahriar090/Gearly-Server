@@ -168,9 +168,21 @@ const getSingleAttributeTemplateFromDb = async (templateId: string) => {
 	return template;
 };
 
+// get attribute template by category
+const getAttributeTemplateByCategoryFromDb = async (categoryId: string) => {
+	const template = await AttributeTemplate.findOne({ categoryId });
+
+	if (!template) {
+		throw new AppError(404, 'No template found for this category', 'TemplateNotFound');
+	}
+
+	return template;
+};
+
 export const AttributeTemplateServices = {
 	createAttributeTemplateIntoDb,
 	updateAttributeTemplateIntoDb,
 	getAllAttributeTemplatesFromDb,
 	getSingleAttributeTemplateFromDb,
+	getAttributeTemplateByCategoryFromDb,
 };
