@@ -180,15 +180,15 @@ const getAttributeTemplateByCategoryFromDb = async (categoryId: string) => {
 };
 
 // soft delete
-const deleteAttributeTemplateFromDb = async(templateId:string)=>{
-	const template = await AttributeTemplate.findByIdAndUpdate(templateId,{isDeleted:true},{new:true})
+const deleteAttributeTemplateFromDb = async (templateId: string) => {
+	const template = await AttributeTemplate.findByIdAndUpdate(templateId, { isDeleted: true }, { new: true });
 
-		if (!template) {
+	if (!template) {
 		throw new AppError(404, 'Template not found', 'TemplateNotFound');
 	}
 
 	return template;
-}
+};
 
 export const AttributeTemplateServices = {
 	createAttributeTemplateIntoDb,
@@ -196,5 +196,5 @@ export const AttributeTemplateServices = {
 	getAllAttributeTemplatesFromDb,
 	getSingleAttributeTemplateFromDb,
 	getAttributeTemplateByCategoryFromDb,
-	deleteAttributeTemplateFromDb
+	deleteAttributeTemplateFromDb,
 };

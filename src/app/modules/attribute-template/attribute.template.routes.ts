@@ -26,6 +26,6 @@ router.route('/category/:categoryId').get(AttributeTemplateControllers.getAttrib
 // Explore more about it later.
 
 // delete template
-router.route('/delete/:templateId').delete(AttributeTemplateControllers.deleteAttributeTemplate)
+router.route('/delete/:templateId').delete(AttributeTemplateControllers.deleteAttributeTemplate);
 
 export const templateRoutes = router;

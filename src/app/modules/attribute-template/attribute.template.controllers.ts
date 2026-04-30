@@ -69,9 +69,9 @@ const getAttributeTemplateByCategory = asyncHandler(async (req, res) => {
 });
 
 // soft delete
-const deleteAttributeTemplate = asyncHandler(async(req, res)=>{
-	const {templateId} = req.params
-	const result = await AttributeTemplateServices.deleteAttributeTemplateFromDb(templateId)
+const deleteAttributeTemplate = asyncHandler(async (req, res) => {
+	const { templateId } = req.params;
+	const result = await AttributeTemplateServices.deleteAttributeTemplateFromDb(templateId);
 
 	sendResponse(res, {
 		statusCode: httpStatus.OK,
@@ -79,7 +79,7 @@ const deleteAttributeTemplate = asyncHandler(async(req, res)=>{
 		message: 'Attribute template deleted successfully',
 		data: result._id,
 	});
-})
+});
 
 export const AttributeTemplateControllers = {
 	createAttributeTemplate,
@@ -87,5 +87,5 @@ export const AttributeTemplateControllers = {
 	getAllAttributeTemplates,
 	getSingleAttributeTemplate,
 	getAttributeTemplateByCategory,
-	deleteAttributeTemplate
+	deleteAttributeTemplate,
 };
