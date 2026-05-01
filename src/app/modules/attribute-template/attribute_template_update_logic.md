@@ -407,3 +407,12 @@ If extended properly, this can power:
 * dynamic filters
 * product configurations
 * admin dashboards
+
+
+
+**FUTURE IMPROVEMENTS**
+
+- Group-level operations like add/delete group
+- Duplicate attribute protection (color, color, color) X
+- Transaction for better safety and scalability
+- Improve payload typing | replace all 'any' with actual type
