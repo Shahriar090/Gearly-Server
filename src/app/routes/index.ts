@@ -1,5 +1,6 @@
 import express from 'express';
 import { adminDashboardRoutes } from '../modules/adminDashboard/adminDashboard.routes';
+import { templateRoutes } from '../modules/attribute-template/attribute.template.routes';
 import { authRoutes } from '../modules/auth/auth.routes';
 import { cartRoutes } from '../modules/cart/cart.routes';
 import { categoryRoutes } from '../modules/category/category.routes';
@@ -61,6 +62,10 @@ const moduleRoutes = [
 	{
 		path: '/payment',
 		route: paymentRoutes,
+	},
+	{
+		path: '/attribute-template',
+		route: templateRoutes,
 	},
 ];
 

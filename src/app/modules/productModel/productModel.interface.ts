@@ -14,7 +14,7 @@ import type { AVAILABILITY_STATUS } from './productModel.constants';
 
 // Experimental : Trying to make the specifications dynamic for different products.
 
-export type TSpecifications = Record<string, string | string[] | number | boolean>;
+// export type TSpecifications = Record<string, string | string[] | number | boolean>;
 
 export type TAvailabilityStatus = (typeof AVAILABILITY_STATUS)[keyof typeof AVAILABILITY_STATUS];
 
@@ -27,16 +27,38 @@ export type TProductModel = {
 	discount?: number;
 	discountPrice?: number;
 	saved: number;
-	specifications?: TSpecifications;
 	tags?: string[];
 	availabilityStatus: TAvailabilityStatus;
 	stock: number;
-	category?: Types.ObjectId;
-	subCategory?: Types.ObjectId;
+	categoryId?: Types.ObjectId;
 	brand: string;
 	images: string[];
 	reviews?: Types.ObjectId[];
 	ratings?: number;
 	isFeatured: boolean;
 	isDeleted: boolean;
+	attributes?: Map<string, any>;
+	sku?: string;
+	status: ProductStatus;
+	createdAt: Date;
+	updatedAt: Date;
 };
+
+export enum ProductStatus {
+	ACTIVE = 'active',
+	INACTIVE = 'inactive',
+	DRAFT = 'draft',
+}
+
+export interface CreateProductInput {
+	name: string;
+	description?: string;
+	categoryId: string;
+	price: number;
+	stock?: number;
+	images?: string[];
+	brand?: string;
+	sku?: string;
+	status?: ProductStatus;
+	attributes?: Record<string, any>;
+}

@@ -1,39 +1,21 @@
 import { model, Schema } from 'mongoose';
-import type { TCategory, TCategoryStatus, TFilteringFields } from './category.interface';
-import { CATEGORY_STATUS } from './category.constants';
 import slugify from 'slugify';
-
-//**---------------------------------------------------------------------------
-// Structure of the specifications:
-// 1) Category has specifications which is an array
-// 2) Each specification is a group with group name and fields
-// 3) Fields is another array
-// 4) Each field is an object with name, type and required.
-// ** Array of groups => Each group has a name and an array of fields => Each field describes a specific detail like, screen size, ram etc.
-// */-------------------------------------------------------------------------
-
-const specificationFieldSchema = new Schema({
-	name: { type: String, required: true },
-	type: {
-		type: String,
-		enum: ['string', 'number', 'boolean'],
-		required: true,
-	},
-	required: { type: Boolean, default: false },
-});
-
-const specificationGroupSchema = new Schema({
-	groupName: { type: String, required: true },
-	fields: { type: [specificationFieldSchema], required: true },
-});
-
-const filteringFieldsSchema = new Schema<TFilteringFields>({
-	groupName: { type: String, required: true },
-	value: { type: [String], required: true },
-});
+import { CATEGORY_STATUS } from './category.constants';
+import type { TCategory, TCategoryStatus } from './category.interface';
 
 const categorySchema = new Schema<TCategory>(
 	{
+		parentId: {
+			type: Schema.Types.ObjectId,
+			ref: 'Category',
+			default: null,
+		},
+		attributeTemplateId: {
+			type: Schema.Types.ObjectId,
+			ref: 'AttributeTemplate',
+			default: null,
+		},
+
 		name: {
 			type: String,
 			required: true,
@@ -60,8 +42,7 @@ const categorySchema = new Schema<TCategory>(
 			enum: Object.values(CATEGORY_STATUS) as TCategoryStatus[],
 			default: CATEGORY_STATUS.Active,
 		},
-		specifications: { type: [specificationGroupSchema], default: [] },
-		filteringFields: [filteringFieldsSchema],
+
 		isDeleted: {
 			type: Boolean,
 			default: false,

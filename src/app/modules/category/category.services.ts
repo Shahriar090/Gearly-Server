@@ -1,7 +1,8 @@
+import httpStatus from 'http-status';
+import { Types } from 'mongoose';
 import AppError from '../../errors/appError';
 import type { TCategory } from './category.interface';
 import { Category } from './category.model';
-import httpStatus from 'http-status';
 
 // create category
 const createCategoryIntoDb = async (payload: TCategory) => {
@@ -10,9 +11,25 @@ const createCategoryIntoDb = async (payload: TCategory) => {
 	if (isCategoryExists) {
 		throw new AppError(httpStatus.BAD_REQUEST, 'This Category Is Already Exist.!', 'CategoryExistingError');
 	}
+
+	let parentCategory = null;
+
+	if (payload.parentId) {
+		if (!Types.ObjectId.isValid(payload.parentId)) {
+			throw new AppError(httpStatus.BAD_REQUEST, 'Invalid parentId', 'InvalidParentIdError');
+		}
+
+		parentCategory = await Category.findById(payload.parentId);
+
+		if (!parentCategory) {
+			throw new AppError(httpStatus.BAD_REQUEST, 'Parent category not found', 'ParentNotFoundError');
+		}
+	}
+
 	// create new category
 	const newCategory = new Category({
 		...payload,
+		parentId: parentCategory?._id || null,
 		imageUrl: payload.imageUrl,
 	});
 
